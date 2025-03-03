@@ -3,6 +3,7 @@
     "types": [
       "vitest/globals"
     ],
+    "jsx": "react-jsx",
     "moduleResolution": "node"
   },
   "include": [
