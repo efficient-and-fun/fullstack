@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "cy:open": "cypress open"
   },
   "dependencies": {
     "react": "^19.0.0",
