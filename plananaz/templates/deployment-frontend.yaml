@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: "{{ .Values.frontend.image }}:{{ .Values.frontend.tag }}"
+          imagepullPolicy: {{ .Values.frontend.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.frontend.port }}
+          env:
+            - name: VITE_API_BASE_URL
+              value: "{{ .Values.frontend.VITE_API_BASE_URL }}"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend  # 👈 This service makes the frontend reachable inside Kubernetes
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: {{ .Values.service.frontendPort }} # The port exposed in the cluster
+      targetPort: {{ .Values.frontend.port }} # The port inside the frontend container
+  type: NodePort  # 👈 Exposes frontend to the outside (Minikube)

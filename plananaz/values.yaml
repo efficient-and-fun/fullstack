@@ -1,0 +1,16 @@
+frontend:
+  image: miweinho/eggplanned
+  pullPolicy: always
+  tag: latest
+  port: 80
+  VITE_API_BASE_URL: "http://backend:5246"
+
+backend:
+  image: miweinho/eggplanned-back
+  tag: latest
+  port: 5246
+
+service:
+  frontendPort: 80
+  backendPort: 5246
+  type: ClusterIP
