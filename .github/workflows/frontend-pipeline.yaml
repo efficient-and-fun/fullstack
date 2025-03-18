@@ -1,0 +1,38 @@
+name: plananaz-frontend-pipeline
+
+on:
+  push:
+    branches: [main, develop, dev-frontend]
+  pull_request:
+    branches: [main, develop, dev-frontend]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the project
+        run: npm run build
+
+      - name: Run Vitest unit tests
+        run: npm run test
+
+      - name: Run Cypress end-to-end tests
+        uses: cypress-io/github-action@v6
+        with:
+          build: npm run build
+          start: npm run dev
+          wait-on: "http://localhost:4173"
+          browser: chrome
