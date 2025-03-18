@@ -46,7 +46,7 @@ jobs:
             libgbm-dev \
             libcups2 \
             libgtk-3-0 \
-            libasound2
+            libasound2t64
 
       - name: Clear Cypress cache
         run: npx cypress cache clear
