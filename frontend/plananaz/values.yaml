@@ -1,5 +1,5 @@
 frontend:
-  image: miweinho/eggplanned
+  image: ghcr.io/efficient-and-fun/my-image
   pullPolicy: always
   tag: latest
   port: 80
