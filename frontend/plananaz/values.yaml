@@ -1,6 +1,6 @@
 frontend:
   image: ghcr.io/efficient-and-fun/my-image
-  pullPolicy: always
+  pullPolicy: Always
   tag: latest
   port: 80
   VITE_API_BASE_URL: "http://backend:5246"
@@ -13,4 +13,4 @@ backend:
 service:
   frontendPort: 8080
   backendPort: 5246
-  type: ClusterIP
+  type: ClusterIPs
