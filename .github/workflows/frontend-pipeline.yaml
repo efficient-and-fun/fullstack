@@ -68,11 +68,11 @@ jobs:
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GHRC_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      # Debugging: List the contents of the frontend directory
-      - name: List files in frontend directory
+        # Debugging: List files in the root of the repository to see the directory structure
+      - name: List files in the root of the repository
         run: |
-          echo "Listing contents of the frontend directory:"
-          ls -la frontend
+          echo "Listing contents of the repository:"
+          ls -la
 
       - name: Build Docker image
         run: docker build -t ghcr.io/${{ github.repository_owner }}/my-image:latest -f frontend/Dockerfile frontend
