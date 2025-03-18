@@ -68,9 +68,14 @@ jobs:
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GHRC_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
+      # Debugging: List the contents of the frontend directory
+      - name: List files in frontend directory
+        run: |
+          echo "Listing contents of the frontend directory:"
+          ls -la frontend
+
       - name: Build Docker image
-        working-directory: frontend
-        run: docker build -t ghcr.io/${{ github.repository_owner }}/my-image:latest .
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/my-image:latest -f frontend/Dockerfile frontend
 
       - name: Push Docker image
         run: docker push ghcr.io/${{ github.repository_owner }}/my-image:latest
