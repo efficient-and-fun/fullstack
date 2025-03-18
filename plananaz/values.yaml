@@ -11,6 +11,6 @@ backend:
   port: 5246
 
 service:
-  frontendPort: 80
+  frontendPort: 8080
   backendPort: 5246
   type: ClusterIP

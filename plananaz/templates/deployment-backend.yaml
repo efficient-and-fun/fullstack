@@ -20,6 +20,13 @@ spec:
           env:
             - name: ASPNETCORE_URLS
               value: "http://+:{{ .Values.backend.port }}"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+              ephemeral-storage: "1Gi"
+            limits:
+              memory: "256Mi"
 ---
 apiVersion: v1
 kind: Service

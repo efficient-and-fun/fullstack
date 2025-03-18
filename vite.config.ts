@@ -8,7 +8,7 @@ export default defineConfig({
     host: true,
     proxy: {
       "/api": {
-        target: process.env.VITE_API_BASE_URL || "http://localhost:5246", // Change to your API URL
+        target: "http://localhost:5246", // Change to your API URL
         changeOrigin: true,
         secure: false, // Set to true if your API uses HTTPS
       },
