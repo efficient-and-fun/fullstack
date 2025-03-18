@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "module": "ESNext", // oder "NodeNext", falls du Node 18+ verwendest
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "target": "ESNext",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
