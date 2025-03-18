@@ -69,7 +69,8 @@ jobs:
         run: echo "${{ secrets.GHRC_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.repository_owner }}/my-image:latest -f frontend/Dockerfile ./frontend
+        working-directory: frontend
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/my-image:latest .
 
       - name: Push Docker image
         run: docker push ghcr.io/${{ github.repository_owner }}/my-image:latest
