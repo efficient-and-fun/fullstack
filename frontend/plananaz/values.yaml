@@ -1,5 +1,5 @@
 frontend:
-  image: ghcr.io/efficient-and-fun/my-image
+  image: ghcr.io/efficient-and-fun/plananaz-frontend-image
   pullPolicy: Always
   tag: latest
   port: 80

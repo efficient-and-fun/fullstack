@@ -2,7 +2,13 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: plananaz-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
 spec:
+  tls:
+    - hosts:
+        - plananaz.scym-ef-testing.pm4.init-lab.ch
+      secretName: plananaz-testing
   rules:
     - host: plananaz.scym-ef-testing.pm4.init-lab.ch
       http:
