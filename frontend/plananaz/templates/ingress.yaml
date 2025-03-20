@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: plananaz-ingress
   annotations:
-    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/ingress.class: "traefik"
 spec:
   tls:
     - hosts:
@@ -19,11 +19,11 @@ spec:
               service:
                 name: frontend
                 port:
-                  number: {{ .Values.service.frontendPort }}
+                  number: 80
           - path: /api
             pathType: Prefix
             backend:
               service:
                 name: backend
                 port:
-                  number: {{ .Values.service.backendPort }}
+                  number: 8080
