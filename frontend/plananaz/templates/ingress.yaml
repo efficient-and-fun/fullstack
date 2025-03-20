@@ -13,11 +13,11 @@ spec:
               service:
                 name: frontend
                 port:
-                  number: 80
+                  number: {{ .Values.service.frontendPort }}
           - path: /api
             pathType: Prefix
             backend:
               service:
                 name: backend
                 port:
-                  number: 8080
+                  number: {{ .Values.service.backendPort }}
