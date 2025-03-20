@@ -87,4 +87,4 @@ jobs:
         run: docker tag ghcr.io/${{ github.repository_owner }}/plananaz-frontend-image:${{ env.IMAGE_TAG }} ghcr.io/${{ github.repository_owner }}/plananaz-frontend-image:latest
 
       - name: Push Docker image
-        run: docker push ghcr.io/${{ github.repository_owner }}/plananaz-frontend-image:${{ env.IMAGE_TAG }}
+        run: docker push ghcr.io/${{ github.repository_owner }}/plananaz-frontend-image: --all-tags
