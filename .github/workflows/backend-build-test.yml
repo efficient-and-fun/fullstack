@@ -20,9 +20,9 @@ jobs:
          with:
            dotnet-version: 8.0.x
        - name: Restore dependencies
-         run: dotnet restore WebApi/WebApi.csproj
+         run: dotnet restore backend/WebApi/WebApi.csproj
        - name: Build
-         run: dotnet build WebApi/WebApi.csproj --no-restore
+         run: dotnet build backend/WebApi/WebApi.csproj --no-restore
 
   test:
     runs-on: ubuntu-latest
