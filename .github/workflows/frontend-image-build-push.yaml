@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - frontend/**
-    branches: [main, dev]
+    branches: [main, dev, dev-frontend]
   workflow_run:
     workflows: ["Frontend build and test"] # Der Name des ersten Workflows
     types:
