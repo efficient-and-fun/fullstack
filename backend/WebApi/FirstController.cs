@@ -10,9 +10,14 @@ public class FirstController : BaseController
         
     }
 
-    [HttpGet, Route("api/[controller]/hello")]
-    public ActionResult<string> GetHello()
+    public class EchoDto
     {
-        return Ok("Hello");
+        public string? Message { get; set; }
+    }
+
+    [HttpPost, Route("echo")]
+    public ActionResult<string> Echo([FromBody] EchoDto dto)
+    {
+        return Ok(dto.Message);
     }
 }
