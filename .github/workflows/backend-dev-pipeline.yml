@@ -4,11 +4,7 @@ on:
   push:
     paths:
       - backend/**
-    branches: [ main, dev, dev-backend ]
-  pull_request:
-    paths:
-      - backend/**
-    branches: [ main, dev, dev-backend ]
+    branches: [ dev-backend ]
 
 jobs:
   build:
