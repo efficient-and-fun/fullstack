@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copy project and restore dependencies
 COPY *.csproj ./
-RUN dotnet restore
+RUN dotnet restore backend/WebApi/WebApi.csproj
 
 # Copy the rest of the application source code
 COPY . ./
