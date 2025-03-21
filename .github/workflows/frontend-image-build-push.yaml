@@ -8,7 +8,7 @@ on:
   workflow_run:
     workflows: ["Frontend build and test"] # Der Name des ersten Workflows
     types:
-      - completed
+      - success
 
 jobs:
   docker-build-and-push:
