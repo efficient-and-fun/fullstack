@@ -13,14 +13,21 @@ public class UnitTestFirst
     {
         _controller = new FirstController();
     }
-    
-    [TestMethod]
-    public void TestHello()
-    {
-        var expected = "Hello";
 
-        var result = _controller.GetHello();
+    [TestMethod]
+    public void TestEcho()
+    {
+        // Arrange
+        var expected = "Test message";
+        var dto = new FirstController.EchoDto 
+        { 
+            Message = expected 
+        };
+
+        // Act
+        var result = _controller.Echo(dto);
         
+        // Assert
         var okResult = result.Result as OkObjectResult;
         Assert.IsNotNull(okResult, "Expected an OkObjectResult");
         
