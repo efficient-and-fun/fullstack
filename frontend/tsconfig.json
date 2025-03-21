@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "ESNext", // oder "NodeNext", falls du Node 18+ verwendest
+    "moduleResolution": "bundler",
+    "target": "ESNext",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "jsx": "react-jsx",
+    "types": ["vitest/globals"]
+  },
+  "include": [
+    "src/**/*",
+    "test/**/*"
+    // "cypress.config.ts" // Falls nicht enthalten, hinzufügen
+    // "cypress/**/*" // Falls nicht enthalten, hinzufügen
+  ]
+}
