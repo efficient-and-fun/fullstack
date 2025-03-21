@@ -44,7 +44,7 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore backend/WebApiTest/WebApiTest.csproj
 
       - name: Test
-        run: dotnet test WebApiTest/WebApiTest.csproj --verbosity normal
+        run: dotnet test backend/WebApiTest/WebApiTest.csproj --verbosity normal
