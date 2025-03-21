@@ -4,7 +4,7 @@ metadata:
   name: plananaz-ingress
 spec:
   rules:
-    - host: plananaz.scym-ef-testing.pm4.init-lab.ch
+    - host: scmy-ef-testing.pm4.init-lab.ch
       http:
         paths:
           - path: /
