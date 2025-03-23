@@ -70,7 +70,7 @@ jobs:
         run: echo "IMAGE_TAG=${{ github.run_number }}" >> $GITHUB_ENV
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.repository_owner }}/plananaz-backend-image:${{ env.IMAGE_TAG }} -f backend/WebApi/Dockerfile backend
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/plananaz-backend-image:${{ env.IMAGE_TAG }} -f backend/WebApi/Dockerfile .
 
       - name: Build Docker image
         run: docker tag ghcr.io/${{ github.repository_owner }}/plananaz-backend-image:${{ env.IMAGE_TAG }} ghcr.io/${{ github.repository_owner }}/plananaz-backend-image:latest
