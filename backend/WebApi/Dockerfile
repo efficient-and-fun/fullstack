@@ -3,12 +3,11 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
 # Copy project and restore dependencies
-COPY *.csproj ./
-RUN dotnet restore backend/WebApi/WebApi.csproj
+COPY backend/ ./backend/
+RUN dotnet restore ./backend/WebApi/WebApi.csproj
 
-# Copy the rest of the application source code
-COPY . ./
-RUN dotnet publish -c Release -o /out
+# Publish
+RUN dotnet publish ./backend/WebApi/WebApi.csproj -c Release -o /out
 
 # Use the official ASP.NET runtime image to run the app
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
