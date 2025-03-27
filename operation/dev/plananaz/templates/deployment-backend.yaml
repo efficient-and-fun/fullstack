@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: "{{ .Values.backend.image }}:{{ .Values.backend.tag }}"
+          ports:
+            - containerPort: {{ .Values.backend.port }}
+          env:
+            - name: ASPNETCORE_URLS
+              value: "http://+:{{ .Values.backend.port }}"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+              ephemeral-storage: "1Gi"
+            limits:
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend  # 👈 This service makes the backend reachable inside Kubernetes
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: {{ .Values.service.backendPort }} # The port exposed in the cluster
+      targetPort: {{ .Values.backend.port }} # The port inside the backend container
+  type: ClusterIP # 👈 Only accessible inside the cluster

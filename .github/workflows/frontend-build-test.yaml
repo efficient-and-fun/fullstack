@@ -1,0 +1,55 @@
+name: Frontend build and test
+
+on:
+  push:
+    paths:
+      - frontend/**
+    branches: [main, dev, dev-frontend]
+  pull_request:
+    paths:
+      - frontend/**
+    branches: [main, dev, dev-frontend]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js with caching
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Restore Cypress cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            cypress-cache-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Build the project
+        run: npm run build
+        working-directory: frontend
+
+      - name: Run Vitest unit tests
+        run: npm run test
+        working-directory: frontend
+
+      - name: Run Cypress end-to-end tests
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: frontend
+          build: npm run build
+          start: npm run dev
+          wait-on: "http://localhost:5173"
+          browser: electron
