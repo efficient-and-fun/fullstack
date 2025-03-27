@@ -1,0 +1,46 @@
+name: Backend Build and Test
+
+on:
+  push:
+    paths:
+      - backend/**
+    branches: [ dev-backend ]
+
+jobs:
+  build:
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v4
+       - name: Setup .NET
+         uses: actions/setup-dotnet@v4
+         with:
+           dotnet-version: 8.0.x
+       - name: Restore dependencies
+         run: dotnet restore backend/WebApi/WebApi.csproj
+       - name: Build
+         run: dotnet build backend/WebApi/WebApi.csproj --no-restore
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache .NET packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore backend/WebApiTest/WebApiTest.csproj
+
+      - name: Test
+        run: dotnet test backend/WebApiTest/WebApiTest.csproj --verbosity normal
