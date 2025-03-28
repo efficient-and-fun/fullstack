@@ -4,11 +4,7 @@ on:
   push:
     paths:
       - frontend/**
-    branches: [main, dev]
-  pull_request:
-    paths:
-      - frontend/**
-    branches: [main, dev]
+    branches: [dev]
 
 jobs:
   build-and-test:

@@ -8,7 +8,7 @@ on:
   pull_request:
     paths:
       - frontend/**
-    branches: [dev-frontend]
+    branches: [dev-frontend, dev]
 
 jobs:
   build-and-test:
