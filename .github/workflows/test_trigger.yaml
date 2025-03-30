@@ -4,10 +4,6 @@ on:
     paths:
       - backend/**
     branches: [ dev-backend ]
-  pull_request:
-    paths:
-      - frontend/**
-    branches: [dev-frontend, dev]  
   
 jobs:
   deploy:
