@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - backend/**
-    branches: [dev, dev-backend]
+    branches: [dev]
 
 jobs:
   build:
