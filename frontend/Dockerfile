@@ -12,7 +12,7 @@ FROM nginx:stable-alpine
 RUN rm /etc/nginx/conf.d/default.conf
 # Copy our custom Nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-# Copy the React build output to the Nginx html folder
+# Copy the React build output to the Nginx html folder.
 COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
