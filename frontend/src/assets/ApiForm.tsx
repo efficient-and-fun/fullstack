@@ -37,7 +37,7 @@ const ApiForm = () => {
         />
         <button type="submit">Senden</button>
       </form>
-      <pre>{response ? response : "Noch keine Antwort"}</pre>
+      <pre>{response || "Noch keine Antwort"}</pre>
     </div>
   );
 };
