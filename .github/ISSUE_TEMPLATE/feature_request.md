@@ -2,11 +2,11 @@
 name: Feature request
 about: Suggest an idea for this project
 title: Feature - Title of the new feature
-labels: feature
+labels: ''
 assignees: ''
- 
+
 ---
- 
+
 **Description**
 A clear and concise description of what you want.
  
