@@ -10,7 +10,7 @@ assignees: ''
 ** Creation Checklist **
 - [ ] Changed story title
 - [ ] Changed Link to parent in description
-- [ ] Added label "frontend"
+- [ ] Added label "backend"
 - [ ] Set type "Story"
 
 **Description**
