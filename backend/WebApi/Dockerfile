@@ -20,5 +20,5 @@ ENV ASPNETCORE_URLS=http://+:5246
 # Expose the correct port
 EXPOSE 5246
 
-# Set the entrypoint to run the app.
+# Set the entrypoint to run the app
 ENTRYPOINT ["dotnet", "WebApi.dll"]
