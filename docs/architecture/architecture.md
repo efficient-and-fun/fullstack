@@ -31,8 +31,9 @@ difficulty in keeping track of event details. Our app addresses these challenges
 ## 5. Building Block View
 ## 6. Runtime View
 ## 7. Deployment View
+Describe there are 2 deployments and how they work
 ## 8. Cross-cutting Concepts
-
+How is the deployment process?
 ## 9. Architecture Decisions
 ## 10. Quality Requirements
 ## 11. Risks and Technical Debt
