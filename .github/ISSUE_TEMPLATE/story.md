@@ -7,6 +7,18 @@ assignees: ''
 
 ---
 
+** Creation Checklist **
+- [ ] Changed story title
+- [ ] Added Description
+- [ ] Added Acceptance Criteria
+- [ ] Added Definition of Done
+- [ ] Label "User story" set
+- [ ] Type "Story" set
+- [ ] Project set
+- [ ] Story points set
+- [ ] Priority set
+- [ ] Sub-Issues for Backend & Frontend created
+
 **Description**
 As a user, 
 I want to [an action or feature]
