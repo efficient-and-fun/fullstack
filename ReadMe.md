@@ -85,7 +85,7 @@ Prerequsiste:
         ```
     - Backend:
         ```bash
-        docker build -t backend:latest ./backend/WebApi
+        docker build -t backend:latest -f backend/WebApi/Dockerfile .
         ```
 
 - Run Docker Containers:
