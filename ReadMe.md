@@ -91,11 +91,11 @@ Prerequsiste:
 - Run Docker Containers:
     - Frontend:
         ```bash
-        docker run -p 3000:3000 frontend:latest
+        docker run -p 80:3000 frontend:latest
         ```
     - Backend:
         ```bash
-        docker run -p 5000:5000 backend:latest
+        docker run -p 5246:5246 backend:latest
         ```
 
 
