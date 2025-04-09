@@ -91,7 +91,7 @@ Prerequsiste:
 - Run Docker Containers:
     - Frontend:
         ```bash
-        docker run -p 80:3000 frontend:latest
+        docker run -p 3000:80 frontend:latest
         ```
     - Backend:
         ```bash
