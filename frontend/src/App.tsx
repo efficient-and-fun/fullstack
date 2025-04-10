@@ -1,38 +1,26 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "./assets/vite.svg";
 import "./App.css";
 
-import ApiForm from "./assets/ApiForm";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import HomePage from './routes/Home';
+import EventPage from './routes/Event';
+import FriendsPage from './routes/Friends';
+import NotificationPage from './routes/Notification';
+import SettingPage from './routes/Setting';
+
 
 function App() {
-  const [count, setCount] = useState(0);
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React (Welcome to Plananaz)</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <div>
-        <ApiForm />
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <Router>  
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/event" element={<EventPage />} />
+          <Route path="/friends" element={<FriendsPage />} />
+          <Route path="/notification" element={<NotificationPage />} />
+          <Route path="/setting" element={<SettingPage />} />
+        </Routes>
+    </Router>
     </>
   );
 }
