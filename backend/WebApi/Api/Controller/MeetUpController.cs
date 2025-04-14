@@ -10,23 +10,36 @@ public class MeetUpController : BaseController
 {
     public MeetUpController(ILogger<MeetUpController> logger, IConfiguration configuration, EfDbContext context) : base(logger, configuration, context) { }
     
+    /// <summary>
+    /// Get MeetUps of a specified user (both accepted invitations and not accepted ones). 
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="meetupId"></param>
+    /// <returns></returns>
     [HttpGet, Route("{userId:int}/{meetupId:int}")]
     public async Task<ActionResult<MeetUps>> GetMeetUpDetails(int userId, [FromRoute] int meetupId)
     {
-        var test = await _context.meetups.Where(m => m.MeetUpId == meetupId).ToListAsync();
+        var foundMeetUp = (from m in _context.MeetUps
+            join p in _context.Participations
+                on m.MeetUpId equals p.MeetUpId
+            join u in _context.Users
+                on p.UserId equals u.UserId
+            where u.UserId == userId
+            select new MeetUpDetailDto()
+            {
+                MeetUpId = m.MeetUpId,
+                MeetUpName = m.MeetUpName,
+                DateTimeFrom = m.DateTimeFrom,
+                DateTimeTo = m.DateTimeTo,
+                CheckList = m.CheckList,
+                MeetUpLocation = m.MeetUpLocation,
+                Description = m.Description,
+            }).FirstOrDefault();
         
-        var firstMeetUp = new MeetUpDetailDto()
-        {
-            MeetUpId = 1,
-            MeetUpName = "GameNight",
-            Description = "Mega cooles Alias Event",
-            MeetUpLocation = "Irgendwo in Winti",
-            CheckList = "Motivation, Lust, Lebensfreude",
-            DateTimeFrom = new DateTime(2020, 01, 01),
-            DateTimeTo = new DateTime(2020, 01, 02)
-        };
+        // TODO: weiteres Beispiel, remove at some later stage.
+        // var foundMeetUp = await _context.MeetUps.Where(m => m.MeetUpId == meetupId).FirstOrDefaultAsync();
         
-        return Ok(test);
+        return Ok(foundMeetUp);
     }
 
     [HttpGet, Route("{userid:int}")]
@@ -34,11 +47,7 @@ public class MeetUpController : BaseController
     {
         // TODO: get meetups of users
         
-        var meetups = new List<MeetUpBreefDto>();
-
-        meetups.Add(new MeetUpBreefDto() { MeetUpId = 1, MeetUpName = "GameNight 1", Description = "Mega cooles Alias Event 1", DateTimeFrom = new DateTime(2020, 01, 01), DateTimeTo = new DateTime(2020, 01, 02) });
-        meetups.Add(new MeetUpBreefDto() { MeetUpId = 2, MeetUpName = "GameNight 2", Description = "Mega cooles Alias Event 2", DateTimeFrom = new DateTime(2020, 01, 01), DateTimeTo = new DateTime(2020, 01, 02) });
-        meetups.Add(new MeetUpBreefDto() { MeetUpId = 3, MeetUpName = "GameNight 3", Description = "Mega cooles Alias Event 3", DateTimeFrom = new DateTime(2020, 01, 01), DateTimeTo = new DateTime(2020, 01, 02) });
+        // var meetups = 
         
         return Ok();
     }

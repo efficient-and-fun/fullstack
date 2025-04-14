@@ -12,7 +12,10 @@ public class EfDbContext : DbContext
         this._configuration = _configuration;
     }
     
-    public DbSet<MeetUps> meetups { get; set; }
+    public DbSet<MeetUps> MeetUps { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<Participation> Participations { get; set; }
+    
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
