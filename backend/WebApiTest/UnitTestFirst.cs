@@ -6,7 +6,7 @@ namespace WebApiTest;
 [TestClass]
 public class UnitTestFirst
 {
-    private FirstController _controller;
+    private MeetUpController _controller;
 
     [TestInitialize]
     public void Initialize()

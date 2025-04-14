@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using WebApi.Api.Common;
 using WebApi.Model;
 
 namespace WebApi;
@@ -6,25 +8,12 @@ namespace WebApi;
 [ApiController, Route("api/meetup")]
 public class MeetUpController : BaseController
 {
-    public MeetUpController()
-    {
-        
-    }
+    public MeetUpController(ILogger<MeetUpController> logger, IConfiguration configuration, EfDbContext context) : base(logger, configuration, context) { }
     
     [HttpGet, Route("{userId:int}/{meetupId:int}")]
-    public ActionResult<MeetUpDetailDto> GetMeetUpDetails(int userId, [FromRoute] int meetupId)
+    public async Task<ActionResult<MeetUps>> GetMeetUpDetails(int userId, [FromRoute] int meetupId)
     {
-        // TODO: hardcoded example ==> remove.
-        if (meetupId == 2)
-        {
-            return NotFound();
-        }
-
-        if (meetupId == 3)
-        {
-            // Scenario: user that is requesting this is not part of this meet up ==> no permission.
-            return Unauthorized();
-        }
+        var test = await _context.meetups.Where(m => m.MeetUpId == meetupId).ToListAsync();
         
         var firstMeetUp = new MeetUpDetailDto()
         {
@@ -37,7 +26,7 @@ public class MeetUpController : BaseController
             DateTimeTo = new DateTime(2020, 01, 02)
         };
         
-        return Ok(firstMeetUp);
+        return Ok(test);
     }
 
     [HttpGet, Route("{userid:int}")]
