@@ -48,3 +48,5 @@ WebApiTest/obj/
 
 **/bin/
 **/obj/
+
+# Ignore all bin and obj folders recursively
