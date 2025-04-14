@@ -10,6 +10,10 @@ public class EfDbContext : DbContext
     public EfDbContext(DbContextOptions<EfDbContext> options, IConfiguration _configuration) : base(options)
     {
         this._configuration = _configuration;
+        
+        // TODO: find a fix for the problem that is described in this Stackoverflow post (it does the job but it appears to be a legacy variation).
+        // https://stackoverflow.com/questions/69961449/net6-and-datetime-problem-cannot-write-datetime-with-kind-utc-to-postgresql-ty
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     }
     
     public DbSet<MeetUps> MeetUps { get; set; }

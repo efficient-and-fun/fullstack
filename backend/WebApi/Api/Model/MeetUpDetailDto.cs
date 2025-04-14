@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebApi.Model;
 
-public class MeetUpBreefDto
+public class MeetUpBriefDto
 {
     [Required, Key]
     public int MeetUpId { get; set; }
@@ -18,7 +18,7 @@ public class MeetUpBreefDto
     public DateTime DateTimeTo { get; set; }
 }
 
-public class MeetUpDetailDto : MeetUpBreefDto
+public class MeetUpDetailDto : MeetUpBriefDto
 {
 
     public string CheckList { get; set; }

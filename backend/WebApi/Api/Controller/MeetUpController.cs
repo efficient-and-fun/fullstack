@@ -17,7 +17,7 @@ public class MeetUpController : BaseController
     /// <param name="meetupId"></param>
     /// <returns></returns>
     [HttpGet, Route("{userId:int}/{meetupId:int}")]
-    public async Task<ActionResult<MeetUps>> GetMeetUpDetails(int userId, [FromRoute] int meetupId)
+    public ActionResult<MeetUps> GetMeetUpDetails(int userId, [FromRoute] int meetupId)
     {
         var foundMeetUp = (from m in _context.MeetUps
             join p in _context.Participations
@@ -42,22 +42,54 @@ public class MeetUpController : BaseController
         return Ok(foundMeetUp);
     }
 
-    [HttpGet, Route("{userid:int}")]
-    public ActionResult<IEnumerable<MeetUpBreefDto>> GetMeetUps(int userId)
+    /// <summary>
+    /// Get 
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    [HttpGet, Route("{userId:int}")]
+    public ActionResult<IEnumerable<MeetUpBriefDto>> GetMeetUps(int userId)
     {
-        // TODO: get meetups of users
+        var meetUps = (from m in _context.MeetUps
+            join p in _context.Participations
+                on m.MeetUpId equals p.MeetUpId
+            where p.UserId == userId  
+            select new MeetUpBriefDto()
+            {
+                MeetUpId = m.MeetUpId,
+                MeetUpName = m.MeetUpName,
+                Description = m.Description,
+                DateTimeFrom = m.DateTimeFrom,
+                DateTimeTo = m.DateTimeTo
+            }).ToList();
         
-        // var meetups = 
-        
-        return Ok();
+        return Ok(meetUps);
     }
     
+    /// <summary>
+    /// Get the MeetUp the user has an invitation for and is in the future of the specified date(time).
+    /// Important: format for parameter "currentDateTime" (without the quotes): "2025-04-14 00:00"
+    /// </summary>
+    /// <param name="currentDateTime">DateTime that the MeetUps in the database are compared to (based on MeetUps.DateTimeFrom).</param>
+    /// <returns>MeetUpBriefDto object that the specified user has an invitation for and also lies in the future based on the provided "currentDateTime".</returns>
     [HttpGet, Route("next")]
-    public ActionResult<IEnumerable<MeetUpBreefDto>> GetNextUpcomingMeetUp(DateTime currentDateTime)
+    public ActionResult<MeetUpBriefDto> GetNextUpcomingMeetUp(DateTime currentDateTime)
     {
-        // TODO: get the nearest (zeitmässig gemeint) upcoming meetup from the CURRENTDATETIME.
+        var now = currentDateTime;
+        var futureMeetUp = (from m in _context.MeetUps
+            join p in _context.Participations on m.MeetUpId equals p.MeetUpId
+        orderby m.DateTimeFrom
+                where m.DateTimeFrom >= now
+            select new MeetUpBriefDto()
+            {
+                MeetUpId = m.MeetUpId,
+                MeetUpName = m.MeetUpName,
+                Description = m.Description,
+                DateTimeFrom = m.DateTimeFrom,
+                DateTimeTo = m.DateTimeTo
+            }).FirstOrDefault();
         
-        return Ok(new MeetUpBreefDto());
+        return Ok(futureMeetUp);
     }
     
     // TODO: Readd this in the next sprint where this feature is actually added.
