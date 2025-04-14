@@ -40,11 +40,11 @@ cypress/screenshots/
 # Misc
 *.swp
 
-WebApi/bin
-WebApi/obj
+WebApi/bin/
+WebApi/obj/
 
-WebApiTest/bin
-WebApiTest/obj
+WebApiTest/bin/
+WebApiTest/obj/
 
 **/bin/
 **/obj/
