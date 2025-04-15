@@ -23,7 +23,10 @@ public class EfDbContext : DbContext
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
