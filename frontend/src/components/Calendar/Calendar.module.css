@@ -1,0 +1,20 @@
+.MuiPickersCalendarHeader-root .MuiPickersCalendarHeader-label {
+  background-color: red;
+  color: #333;
+  font-weight: bold;
+  width: 100%; /* Ensure label inside the header takes full width */
+}
+
+/* Calendar.module.css */
+.calendarContainer {
+  display: flex;
+  justify-content: center; /* Horizontally centers */
+}
+
+.MuiPickersCalendarHeader-root {
+  width: 100%; /* Ensures the calendar header takes full width */
+}
+
+.MuiPaper-root {
+  width: 100%; /* Ensures the calendar paper expands fully */
+}
