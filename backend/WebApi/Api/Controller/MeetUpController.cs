@@ -24,7 +24,7 @@ public class MeetUpController : BaseController
                 on m.MeetUpId equals p.MeetUpId
             join u in _context.Users
                 on p.UserId equals u.UserId
-            where u.UserId == userId
+            where u.UserId == userId && m.MeetUpId == meetupId
             select new MeetUpDetailDto()
             {
                 MeetUpId = m.MeetUpId,
