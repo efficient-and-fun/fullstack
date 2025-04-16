@@ -1,0 +1,69 @@
+[
+  {
+    "EventId": 1,
+    "Name": "Open Air Cinema",
+    "Description": "Enjoy a movie under the stars in the city park.",
+    "DateTimeFrom": "2025-07-15T20:30:00",
+    "DateTimeTo": "2025-07-15T23:00:00",
+    "Location": "Stadtpark Zürich",
+    "Tags": [
+      "IT",
+      "ZHAW"
+    ]
+  },
+  {
+    "EventId": 2,
+    "Name": "Tech Meetup Bern",
+    "Description": "A chance for tech enthusiasts to meet and share ideas.",
+    "DateTimeFrom": "2025-05-10T18:00:00",
+    "DateTimeTo": "2025-05-10T20:00:00",
+    "Location": "Impact Hub Bern",
+    "Tags": []
+  },
+  {
+    "EventId": 3,
+    "Name": "Jazz Festival Basel",
+    "Description": "Live performances from international jazz artists.",
+    "Location": "Kunsthalle Basel",
+    "Tags": [
+      "Music",
+      "Festival"
+    ]
+  },
+  {
+    "EventId": 4,
+    "Name": "Food Truck Fiesta",
+    "Description": "Street food from around the world.",
+    "DateTimeFrom": "2025-06-01T12:00:00",
+    "DateTimeTo": "2025-06-01T22:00:00",
+    "Location": "Limmatquai, Zürich",
+    "Tags": [
+      "Food",
+      "ZHAW"
+    ]
+  },
+  {
+    "EventId": 5,
+    "Name": "Hackathon Weekend",
+    "Description": "A 48-hour coding marathon to build innovative solutions.",
+    "DateTimeFrom": "2025-08-01T09:00:00",
+    "DateTimeTo": "2025-08-03T18:00:00",
+    "Location": "ETH Zurich",
+    "Tags": [
+      "Tech",
+      "Innovation"
+    ]
+  },
+  {
+    "EventId": 6,
+    "Name": "Art Exhibition Opening",
+    "Description": null,
+    "DateTimeFrom": "2025-07-25T18:00:00",
+    "DateTimeTo": "2025-07-25T21:00:00",
+    "Location": "Zurich Art Museum",
+    "Tags": [
+      "Art",
+      "Culture"
+    ]
+  }
+]

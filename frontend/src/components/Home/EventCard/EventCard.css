@@ -1,0 +1,40 @@
+.MuiCard-root.custom-card {
+    background-color: #2E2E2E;
+    color: white;
+    border-radius: 1rem;
+    padding: 1em;
+    margin: 1em;
+    text-align: left;
+
+}
+
+.MuiCardContent-root.custom-card-content {
+    padding: 0;
+}
+
+.MuiCardContent-root.custom-card-content:last-child {
+    padding-bottom: 0;
+}
+
+.custom-time,
+.custom-location {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 0.5em;
+}
+
+.custom-time-icon,
+.custom-location-icon {
+    color: var(--primary-color);
+}
+
+.custom-time-text,
+.custom-location-text {
+    color: var(--primary-color);
+}
+
+.custom-chip {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+    margin-right: 0.5em;
+}
