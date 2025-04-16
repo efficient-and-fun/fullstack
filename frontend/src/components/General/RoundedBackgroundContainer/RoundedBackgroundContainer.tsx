@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import './RoundedBackgroundColor.css'
+import './RoundedBackgroundContainer.css'
 
 type RoundedBackgroundContainerProps = {
   height: string;
