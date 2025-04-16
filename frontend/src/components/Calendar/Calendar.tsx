@@ -60,6 +60,10 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, setSelectedDate }) =>
               borderBottom: "1px solid black", // ✅ Divider line under weekdays
               marginBottom: "8px", // Optional space after the line
             },
+            ".MuiDayCalendar-weekDayLabel": {
+    color: "black",
+    fontWeight: "bold",
+  },
           }}
         />
       </div>
