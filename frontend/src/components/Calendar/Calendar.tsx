@@ -61,9 +61,9 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, setSelectedDate }) =>
               marginBottom: "8px", // Optional space after the line
             },
             ".MuiDayCalendar-weekDayLabel": {
-    color: "black",
-    fontWeight: "bold",
-  },
+              color: "black",
+              fontWeight: "bold",
+            },
           }}
         />
       </div>
