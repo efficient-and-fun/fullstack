@@ -17,6 +17,19 @@ const theme = createTheme({
       },
     },
   },
+  palette: {
+    mode: "dark", // or 'light'
+    background: {
+      default: "#242424",
+      paper: "transparent",
+    },
+    text: {
+      primary: "rgba(255, 255, 255, 0.87)",
+    },
+  },
+  typography: {
+    fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
+  }
 });
  
 createRoot(document.getElementById("root")!).render(

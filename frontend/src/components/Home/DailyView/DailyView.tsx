@@ -5,8 +5,13 @@ import { useEffect, useRef, useState } from 'react';
 
 import eventsRaw from './testEvents.json';
 import RoundedBackgroundContainer from '../../General/RoundedBackgroundContainer/RoundedBackgroundContainer';
+import { Dayjs } from 'dayjs';
 
-const DailyView = () => {
+interface DailyViewProps {
+  selectedDate: Dayjs;
+}
+
+const DailyView: React.FC<DailyViewProps> = ({ selectedDate }) => {
   const events = eventsRaw.map(event => ({
     ...event,
     DateTimeFrom: event.DateTimeFrom ? new Date(event.DateTimeFrom) : null,
@@ -39,12 +44,16 @@ const DailyView = () => {
     return () => observer.disconnect();
   }, []);
 
+
+
   return (
     <RoundedBackgroundContainer height="45vh" backgroundColor="var(--background-color)">
 
       <Typography variant="h6" className="daily-view-title">
-        01 April 2025
+      {selectedDate.format("DD. MMMM YYYY")}
+     
       </Typography>
+
 
       <Box className="daily-view-body">
 

@@ -1,10 +1,18 @@
-import React from 'react';
+import { useState } from 'react';
+import Calendar from '../components/Calendar/Calendar';
+import DailyView from '../components/Home/DailyView/DailyView';
+import dayjs, { Dayjs } from 'dayjs';
+import HomeHeader from '../components/Home/Header/HomeHeader';
 
 const HomePage = () => {
+  const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
+
   return (
-    <div>
-      <h1>Home Page</h1>
-    </div>
+    <>
+      <HomeHeader></HomeHeader>
+      <Calendar selectedDate={selectedDate} setSelectedDate={setSelectedDate}></Calendar>
+      <DailyView selectedDate={selectedDate}></DailyView>
+    </>
   );
 };
 
