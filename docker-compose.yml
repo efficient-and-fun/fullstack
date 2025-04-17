@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: plananaz_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/WebApi/Dockerfile
+    environment:
+      # Update your connection string to point to the db service.
+      DefaultConnection: "Host=db;Port=5432;Database=plananaz_db;Username=myuser;Password=mypassword"
+      ASPNETCORE_ENVIRONMENT: "Development"
+    ports:
+      - "5246:5246"
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
