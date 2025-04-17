@@ -158,7 +158,7 @@ public void TestGetMeetUpDetails_ReturnsBadRequest_WhenUserIdIsInvalid_Negativ()
 
 
 [TestMethod]
-public void TestGetMeetUpDetails_ReturnsBadRequest_WhenUserIdIsInvalid_DoesNotExist(){
+public void TestGetMeetUpDetails_ReturnsNotFound_WhenUserIdIsInvalid_DoesNotExist(){
     // Arrange – Use real EF context with InMemory provider
     var options = new DbContextOptionsBuilder<EfDbContext>()
         .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
@@ -206,7 +206,7 @@ public void TestGetMeetUpDetails_ReturnsBadRequest_WhenUserIdIsInvalid_DoesNotEx
 }
 
 [TestMethod]
-public void TestGetMeetUpDetails_ReturnsBadRequest_WhenMeetUpDoesNotExist(){
+public void TestGetMeetUpDetails_ReturnsNotFound_WhenMeetUpDoesNotExist(){
     // Arrange – Use real EF context with InMemory provider
     var options = new DbContextOptionsBuilder<EfDbContext>()
         .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
