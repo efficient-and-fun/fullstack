@@ -2,24 +2,31 @@ version: "3.8"
 
 services:
   db:
-    image: postgres:15
+    build:
+      context: ../
+      dockerfile: ./dev/Dockerfile
     restart: always
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: plananaz_db
+      POSTGRES_USER: plananaz
+      POSTGRES_PASSWORD: plananaz-secret
+      POSTGRES_DB: plananaz
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U plananaz"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
-      context: .
+      context: ../
       dockerfile: ./backend/WebApi/Dockerfile
     environment:
       # Update your connection string to point to the db service.
-      DefaultConnection: "Host=db;Port=5432;Database=plananaz_db;Username=myuser;Password=mypassword"
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=plananaz;Username=plananaz;Password=plananaz-secret"
       ASPNETCORE_ENVIRONMENT: "Development"
     ports:
       - "5246:5246"
@@ -28,7 +35,7 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: ../frontend
       dockerfile: Dockerfile
     ports:
       - "80:80"
