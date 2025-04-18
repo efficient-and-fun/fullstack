@@ -107,7 +107,7 @@ public class UnitTestMeetUpController
     }
 
     [TestMethod]
-    public void TestGetMeetUpDetails_ReturnsBadRequest_WhenUserIdEqualsBelowZero()
+    public void TestGetMeetUpDetails_ReturnsBadRequest_WhenUserIdIsBelowZero()
     {
         // Arrange – Use real EF context with InMemory provider
         var options = new DbContextOptionsBuilder<EfDbContext>()
@@ -207,7 +207,7 @@ public class UnitTestMeetUpController
     }
     
     [TestMethod]
-    public void TestGetMeetUpDetails_ReturnsBadRequest_WhenMeetUpIdEqualsBelowZero()
+    public void TestGetMeetUpDetails_ReturnsBadRequest_WhenMeetUpIdIsBelowZero()
     {
         // Arrange – Use real EF context with InMemory provider
         var options = new DbContextOptionsBuilder<EfDbContext>()
