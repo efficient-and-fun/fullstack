@@ -65,31 +65,33 @@ public class MeetUpController : BaseController
         return Ok(meetUps);
     }
     
+    
+    // TODO: reuse this if necessary. If it is not going to be used ==> delete.
     /// <summary>
     /// Get the MeetUp the user has an invitation for and is in the future of the specified date(time).
     /// Important: format for parameter "currentDateTime" (without the quotes): "2025-04-14 00:00"
     /// </summary>
     /// <param name="currentDateTime">DateTime that the MeetUps in the database are compared to (based on MeetUps.DateTimeFrom).</param>
     /// <returns>MeetUpBriefDto object that the specified user has an invitation for and also lies in the future based on the provided "currentDateTime".</returns>
-    [HttpGet, Route("next")]
-    public ActionResult<MeetUpBriefDto> GetNextUpcomingMeetUp(DateTime currentDateTime)
-    {
-        var now = currentDateTime;
-        var futureMeetUp = (from m in _context.MeetUps
-            join p in _context.Participations on m.MeetUpId equals p.MeetUpId
-        orderby m.DateTimeFrom
-                where m.DateTimeFrom >= now
-            select new MeetUpBriefDto()
-            {
-                MeetUpId = m.MeetUpId,
-                MeetUpName = m.MeetUpName,
-                Description = m.Description,
-                DateTimeFrom = m.DateTimeFrom,
-                DateTimeTo = m.DateTimeTo
-            }).FirstOrDefault();
-        
-        return Ok(futureMeetUp);
-    }
+    // [HttpGet, Route("next")]
+    // public ActionResult<MeetUpBriefDto> GetNextUpcomingMeetUp(DateTime currentDateTime)
+    // {
+    //     var now = currentDateTime;
+    //     var futureMeetUp = (from m in _context.MeetUps
+    //         join p in _context.Participations on m.MeetUpId equals p.MeetUpId
+    //     orderby m.DateTimeFrom
+    //             where m.DateTimeFrom >= now
+    //         select new MeetUpBriefDto()
+    //         {
+    //             MeetUpId = m.MeetUpId,
+    //             MeetUpName = m.MeetUpName,
+    //             Description = m.Description,
+    //             DateTimeFrom = m.DateTimeFrom,
+    //             DateTimeTo = m.DateTimeTo
+    //         }).FirstOrDefault();
+    //     
+    //     return Ok(futureMeetUp);
+    // }
     
     // TODO: Readd this in the next sprint where this feature is actually added.
     // [HttpPost, Route("")]
