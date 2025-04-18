@@ -19,6 +19,24 @@ public class MeetUpController : BaseController
     [HttpGet, Route("{userId:int}/{meetupId:int}")]
     public ActionResult<MeetUps> GetMeetUpDetails([FromRoute] int userId, [FromRoute] int meetupId)
     {
+        if (userId <= 0)
+        {
+            return BadRequest("UserId invalid");
+        }
+        
+        if (meetupId <= 0)
+        {
+            return BadRequest("MeetUpId invalid");
+        }
+        
+        var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+        var meetUp = _context.MeetUps.FirstOrDefault(m => m.MeetUpId == meetupId);
+        var participation = _context.Participations.FirstOrDefault(p => p.UserId == userId && p.MeetUpId == meetupId);
+        if (user == null || meetUp == null || participation == null)
+        {
+            return NotFound();
+        }
+        
         var foundMeetUp = (from m in _context.MeetUps
             join p in _context.Participations
                 on m.MeetUpId equals p.MeetUpId

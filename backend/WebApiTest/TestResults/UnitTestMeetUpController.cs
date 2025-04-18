@@ -57,7 +57,7 @@ public class UnitTestMeetUpController
     }
 
     [TestMethod]
-    public void TestGetMeetUpDetails_ReturnsBadRequest_WhenUserIdIsInvalid_ToSmall()
+    public void TestGetMeetUpDetails_ReturnsBadRequest_WhenUserIdEqualsZero()
     {
         // Arrange – Use real EF context with InMemory provider
         var options = new DbContextOptionsBuilder<EfDbContext>()
@@ -103,11 +103,11 @@ public class UnitTestMeetUpController
         var badRequestResult = result.Result as BadRequestObjectResult;
         Assert.IsNotNull(badRequestResult);
         Assert.IsInstanceOfType(badRequestResult.Value, typeof(string)); // Assuming the value is a string message
-        Assert.AreEqual("User invalid", badRequestResult.Value); // Adjust the message as per your implementation
+        Assert.AreEqual("UserId invalid", badRequestResult.Value); // Adjust the message as per your implementation
     }
 
     [TestMethod]
-    public void TestGetMeetUpDetails_ReturnsBadRequest_WhenUserIdIsInvalid_Negativ()
+    public void TestGetMeetUpDetails_ReturnsBadRequest_WhenUserIdEqualsBelowZero()
     {
         // Arrange – Use real EF context with InMemory provider
         var options = new DbContextOptionsBuilder<EfDbContext>()
@@ -153,12 +153,112 @@ public class UnitTestMeetUpController
         var badRequestResult = result.Result as BadRequestObjectResult;
         Assert.IsNotNull(badRequestResult);
         Assert.IsInstanceOfType(badRequestResult.Value, typeof(string)); // Assuming the value is a string message
-        Assert.AreEqual("User invalid", badRequestResult.Value); // Adjust the message as per your implementation
+        Assert.AreEqual("UserId invalid", badRequestResult.Value); // Adjust the message as per your implementation
+    }
+    
+    [TestMethod]
+    public void TestGetMeetUpDetails_ReturnsBadRequest_WhenMeetUpIdEqualsZero()
+    {
+        // Arrange – Use real EF context with InMemory provider
+        var options = new DbContextOptionsBuilder<EfDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+
+        using var context = new EfDbContext(options, _mockConfig.Object);
+
+        // Seed test data
+        context.Users.Add(new User
+        {
+            UserId = 1,
+            UserName = "TestUser",
+            Email = "test@test.com",
+            DiataryRestrictions = "TestDiatary",
+            UserPassword = "TestPassword",
+            ProfilePicturePath = "TestProfilePicturePath"
+        });
+        context.MeetUps.Add(new MeetUps
+        {
+            MeetUpId = 1,
+            MeetUpName = "Test MeetUp",
+            DateTimeFrom = DateTime.Now,
+            DateTimeTo = DateTime.Now.AddHours(1),
+            CheckList = "Check",
+            MeetUpLocation = "Somewhere",
+            Description = "Test"
+        });
+        context.Participations.Add(new Participation { UserId = 1, MeetUpId = 0 });
+        context.SaveChanges();
+
+        // Logger und Config können gemockt bleiben
+        var mockLogger = new Mock<ILogger<MeetUpController>>();
+        var mockConfig = new Mock<IConfiguration>();
+
+        var controller = new MeetUpController(mockLogger.Object, mockConfig.Object, context);
+
+        // Act
+        var result = controller.GetMeetUpDetails(1, 0);
+
+        // Assert
+        Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+        var badRequestResult = result.Result as BadRequestObjectResult;
+        Assert.IsNotNull(badRequestResult);
+        Assert.IsInstanceOfType(badRequestResult.Value, typeof(string)); // Assuming the value is a string message
+        Assert.AreEqual("MeetUpId invalid", badRequestResult.Value); // Adjust the message as per your implementation
+    }
+    
+    [TestMethod]
+    public void TestGetMeetUpDetails_ReturnsBadRequest_WhenMeetUpIdEqualsBelowZero()
+    {
+        // Arrange – Use real EF context with InMemory provider
+        var options = new DbContextOptionsBuilder<EfDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+
+        using var context = new EfDbContext(options, _mockConfig.Object);
+
+        // Seed test data
+        context.Users.Add(new User
+        {
+            UserId = 1,
+            UserName = "TestUser",
+            Email = "test@test.com",
+            DiataryRestrictions = "TestDiatary",
+            UserPassword = "TestPassword",
+            ProfilePicturePath = "TestProfilePicturePath"
+        });
+        context.MeetUps.Add(new MeetUps
+        {
+            MeetUpId = 1,
+            MeetUpName = "Test MeetUp",
+            DateTimeFrom = DateTime.Now,
+            DateTimeTo = DateTime.Now.AddHours(1),
+            CheckList = "Check",
+            MeetUpLocation = "Somewhere",
+            Description = "Test"
+        });
+        context.Participations.Add(new Participation { UserId = 1, MeetUpId = 1 });
+        context.SaveChanges();
+
+        // Logger und Config können gemockt bleiben
+        var mockLogger = new Mock<ILogger<MeetUpController>>();
+        var mockConfig = new Mock<IConfiguration>();
+
+        var controller = new MeetUpController(mockLogger.Object, mockConfig.Object, context);
+
+        // Act
+        var result = controller.GetMeetUpDetails(1, -3);
+
+        // Assert
+        Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+        var badRequestResult = result.Result as BadRequestObjectResult;
+        Assert.IsNotNull(badRequestResult);
+        Assert.IsInstanceOfType(badRequestResult.Value, typeof(string)); // Assuming the value is a string message
+        Assert.AreEqual("MeetUpId invalid", badRequestResult.Value); // Adjust the message as per your implementation
     }
 
 
     [TestMethod]
-    public void TestGetMeetUpDetails_ReturnsNotFound_WhenUserIdIsInvalid_DoesNotExist()
+    public void TestGetMeetUpDetails_ReturnsNotFound_WhenUserDoesNotExist()
     {
         // Arrange – Use real EF context with InMemory provider
         var options = new DbContextOptionsBuilder<EfDbContext>()
@@ -200,10 +300,7 @@ public class UnitTestMeetUpController
         var result = controller.GetMeetUpDetails(2, 1);
 
         // Assert
-        Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
-        var notFoundResult = result.Result as NotFoundObjectResult;
-        Assert.IsInstanceOfType(notFoundResult.Value, typeof(string)); // Assuming the value is a string message
-        Assert.AreEqual("User not found", notFoundResult.Value); // Adjust the message as per your implementation
+        Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
     }
 
     [TestMethod]
@@ -249,11 +346,9 @@ public class UnitTestMeetUpController
         var result = controller.GetMeetUpDetails(2, 1);
 
         // Assert
-        Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
-        var notFoundResult = result.Result as NotFoundObjectResult;
+        Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        var notFoundResult = result.Result as NotFoundResult;
         Assert.IsNotNull(notFoundResult);
-        Assert.IsInstanceOfType(notFoundResult.Value, typeof(string)); // Assuming the value is a string message
-        Assert.AreEqual("MeetUp not found", notFoundResult.Value); // Adjust the message as per your implementation
     }
 
     [TestMethod]
@@ -305,5 +400,51 @@ public class UnitTestMeetUpController
         var dto = okResult.Value as MeetUpDetailDto;
         Assert.IsNotNull(dto);
         Assert.AreEqual(1, dto.MeetUpId);
+    }
+
+    [TestMethod]
+    public void TestGetMeetUpDetails_ReturnsNotFound_WhenUserHasNoParticipation()
+    {
+        // Arrange – Use real EF context with InMemory provider
+        var options = new DbContextOptionsBuilder<EfDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+
+        using var context = new EfDbContext(options, _mockConfig.Object);
+
+        // Seed test data
+        context.Users.Add(new User
+        {
+            UserId = 1,
+            UserName = "TestUser",
+            Email = "test@test.com",
+            DiataryRestrictions = "TestDiatary",
+            UserPassword = "TestPassword",
+            ProfilePicturePath = "TestProfilePicturePath"
+        });
+        context.MeetUps.Add(new MeetUps
+        {
+            MeetUpId = 1,
+            MeetUpName = "Test MeetUp",
+            DateTimeFrom = DateTime.Now,
+            DateTimeTo = DateTime.Now.AddHours(1),
+            CheckList = "Check",
+            MeetUpLocation = "Somewhere",
+            Description = "Test"
+        });
+        
+        context.SaveChanges();
+
+        // Logger und Config können gemockt bleiben
+        var mockLogger = new Mock<ILogger<MeetUpController>>();
+        var mockConfig = new Mock<IConfiguration>();
+
+        var controller = new MeetUpController(mockLogger.Object, mockConfig.Object, context);
+
+        // Act
+        var result = controller.GetMeetUpDetails(1, 1);
+
+        // Assert
+        Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
     }
 }
