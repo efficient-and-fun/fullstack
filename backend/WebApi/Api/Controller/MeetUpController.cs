@@ -69,6 +69,11 @@ public class MeetUpController : BaseController
     [HttpGet, Route("{userId:int}")]
     public ActionResult<IEnumerable<MeetUpBriefDto>> GetMeetUps([FromRoute] int userId, [FromQuery] DateTime currentDate)
     {
+        if (userId <= 0)
+        {
+            return BadRequest("UserId invalid");
+        }
+        
         var meetUps = (from m in _context.MeetUps
             join p in _context.Participations
                 on m.MeetUpId equals p.MeetUpId
