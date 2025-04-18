@@ -3,38 +3,38 @@ import { Typography, Chip, Stack, Card, CardContent } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PlaceIcon from '@mui/icons-material/Place';
 import { MeetUp } from '../../../models/MeetUp';
+import { useNavigate } from 'react-router-dom';
 
 type EventCardProps = {
-    event: MeetUp;
+    meetUp: MeetUp;
 };
 
-const EventCard: React.FC<EventCardProps> = ({ event }) => {
-    const hasTime = event.DateTimeFrom && event.DateTimeTo;
-    const hasDescription = event.Description && event.Description.trim() !== '';
+const EventCard: React.FC<EventCardProps> = ({ meetUp: meetUp }) => {
+    const hasTime = meetUp.DateTimeFrom && meetUp.DateTimeTo;
+
+    const navigate = useNavigate();
+
+    const navigateToDetailsPage = () => {
+        navigate(`/${meetUp.MeetUpId}`);
+    };
 
     return (
-        <Card className="custom-card">
+        <Card onClick={navigateToDetailsPage} className="custom-card">
             <CardContent className="custom-card-content">
                 <Typography variant="subtitle1" fontWeight="bold">
-                    {event.Name}
+                    {meetUp.Name}
                 </Typography>
-
-                {hasDescription && (
-                    <Typography variant="body2" color="grey.400" mb={2}>
-                        {event.Description}
-                    </Typography>
-                )}
 
                 {hasTime && (
                     <div className="custom-time">
                         <AccessTimeIcon fontSize="small" className="custom-time-icon" />
                         <Typography variant="body2" className="custom-time-text">
-                            {event.DateTimeFrom.toLocaleTimeString([], {
+                            {meetUp.DateTimeFrom.toLocaleTimeString([], {
                                 hour: '2-digit',
                                 minute: '2-digit',
                             })}{' '}
                             until{' '}
-                            {event.DateTimeTo.toLocaleTimeString([], {
+                            {meetUp.DateTimeTo.toLocaleTimeString([], {
                                 hour: '2-digit',
                                 minute: '2-digit',
                             })}
@@ -45,14 +45,8 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
                 <div className="custom-location">
                     <PlaceIcon fontSize="small" className="custom-location-icon" />
                     <Typography variant="body2" className="custom-location-text">
-                        {event.Location}
+                        {meetUp.Location}
                     </Typography>
-                </div>
-
-                <div>
-                    {event.Tags.map((tag, index) => (
-                        <Chip key={index} label={tag} className="custom-chip" />
-                    ))}
                 </div>
             </CardContent>
         </Card>

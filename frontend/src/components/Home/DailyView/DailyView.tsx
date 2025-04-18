@@ -50,10 +50,8 @@ const DailyView: React.FC<DailyViewProps> = ({ selectedDate }) => {
     <RoundedBackgroundContainer height="45vh" backgroundColor="var(--background-color)">
 
       <Typography variant="h6" className="daily-view-title">
-      {selectedDate.format("DD. MMMM YYYY")}
-     
+        {selectedDate.format("DD. MMMM YYYY")}
       </Typography>
-
 
       <Box className="daily-view-body">
 
@@ -71,7 +69,7 @@ const DailyView: React.FC<DailyViewProps> = ({ selectedDate }) => {
                 cardRefs.current[index] = el;
               }}
             >
-              <EventCard event={event} />
+              <EventCard meetUp={event} />
             </div>
           ))}
         </Box>

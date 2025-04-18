@@ -1,6 +1,6 @@
 [
   {
-    "EventId": 1,
+    "MeetUpId": 1,
     "Name": "Open Air Cinema",
     "Description": "Enjoy a movie under the stars in the city park.",
     "DateTimeFrom": "2025-07-15T20:30:00",
@@ -12,7 +12,7 @@
     ]
   },
   {
-    "EventId": 2,
+    "MeetUpId": 2,
     "Name": "Tech Meetup Bern",
     "Description": "A chance for tech enthusiasts to meet and share ideas.",
     "DateTimeFrom": "2025-05-10T18:00:00",
@@ -21,7 +21,7 @@
     "Tags": []
   },
   {
-    "EventId": 3,
+    "MeetUpId": 3,
     "Name": "Jazz Festival Basel",
     "Description": "Live performances from international jazz artists.",
     "Location": "Kunsthalle Basel",
@@ -31,7 +31,7 @@
     ]
   },
   {
-    "EventId": 4,
+    "MeetUpId": 4,
     "Name": "Food Truck Fiesta",
     "Description": "Street food from around the world.",
     "DateTimeFrom": "2025-06-01T12:00:00",
@@ -43,7 +43,7 @@
     ]
   },
   {
-    "EventId": 5,
+    "MeetUpId": 5,
     "Name": "Hackathon Weekend",
     "Description": "A 48-hour coding marathon to build innovative solutions.",
     "DateTimeFrom": "2025-08-01T09:00:00",
@@ -55,7 +55,7 @@
     ]
   },
   {
-    "EventId": 6,
+    "MeetUpId": 6,
     "Name": "Art Exhibition Opening",
     "Description": null,
     "DateTimeFrom": "2025-07-25T18:00:00",
