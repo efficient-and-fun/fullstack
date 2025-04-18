@@ -1,4 +1,19 @@
+using Microsoft.EntityFrameworkCore;
+using WebApi.Api.Common;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration
+    .AddJsonFile("appsettings.json")
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+    .AddUserSecrets<Program>()
+    .AddEnvironmentVariables();
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+Console.WriteLine($"ConnectionString: {connectionString}");
+
+builder.Services.AddDbContext<EfDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add services to the container.
 builder.Services.AddControllers(); // Add controllers

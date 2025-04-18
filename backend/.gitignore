@@ -39,3 +39,14 @@ cypress/screenshots/
 
 # Misc
 *.swp
+
+WebApi/bin/
+WebApi/obj/
+
+WebApiTest/bin/
+WebApiTest/obj/
+
+**/bin/
+**/obj/
+
+# Ignore all bin and obj folders recursively
