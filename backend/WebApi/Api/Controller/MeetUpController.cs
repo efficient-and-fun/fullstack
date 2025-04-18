@@ -17,7 +17,7 @@ public class MeetUpController : BaseController
     /// <param name="meetupId"></param>
     /// <returns></returns>
     [HttpGet, Route("{userId:int}/{meetupId:int}")]
-    public ActionResult<MeetUps> GetMeetUpDetails(int userId, [FromRoute] int meetupId)
+    public ActionResult<MeetUps> GetMeetUpDetails([FromRoute] int userId, [FromRoute] int meetupId)
     {
         var foundMeetUp = (from m in _context.MeetUps
             join p in _context.Participations
@@ -49,7 +49,7 @@ public class MeetUpController : BaseController
     /// <param name="currentDate"></param>
     /// <returns></returns>
     [HttpGet, Route("{userId:int}")]
-    public ActionResult<IEnumerable<MeetUpBriefDto>> GetMeetUps(int userId, DateTime currentDate)
+    public ActionResult<IEnumerable<MeetUpBriefDto>> GetMeetUps([FromRoute] int userId, [FromQuery] DateTime currentDate)
     {
         var meetUps = (from m in _context.MeetUps
             join p in _context.Participations
