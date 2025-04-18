@@ -58,7 +58,6 @@ public class MeetUpController : BaseController
             {
                 MeetUpId = m.MeetUpId,
                 MeetUpName = m.MeetUpName,
-                Description = m.Description,
                 DateTimeFrom = m.DateTimeFrom,
                 DateTimeTo = m.DateTimeTo
             }).ToList();
