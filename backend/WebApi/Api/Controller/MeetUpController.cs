@@ -43,17 +43,18 @@ public class MeetUpController : BaseController
     }
 
     /// <summary>
-    /// Get 
+    /// Get all MeetUps user has a participation to for a specific day.
     /// </summary>
     /// <param name="userId"></param>
+    /// <param name="currentDate"></param>
     /// <returns></returns>
     [HttpGet, Route("{userId:int}")]
-    public ActionResult<IEnumerable<MeetUpBriefDto>> GetMeetUps(int userId)
+    public ActionResult<IEnumerable<MeetUpBriefDto>> GetMeetUps(int userId, DateTime currentDate)
     {
         var meetUps = (from m in _context.MeetUps
             join p in _context.Participations
                 on m.MeetUpId equals p.MeetUpId
-            where p.UserId == userId  
+            where p.UserId == userId && m.DateTimeFrom >= currentDate && m.DateTimeTo <= currentDate
             select new MeetUpBriefDto()
             {
                 MeetUpId = m.MeetUpId,
