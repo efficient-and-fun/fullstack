@@ -72,7 +72,7 @@ public class UnitTestMeetUpController
             UserId = 1,
             UserName = "TestUser",
             Email = "test@test.com",
-            DiataryRestrictions = "TestDiatary",
+            DietaryRestrictions = "TestDietary",
             UserPassword = "TestPassword",
             ProfilePicturePath = "TestProfilePicturePath"
         });
@@ -122,7 +122,7 @@ public class UnitTestMeetUpController
             UserId = 1,
             UserName = "TestUser",
             Email = "test@test.com",
-            DiataryRestrictions = "TestDiatary",
+            DietaryRestrictions = "TestDietary",
             UserPassword = "TestPassword",
             ProfilePicturePath = "TestProfilePicturePath"
         });
@@ -172,7 +172,7 @@ public class UnitTestMeetUpController
             UserId = 1,
             UserName = "TestUser",
             Email = "test@test.com",
-            DiataryRestrictions = "TestDiatary",
+            DietaryRestrictions = "TestDietary",
             UserPassword = "TestPassword",
             ProfilePicturePath = "TestProfilePicturePath"
         });
@@ -222,7 +222,7 @@ public class UnitTestMeetUpController
             UserId = 1,
             UserName = "TestUser",
             Email = "test@test.com",
-            DiataryRestrictions = "TestDiatary",
+            DietaryRestrictions = "TestDietary",
             UserPassword = "TestPassword",
             ProfilePicturePath = "TestProfilePicturePath"
         });
@@ -273,7 +273,7 @@ public class UnitTestMeetUpController
             UserId = 1,
             UserName = "TestUser",
             Email = "test@test.com",
-            DiataryRestrictions = "TestDiatary",
+            DietaryRestrictions = "TestDietary",
             UserPassword = "TestPassword",
             ProfilePicturePath = "TestProfilePicturePath"
         });
@@ -319,7 +319,7 @@ public class UnitTestMeetUpController
             UserId = 1,
             UserName = "TestUser",
             Email = "test@test.com",
-            DiataryRestrictions = "TestDiatary",
+            DietaryRestrictions = "TestDietary",
             UserPassword = "TestPassword",
             ProfilePicturePath = "TestProfilePicturePath"
         });
@@ -367,7 +367,7 @@ public class UnitTestMeetUpController
             UserId = 1,
             UserName = "TestUser",
             Email = "test@test.com",
-            DiataryRestrictions = "TestDiatary",
+            DietaryRestrictions = "TestDietary",
             UserPassword = "TestPassword",
             ProfilePicturePath = "TestProfilePicturePath"
         });
@@ -418,7 +418,7 @@ public class UnitTestMeetUpController
             UserId = 1,
             UserName = "TestUser",
             Email = "test@test.com",
-            DiataryRestrictions = "TestDiatary",
+            DietaryRestrictions = "TestDietary",
             UserPassword = "TestPassword",
             ProfilePicturePath = "TestProfilePicturePath"
         });
@@ -446,5 +446,79 @@ public class UnitTestMeetUpController
 
         // Assert
         Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+    }
+
+    [TestMethod]
+    public void TestGetMeetUps_ReturnsNotFound_WhenUserDoesNotExist()
+    {
+        // Arrange – InMemory DB
+        var options = new DbContextOptionsBuilder<EfDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+
+        using var context = new EfDbContext(options, _mockConfig.Object);
+
+        var mockLogger = new Mock<ILogger<MeetUpController>>();
+        var mockConfig = new Mock<IConfiguration>();
+
+        var controller = new MeetUpController(mockLogger.Object, mockConfig.Object, context);
+
+        // Act
+        var result = controller.GetMeetUps(999, DateTime.Today); // UserId does not exist
+
+        // Assert
+        Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
+        var notFound = result.Result as NotFoundObjectResult;
+        Assert.IsNotNull(notFound);
+        StringAssert.Contains(notFound.Value?.ToString(), "does not exist");
+    }
+
+    [TestMethod]
+    public void TestGetMeetUps_ReturnsNotFound_WhenNoMeetUpsExist()
+    {
+        // Arrange
+        var options = new DbContextOptionsBuilder<EfDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+
+        using var context = new EfDbContext(options, _mockConfig.Object);
+
+        context.Users.Add(new User
+        {
+            UserId = 1,
+            UserName = "TestUser",
+            Email = "test@test.com",
+            DietaryRestrictions = "None",
+            UserPassword = "Password123",
+            ProfilePicturePath = "img.png"
+        });
+
+        context.MeetUps.Add(new MeetUps
+        {
+            MeetUpId = 1,
+            MeetUpName = "Test MeetUp",
+            DateTimeFrom = DateTime.Today.AddDays(-2),
+            DateTimeTo = DateTime.Today.AddDays(-1),
+            CheckList = "Checklist",
+            MeetUpLocation = "Here",
+            Description = "Old Event"
+        });
+
+        context.Participations.Add(new Participation { UserId = 1, MeetUpId = 1 });
+        context.SaveChanges();
+
+        var mockLogger = new Mock<ILogger<MeetUpController>>();
+        var mockConfig = new Mock<IConfiguration>();
+
+        var controller = new MeetUpController(mockLogger.Object, mockConfig.Object, context);
+
+        // Act
+        var result = controller.GetMeetUps(1, DateTime.Today);
+
+        // Assert
+        Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
+        var notFound = result.Result as NotFoundObjectResult;
+        Assert.IsNotNull(notFound);
+        StringAssert.Contains(notFound.Value?.ToString(), "No meetups found");
     }
 }
