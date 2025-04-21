@@ -73,19 +73,30 @@ public class MeetUpController : BaseController
         {
             return BadRequest("UserId invalid");
         }
-        
+
+        var userExists = _context.Users.Any(u => u.UserId == userId);
+        if (!userExists)
+        {
+            return NotFound($"User with ID {userId} does not exist.");
+        }
+
         var meetUps = (from m in _context.MeetUps
-            join p in _context.Participations
-                on m.MeetUpId equals p.MeetUpId
-            where p.UserId == userId && m.DateTimeFrom >= currentDate && m.DateTimeTo <= currentDate
-            select new MeetUpBriefDto()
+            join p in _context.Participations on m.MeetUpId equals p.MeetUpId
+            where p.UserId == userId
+                  && m.DateTimeFrom.Date <= currentDate.Date
+                  && m.DateTimeTo.Date >= currentDate.Date
+            select new MeetUpBriefDto
             {
                 MeetUpId = m.MeetUpId,
                 MeetUpName = m.MeetUpName,
                 DateTimeFrom = m.DateTimeFrom,
                 DateTimeTo = m.DateTimeTo
             }).ToList();
-        
+
+        if (meetUps.Count == 0)
+        {
+            return NotFound($"No meetups found for user {userId} on {currentDate:yyyy-MM-dd}.");
+        }
         return Ok(meetUps);
     }
     
