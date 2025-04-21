@@ -13,5 +13,5 @@ public class User
     public string Email { get; set; }
     public string UserPassword { get; set; }
     public string ProfilePicturePath { get; set; }
-    public string DiataryRestrictions { get; set; }
+    public string DietaryRestrictions { get; set; }
 }
