@@ -5,6 +5,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import styles from "./Calendar.module.css";
 import "dayjs/locale/de";
+import { calendarStyles } from "./CalenderStyles";
 
 dayjs.locale("de");
 
@@ -23,48 +24,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, setSelectedDate }) =>
           value={selectedDate}
           onChange={(newValue) => setSelectedDate(newValue)}
           showDaysOutsideCurrentMonth
-          sx={{
-            ".MuiPickersCalendarHeader-label": {
-              fontSize: "1.5rem",
-              fontWeight: "bold",
-              fontStyle: "italic",
-              color: "#9DD258",
-            },
-            ".MuiPickersCalendarHeader-root": {
-              width: "100%" /* Ensures the calendar header takes full width */,
-            },
-            ".MuiPickersDay-root.Mui-selected": {
-              backgroundColor: "white",
-              color: "black",
-              "&:focus, &:hover": {      // Ensure hover and focus match selected style
-                backgroundColor: "white",
-                color: "black",
-              },
-            },
-            ".MuiPickersDay-root": {
-              color: "black", // changes text color of day numbers
-            },
-            ".MuiPickersDay-dayOutsideMonth": {
-              color: "white",
-              opacity: 0.5, // optional, default is lower
-            },
-            "& .MuiPickersYear-yearButton.Mui-selected": {
-              backgroundColor: "white",
-              color: "black",
-              "&:focus, &:hover": {      // Ensure hover and focus match selected style
-                backgroundColor: "white",
-                color: "black",
-              },
-            },
-            ".MuiDayCalendar-header": {
-              borderBottom: "1px solid black", // ✅ Divider line under weekdays
-              marginBottom: "8px", // Optional space after the line
-            },
-            ".MuiDayCalendar-weekDayLabel": {
-              color: "black",
-              fontWeight: "bold",
-            },
-          }}
+          sx={calendarStyles}
         />
       </div>
     </LocalizationProvider>
