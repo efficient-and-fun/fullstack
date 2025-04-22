@@ -7,7 +7,7 @@ import EventPage from './routes/Event';
 import FriendsPage from './routes/Friends';
 import NotificationPage from './routes/Notification';
 import SettingPage from './routes/Setting';
-import Nav from './components/Nav';
+import Nav from './components/Navbar/Nav';
 
 
 function App() {
