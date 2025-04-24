@@ -43,8 +43,12 @@ Prerequsite
     ```bash
     npm run dev
     ```
+4. Optionally a Mock server can be used:
+    ```bash
+    npm run dev:mock
+    ```
 
-4. Run tests:
+5. Run tests:
     ```bash
     npm test
     ```
