@@ -2,6 +2,29 @@
 
 ## Development Setup
 
+### Local Development with Docker compose
+This setups and connects the Frontend, Backend and a Database.
+
+1. Navigate to dev directory:
+    ```bash
+    cd dev
+    ```
+
+2. Build the Docker Compose setup
+    ```bash
+    docker compose build
+    ```
+3. Start the environment
+    ```bash
+    docker compose up
+    ```
+4. To reset the network
+    ```bash
+    docker compose down -v
+    ```
+
+## The local Dev Setup can be done manually:
+
 ### Frontend
 Prerequsite
     -node version 20+ installed
@@ -97,15 +120,3 @@ Prerequsiste:
         ```bash
         docker run -p 5246:5246 backend:latest
         ```
-
-
-### Additional Commands
-- Lint the codebase:
-  ```bash
-  npm run lint
-  ```
-
-- Build the project:
-  ```bash
-  npm run build
-  ```

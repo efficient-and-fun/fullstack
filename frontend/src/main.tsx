@@ -18,25 +18,37 @@ const theme = createTheme({
     },
   },
   palette: {
-    mode: "dark", // or 'light'
-    background: {
-      default: "#242424",
-      paper: "transparent",
-    },
-    text: {
-      primary: "rgba(255, 255, 255, 0.87)",
-    },
+    mode: "dark",
+    background: { default: "#242424", paper: "transparent" },
+    text: { primary: "rgba(255, 255, 255, 0.87)" },
   },
   typography: {
     fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
-  }
+  },
 });
- 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <App />
-    </ThemeProvider>
-  </StrictMode>
-);
+
+function mountApp() {
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <App />
+      </ThemeProvider>
+    </StrictMode>
+  );
+}
+
+if (import.meta.env.MODE == "Mock") {
+  import('./mocks/browser').then(({ worker }) => {
+    worker
+      .start({ serviceWorker: { url: `${import.meta.env.BASE_URL}mockServiceWorker.js`,
+      },
+      onUnhandledRequest: "bypass",
+     })
+      .then(() => {
+        mountApp();
+      });
+  });
+} else {
+  mountApp();
+}

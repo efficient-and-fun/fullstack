@@ -10,31 +10,31 @@ type EventCardProps = {
 };
 
 const EventCard: React.FC<EventCardProps> = ({ meetUp: meetUp }) => {
-    const hasTime = meetUp.DateTimeFrom && meetUp.DateTimeTo;
+    const hasTime = meetUp.dateTimeFrom && meetUp.dateTimeTo;
 
     const navigate = useNavigate();
 
     const navigateToDetailsPage = () => {
-        navigate(`/${meetUp.MeetUpId}`);
+        navigate(`/${meetUp.meetUpId}`);
     };
 
     return (
         <Card onClick={navigateToDetailsPage} className="custom-card">
             <CardContent className="custom-card-content">
                 <Typography variant="subtitle1" fontWeight="bold">
-                    {meetUp.Name}
+                    {meetUp.meetUpName}
                 </Typography>
 
                 {hasTime && (
                     <div className="custom-time">
                         <AccessTimeIcon fontSize="small" className="custom-time-icon" />
                         <Typography variant="body2" className="custom-time-text">
-                            {meetUp.DateTimeFrom.toLocaleTimeString([], {
+                            {meetUp.dateTimeFrom.toLocaleTimeString([], {
                                 hour: '2-digit',
                                 minute: '2-digit',
                             })}{' '}
                             until{' '}
-                            {meetUp.DateTimeTo.toLocaleTimeString([], {
+                            {meetUp.dateTimeTo.toLocaleTimeString([], {
                                 hour: '2-digit',
                                 minute: '2-digit',
                             })}
@@ -45,7 +45,7 @@ const EventCard: React.FC<EventCardProps> = ({ meetUp: meetUp }) => {
                 <div className="custom-location">
                     <PlaceIcon fontSize="small" className="custom-location-icon" />
                     <Typography variant="body2" className="custom-location-text">
-                        {meetUp.Location}
+                        {meetUp.meetUpLocation}
                     </Typography>
                 </div>
             </CardContent>
