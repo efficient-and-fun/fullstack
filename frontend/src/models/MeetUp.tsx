@@ -1,8 +1,8 @@
 export interface MeetUp {
-    MeetUpId: number;
-    Name: string;
-    DateTimeFrom?: Date | null;
-    DateTimeTo?: Date | null;
-    Location: string;
+    meetUpId: number;
+    meetUpName: string;
+    dateTimeFrom?: Date | null;
+    dateTimeTo?: Date | null;
+    meetUpLocation: string;
   }
   

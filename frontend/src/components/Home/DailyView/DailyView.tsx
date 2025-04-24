@@ -1,22 +1,28 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Typography } from "@mui/material";
 import EventCard from "../EventCard/EventCard";
-import './DailyView.css';
-import { useEffect, useRef, useState } from 'react';
-
-import eventsRaw from './testEvents.json';
-import RoundedBackgroundContainer from '../../General/RoundedBackgroundContainer/RoundedBackgroundContainer';
-import { Dayjs } from 'dayjs';
+import "./DailyView.css";
+import { useEffect, useRef, useState } from "react";
+import { MeetUp } from "../../../models/MeetUp";
+import RoundedBackgroundContainer from "../../General/RoundedBackgroundContainer/RoundedBackgroundContainer";
+import { Dayjs } from "dayjs";
+import {meetUpsApiCall } from "../../../api/meetUpApi";
 
 interface DailyViewProps {
   selectedDate: Dayjs;
 }
 
 const DailyView: React.FC<DailyViewProps> = ({ selectedDate }) => {
-  const events = eventsRaw.map(event => ({
-    ...event,
-    DateTimeFrom: event.DateTimeFrom ? new Date(event.DateTimeFrom) : null,
-    DateTimeTo: event.DateTimeTo ? new Date(event.DateTimeTo) : null,
-  }));
+  const [events, setEvents] = useState<MeetUp[]>([]);
+
+  useEffect(() => {
+    let ignore = false;
+    const url = "/api/meetUp/1";
+    meetUpsApiCall(url, setEvents, selectedDate);
+
+    return () => {
+      ignore = true;
+    };
+  }, [selectedDate]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -27,7 +33,9 @@ const DailyView: React.FC<DailyViewProps> = ({ selectedDate }) => {
       (entries) => {
         const visibleEntry = entries.find((entry) => entry.isIntersecting);
         if (visibleEntry) {
-          const index = cardRefs.current.findIndex((el) => el === visibleEntry.target);
+          const index = cardRefs.current.findIndex(
+            (el) => el === visibleEntry.target
+          );
           if (index !== -1) setCurrentIndex(index);
         }
       },
@@ -42,22 +50,24 @@ const DailyView: React.FC<DailyViewProps> = ({ selectedDate }) => {
     });
 
     return () => observer.disconnect();
-  }, []);
-
-
+  }, [events]);
 
   return (
-    <RoundedBackgroundContainer height="45vh" backgroundColor="var(--background-color)">
-
+    <RoundedBackgroundContainer
+      height="45vh"
+      backgroundColor="var(--background-color)"
+    >
       <Typography variant="h6" className="daily-view-title">
         {selectedDate.format("DD. MMMM YYYY")}
       </Typography>
 
       <Box className="daily-view-body">
-
         <Box className="dot-column">
           {events.map((_, index) => (
-            <div key={index} className={`dot ${currentIndex === index ? 'active' : ''}`} />
+            <div
+              key={index}
+              className={`dot ${currentIndex === index ? "active" : ""}`}
+            />
           ))}
         </Box>
 
