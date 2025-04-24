@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 describe('Navigation', () => {
     it('should navigate to Event page when clicking the Event link', () => {
       cy.visit('http://localhost:5173'); // Deine Dev-URL
@@ -14,7 +15,7 @@ describe('Navigation', () => {
         cy.contains('Home').click(); // Link mit Text "Home" anklicken
     
         cy.url().should('include', '/'); // URL sollte sich ändern
-        cy.contains('Home Page'); // Der Inhalt der Home-Seite sollte angezeigt werden
+        cy.get(".MuiTypography-h6").contains(dayjs().format("DD. MMMM YYYY"));
       });
 
     it('should navigate to Event page when clicking the Notification link', () => {
