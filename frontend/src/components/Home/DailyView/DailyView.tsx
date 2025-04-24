@@ -15,13 +15,10 @@ const DailyView: React.FC<DailyViewProps> = ({ selectedDate }) => {
   const [events, setEvents] = useState<MeetUp[]>([]);
 
   useEffect(() => {
-    let ignore = false;
     const url = "/api/meetUp/1";
     meetUpsApiCall(url, setEvents, selectedDate);
 
-    return () => {
-      ignore = true;
-    };
+    return () => {};
   }, [selectedDate]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
