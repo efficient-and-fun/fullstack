@@ -1,0 +1,21 @@
+.btn {
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+    margin-right: 25px;
+    background-color: #1a1a1a;
+    color: white;
+    font-weight: bold;
+    border: 1px solid transparent;
+}
+
+.headercontainer {
+    height: 100px;
+    bottom: 0;
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    width: 100%;
+}
