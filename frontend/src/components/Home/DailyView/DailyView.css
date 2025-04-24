@@ -1,0 +1,45 @@
+.daily-view-title {
+    padding-left: 2em;
+    padding-top: 1.5em;
+    padding-bottom: 0.5em;
+    font-weight: bold !important;
+    color: black;
+    text-align: left;
+}
+
+.daily-view-body {
+    overflow-y: auto;
+    padding-left: 2em;
+    margin-bottom: 60px;
+    display: flex;
+    flex-direction: row;
+}
+
+.dot-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 75%;
+    padding-top: 2em;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+}
+
+.dot.active {
+    width: 20px;
+    height: 20px;
+    background-color: var(--highlight-color);
+}
+
+.scrollable-cards {
+    flex: 1;
+    overflow-y: auto;
+    padding-left: 1em;
+    scrollbar-width: none;
+}
