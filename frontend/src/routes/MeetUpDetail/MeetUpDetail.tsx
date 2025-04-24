@@ -8,8 +8,6 @@ import { MeetUpDetail } from "../../models/MeetUpDetails";
 import { useState, useEffect } from "react";
 import { meetUpApiCall }  from "../../api/meetUpApi";
 
-"use client";
-
 const MeetUpDetailPage: React.FC = () => {
   const { meetUpId } = useParams<{ meetUpId: string }>();
   const navigate = useNavigate();
@@ -17,13 +15,9 @@ const MeetUpDetailPage: React.FC = () => {
   const [event, setEvent] = useState<MeetUpDetail>();
 
   useEffect(() => {
-    let ignore = false;
     const url = "/api/meetUp/1/";
     meetUpApiCall(url, setEvent, parseInt(meetUpId));
 
-    return () => {
-      ignore = true;
-    };
   }, [meetUpId]);
 
 

@@ -18,7 +18,6 @@ const DailyView: React.FC<DailyViewProps> = ({ selectedDate }) => {
     const url = "/api/meetUp/1";
     meetUpsApiCall(url, setEvents, selectedDate);
 
-    return () => {};
   }, [selectedDate]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
