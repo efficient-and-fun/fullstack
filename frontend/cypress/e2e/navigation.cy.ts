@@ -21,7 +21,7 @@ describe('Navigation', () => {
     it('should navigate to Event page when clicking the Notification link', () => {
         cy.visit('http://localhost:5173'); // Deine Dev-URL
 
-        cy.contains('Notification').click(); // Link mit Text "Event" anklicken
+        cy.contains('Notification').click(); // Link mit Text "Notification" anklicken
 
         cy.url().should('include', '/notification'); // URL sollte sich ändern
         cy.contains('Notification Page'); // Der Inhalt der Event-Seite sollte angezeigt werden
