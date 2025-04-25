@@ -1,5 +1,17 @@
 # Project ReadMe
 
+## Project Documentation
+
+The project and its architecture is documented under this [link](docs/architecture/architecture.md)
+
+The code of conduct is [here](docs/CODE_OF_CONDUCT.md)
+
+The meeting protocols are accessible under the following [link](https://zhaw.sharepoint.com/sites/PM4Nametobedefined/Freigegebene%20Dokumente/General/eisonenotelanget/)
+
+The ReadMe of the operations repo is accessible [here](https://github.com/efficient-and-fun/operation/blob/main/README.md)
+
+The ReadMe to the frontend documentation can be found [here](frontend/README.md)
+
 ## Development Setup
 
 ### Local Development with Docker compose
