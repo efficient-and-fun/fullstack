@@ -35,6 +35,11 @@ Describe there are 2 deployments and how they work
 ## 8. Cross-cutting Concepts
 How is the deployment process?
 ## 9. Architecture Decisions
+
+### HTTP Methoden:
+- POST: Creation / Insert
+- PUT: Update
+
 ## 10. Quality Requirements
 ## 11. Risks and Technical Debt
 ## 12. Glossary
