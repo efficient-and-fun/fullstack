@@ -26,7 +26,7 @@ services:
       dockerfile: ./backend/WebApi/Dockerfile
     environment:
       # Update your connection string to point to the db service.
-      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=plananaz;Username=plananaz;Password=plananaz-secret"
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=plananaz;Username=plananaz;Password=plananaz-secret;Pooling=true;Include Error Detail=true;"
       ASPNETCORE_ENVIRONMENT: "Development"
     ports:
       - "5246:5246"

@@ -15,6 +15,7 @@ const DailyView: React.FC<DailyViewProps> = ({ selectedDate }) => {
   const [events, setEvents] = useState<MeetUp[]>([]);
 
   useEffect(() => {
+    console.log("selcetedDate",selectedDate);
     const url = "/api/meetUp/1";
     meetUpsApiCall(url, setEvents, selectedDate);
 
