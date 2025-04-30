@@ -9,6 +9,111 @@ namespace WebApi;
 public class MeetUpController : BaseController
 {
     public MeetUpController(ILogger<MeetUpController> logger, IConfiguration configuration, EfDbContext context) : base(logger, configuration, context) { }
+
+
+    /// <summary>
+    /// Create a new MeetUp.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="meetupDto"></param>
+    /// <returns>
+    /// Returns 200 and the ID of the newly created MeetUp on success, 400 if input is invalid, or 404 if the user doesn't exist.
+    /// </returns>
+    [HttpPost, Route("{userId:int}")]
+    public ActionResult<int> CreateMeetUp([FromRoute] int userId, [FromBody] MeetUpDetailDto meetupDto)
+    {
+        if (userId <= 0)
+        {
+            return BadRequest("UserId invalid");
+        }
+
+        var userExists = _context.Users.Any(u => u.UserId == userId);
+        if (!userExists)
+        {
+            return NotFound($"User with ID {userId} does not exist.");
+        }
+
+        var newMeetUp = new MeetUps
+        {
+            // todo check with frontend if validation tests are necessary: min length, max length, valid date, max participants > 0, etc
+
+            MeetUpName = meetupDto.MeetUpName,
+            Description = meetupDto.Description,
+            DateTimeFrom = meetupDto.DateTimeFrom,
+            DateTimeTo = meetupDto.DateTimeTo,
+            CheckList = meetupDto.CheckList,
+            MeetUpLocation = meetupDto.MeetUpLocation
+            
+            // todo: add int MaxParticipants { get; set; } but also needs to be added in DB
+        };
+
+        _context.MeetUps.Add(newMeetUp);
+        _context.SaveChanges();
+
+        // todo discuss: Add creator as participant
+        _context.Participations.Add(new Participation
+        {
+            UserId = userId,
+            MeetUpId = newMeetUp.MeetUpId,
+            HasAcceptedInvitation = true
+        });
+
+        _context.SaveChanges();
+
+        return Ok(newMeetUp.MeetUpId);
+    }
+    
+    /// <summary>
+    /// Updates a meetup's details if the user is a participant.
+    /// </summary>
+    /// <param name="userId">ID of the user requesting the update.</param>
+    /// <param name="meetupId">ID of the meetup to update.</param>
+    /// <param name="updatedMeetUp">The updated data for the meetup.</param>
+    /// <returns>
+    /// Returns 204 No Content on success, 400 if input is invalid, 404 if the user or meetup doesn't exist,
+    /// or 403 if the user is not a participant.
+    /// </returns>
+    [HttpPut, Route("{userId:int}/{meetupId:int}")]
+    public ActionResult UpdateMeetUp([FromRoute] int userId, [FromRoute] int meetupId, [FromBody] MeetUpDetailDto updatedMeetUp)
+    {
+        if (userId <= 0 || meetupId <= 0)
+        {
+            return BadRequest("Invalid userId or meetupId.");
+        }
+
+        var userExists = _context.Users.Any(u => u.UserId == userId);
+        if (!userExists)
+        {
+            return NotFound($"User with ID {userId} does not exist.");
+        }
+
+        var meetUp = _context.MeetUps.Find(meetupId);
+        if (meetUp == null)
+        {
+            return NotFound($"MeetUp with ID {meetupId} not found.");
+        }
+
+        // todo discuss: check if the user is the creator or authorized participant
+        var participation = _context.Participations
+            .FirstOrDefault(p => p.UserId == userId && p.MeetUpId == meetupId);
+        if (participation == null)
+        {
+            return Forbid("User is not authorized to update this meetup.");
+        }
+
+        // Update fields
+        meetUp.MeetUpName = updatedMeetUp.MeetUpName;
+        meetUp.DateTimeFrom = updatedMeetUp.DateTimeFrom;
+        meetUp.DateTimeTo = updatedMeetUp.DateTimeTo;
+        meetUp.Description = updatedMeetUp.Description;
+        meetUp.CheckList = updatedMeetUp.CheckList;
+        meetUp.MeetUpLocation = updatedMeetUp.MeetUpLocation;
+
+        _context.MeetUps.Update(meetUp);
+        _context.SaveChanges();
+
+        return NoContent();
+    }
     
     /// <summary>
     /// Get MeetUps of a specified user (both accepted invitations and not accepted ones). 
