@@ -38,4 +38,6 @@ public class MeetUps
     
     public string? CheckList { get; set; }
     public string? MeetUpLocation { get; set; }
+
+    
 }
