@@ -57,6 +57,170 @@ public class UnitTestMeetUpController
     }
 
     [TestMethod]
+    public void TestCreateMeetUp_ReturnsBadRequest_WhenUserIdIsZero()
+    {
+        // Arrange
+        var meetUpDto = new MeetUpDetailDto { MeetUpName = "Test MeetUp", DateTimeFrom = DateTime.Now, DateTimeTo = DateTime.Now.AddHours(1), CheckList = "Test", MeetUpLocation = "Location", Description = "Description" };
+
+        // Act
+        var result = _meetUpController.CreateMeetUp(0, meetUpDto);
+        
+        // Assert
+        Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+        var badRequestResult = result.Result as BadRequestObjectResult;
+        Assert.IsNotNull(badRequestResult);
+        Assert.AreEqual("UserId invalid", badRequestResult.Value);
+    }
+    
+    [TestMethod]
+    public void TestCreateMeetUp_ReturnsBadRequest_WhenUserIdIsNegative()
+    {
+        // Arrange
+        var meetUpDto = new MeetUpDetailDto { MeetUpName = "Test Meet Up", DateTimeFrom = DateTime.Now, DateTimeTo = DateTime.Now.AddHours(1), CheckList = "Test", MeetUpLocation = "Location", Description = "Description" };
+
+        // Act
+        var result = _meetUpController.CreateMeetUp(-1, meetUpDto);
+
+        // Assert
+        Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+        var badRequestResult = result.Result as BadRequestObjectResult;
+        Assert.IsNotNull(badRequestResult);
+        Assert.AreEqual("UserId invalid", badRequestResult.Value);
+    }
+    
+    [TestMethod]
+    public void TestCreateMeetUp_ReturnsNotFound_WhenUserDoesNotExist()
+    {
+        // Arrange
+        var meetUpDto = new MeetUpDetailDto { MeetUpName = "Test MeetUp", DateTimeFrom = DateTime.Now, DateTimeTo = DateTime.Now.AddHours(1), CheckList = "Test", MeetUpLocation = "Location", Description = "Description" };
+        var nonExistentUserId = 999;
+
+        // Act
+        var result = _meetUpController.CreateMeetUp(nonExistentUserId, meetUpDto);
+
+        // Assert
+        Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
+        var notFoundResult = result.Result as NotFoundObjectResult;
+        Assert.IsNotNull(notFoundResult);
+        Assert.AreEqual("User not found", notFoundResult.Value);
+    }
+    
+    [TestMethod]
+    public void TestCreateMeetUp_ReturnsOk_WhenValidUserIdAndValidMeetupDtoProvided()
+    {
+        // Arrange
+        var meetUpDto = new MeetUpDetailDto { MeetUpName = "Test MeetUp", DateTimeFrom = DateTime.Now, DateTimeTo = DateTime.Now.AddHours(1), CheckList = "Test", MeetUpLocation = "Location", Description = "Description" };
+        var validUserId = 1; // Assume this user exists
+
+        // Act
+        var result = _meetUpController.CreateMeetUp(validUserId, meetUpDto);
+
+        // Assert
+        Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+        var okResult = result.Result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual("MeetUp created successfully", okResult.Value);
+    }
+    [TestMethod]
+    public void TestCreateMeetUp_ReturnsBadRequest_WhenMeetupDtoIsNull()
+    {
+        // Act
+        var result = _meetUpController.CreateMeetUp(1, null);
+
+        // Assert
+        Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+        var badRequestResult = result.Result as BadRequestObjectResult;
+        Assert.IsNotNull(badRequestResult);
+        Assert.AreEqual("MeetUpDto is null", badRequestResult.Value);
+    }
+
+    // todo : is this necessary? => only when validation needs to be done in the backend
+    [TestMethod]
+    public void TestCreateMeetUp_ReturnsBadRequest_WhenMeetupDtoHasInvalidData()
+    {
+        
+    }
+
+    [TestMethod]
+    public void TestCreateMeetUp_ReturnsInternalServerError_WhenDatabaseSaveFails()
+    {
+        // Arrange
+        var meetUpDto = new MeetUpDetailDto { MeetUpName = "Test MeetUp", DateTimeFrom = DateTime.Now, DateTimeTo = DateTime.Now.AddHours(1), CheckList = "Test", MeetUpLocation = "Location", Description = "Description" };
+        var validUserId = 1; // Assume this user exists
+
+        // Mock the failure of database save (e.g., simulate a DbContext exception)
+        _mockContext.Setup(c => c.SaveChanges()).Throws(new InvalidOperationException("Database save failed"));
+
+        // Act
+        var result = _meetUpController.CreateMeetUp(validUserId, meetUpDto);
+
+        // Assert
+        Assert.IsInstanceOfType(result.Result, typeof(StatusCodeResult));
+        
+        var statusCodeResult = result.Result as StatusCodeResult;
+        Assert.IsNotNull(statusCodeResult);
+        Assert.AreEqual(500, statusCodeResult.StatusCode);
+    }
+    
+    
+    // // todo add if max participants is implemented
+    // [TestMethod]
+    // public void TestCreateMeetUp_ReturnsOk_WhenNoMaxParticipantsInDto()
+    // {
+    //     // Arrange
+    //     var meetUpDto = new MeetUpDetailDto { MeetUpName = "Test MeetUp", DateTimeFrom = DateTime.Now, DateTimeTo = DateTime.Now.AddHours(1), CheckList = "Test", MeetUpLocation = "Location", Description = "Description" };
+    //     var validUserId = 1; // Assume this user exists
+    //
+    //     // Act
+    //     var result = _meetUpController.CreateMeetUp(validUserId, meetUpDto);
+    //
+    //     // Assert
+    //     Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+    //     var okResult = result as OkObjectResult;
+    //     Assert.IsNotNull(okResult);
+    //     Assert.AreEqual("MeetUp created successfully", okResult.Value);
+    // }
+    // [TestMethod]
+    // public void TestCreateMeetUp_ReturnsBadRequest_WhenMaxParticipantsIsInvalid()
+    // {
+    //     // Arrange
+    //     var meetUpDto = new MeetUpDetailDto { MeetUpName = "Test MeetUp", DateTimeFrom = DateTime.Now, DateTimeTo = DateTime.Now.AddHours(1), CheckList = "Test", MeetUpLocation = "Location", Description = "Description", MaxParticipants = -1 };
+    //     var validUserId = 1; // Assume this user exists
+    //
+    //     // Act
+    //     var result = _meetUpController.CreateMeetUp(validUserId, meetUpDto);
+    //
+    //     // Assert
+    //     Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+    //     var badRequestResult = result as BadRequestObjectResult;
+    //     Assert.IsNotNull(badRequestResult);
+    //     Assert.AreEqual("MaxParticipants cannot be negative", badRequestResult.Value);
+    // }
+    //
+    // [TestMethod]
+    // public void TestCreateMeetUp_AddsCreatorAsParticipant_WhenMeetUpIsCreated()
+    // {
+    //     // Arrange
+    //     var meetUpDto = new MeetUpDetailDto { MeetUpName = "Test MeetUp", DateTimeFrom = DateTime.Now, DateTimeTo = DateTime.Now.AddHours(1), CheckList = "Test", MeetUpLocation = "Location", Description = "Description" };
+    //     var validUserId = 1; // Assume this user exists
+    //
+    //     // Act
+    //     var result = _meetUpController.CreateMeetUp(validUserId, meetUpDto);
+    //
+    //     // Assert
+    //     Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+    //     var okResult = result.Result as OkObjectResult;
+    //     Assert.IsNotNull(okResult);
+    //
+    //     // Simulate checking the database for participation record
+    //     var createdMeetUp = _mockContext.Object.MeetUps.FirstOrDefault(m => m.MeetUpName == "Test MeetUp");
+    //     Assert.IsNotNull(createdMeetUp);
+    //     var participation = _mockContext.Object.Participations.FirstOrDefault(p => p.UserId == validUserId && p.MeetUpId == createdMeetUp.MeetUpId);
+    //     Assert.IsNotNull(participation);
+    // }
+
+
+    [TestMethod]
     public void TestGetMeetUpDetails_ReturnsBadRequest_WhenUserIdEqualsZero()
     {
         // Arrange – Use real EF context with InMemory provider
