@@ -16,7 +16,7 @@ public class MeetUpBriefDto
     public DateTime DateTimeFrom { get; set; }
     public DateTime DateTimeTo { get; set; }
     
-    public string MeetUpLocation { get; set; }
+    public string? MeetUpLocation { get; set; }
 }
 
 public class MeetUpDetailDto : MeetUpBriefDto
@@ -38,4 +38,6 @@ public class MeetUps
     
     public string? CheckList { get; set; }
     public string? MeetUpLocation { get; set; }
+
+    
 }
