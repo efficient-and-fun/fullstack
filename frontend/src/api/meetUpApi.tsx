@@ -3,34 +3,33 @@ import { MeetUpDetail } from "../models/MeetUpDetails";
 import { Dayjs } from "dayjs";
 
 function meetUpsApiCall(
-  url: string,
+  baseURL: string,
   setEvents: React.Dispatch<React.SetStateAction<MeetUp[]>>,
   selectedDate: Dayjs
 ) {
+  const dateString = selectedDate.format("YYYY-MM-DD");
+  const url = baseURL + "?currentDate=" + dateString;
   fetch(url)
     .then((res) => {
       if (!res.ok) {
-        throw new Error(
-          `Fehler meetUpsApiCall (Status ${res.status})`
-        );
+        throw new Error(`Fehler meetUpsApiCall (Status ${res.status})`);
       }
       return res.json() as Promise<MeetUp[]>;
     })
     .then((data) => {
-        const meetUps = data.map((meetUp) => ({
-          ...meetUp,
-          dateTimeFrom: meetUp.dateTimeFrom
-            ? new Date(meetUp.dateTimeFrom)
-            : null,
-          dateTimeTo: meetUp.dateTimeTo ? new Date(meetUp.dateTimeTo) : null,
-        }));
-        setEvents(meetUps);
+      const meetUps = data.map((meetUp) => ({
+        ...meetUp,
+        dateTimeFrom: meetUp.dateTimeFrom
+          ? new Date(meetUp.dateTimeFrom)
+          : null,
+        dateTimeTo: meetUp.dateTimeTo ? new Date(meetUp.dateTimeTo) : null,
+      }));
+      setEvents(meetUps);
     })
     .catch((err) => {
-        console.log(err);
+      console.log(err);
     })
-    .finally(() => {
-    });
+    .finally(() => {});
 }
 
 function meetUpApiCall(

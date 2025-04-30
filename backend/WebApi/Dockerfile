@@ -16,6 +16,8 @@ COPY --from=build /out ./
 
 # Set environment variable for ASP.NET Core to listen on port 5246
 ENV ASPNETCORE_URLS=http://+:5246
+ENV DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE=false \
+    DOTNET_USE_POLLING_FILE_WATCHER=true
 
 # Expose the correct port
 EXPOSE 5246
