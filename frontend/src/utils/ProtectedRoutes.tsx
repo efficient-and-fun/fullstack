@@ -1,12 +1,12 @@
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 const ProtectedRoutes = () => {
   const token = localStorage.getItem("authToken");
   const navigate = useNavigate();
+  const location = useLocation();
   useEffect(() => {
     const verifyToken = async () => {
       if (token) {
-        console.log("send validate");
         try {
           const response = await fetch("api/validate", {
             method: "GET",
@@ -16,7 +16,6 @@ const ProtectedRoutes = () => {
           });
 
           if (!response.ok) {
-            console.log("noValid Token")
             localStorage.removeItem("authToken");
             navigate("/login", { replace: true });
           }
@@ -26,7 +25,6 @@ const ProtectedRoutes = () => {
           navigate("/login", { replace: true });
         }
       } else {
-        console.log("redirected");
         navigate("/login", { replace: true });
       }
     };

@@ -38,7 +38,8 @@ const LoginForm = () => {
       const data = await res.json();
 
       if (res.ok) {
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("authToken", data.token);
+        window.location.href = '/';
       } else {
         // Fehler vom Server anzeigen
         setErrors([data.message || "Login failed. Please try again."]);
