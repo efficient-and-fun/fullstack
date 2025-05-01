@@ -10,6 +10,62 @@ public class MeetUpController : BaseController
 {
     public MeetUpController(ILogger<MeetUpController> logger, IConfiguration configuration, EfDbContext context) : base(logger, configuration, context) { }
 
+    private static ActionResult ValidateMeetupDetail(MeetUpDetailDto meetupDto)
+    {
+        // Validate if meetup name or description is empty
+        if (string.IsNullOrWhiteSpace(meetupDto.MeetUpName) || string.IsNullOrWhiteSpace(meetupDto.Description))
+        {
+            return new BadRequestObjectResult("MeetUp name and description are required.");
+        }
+        // Validate if start and end times are non-default values
+        if (meetupDto.DateTimeFrom == default || meetupDto.DateTimeTo == default)
+        {
+            return new BadRequestObjectResult("MeetUp start and end times are required.");
+        }
+        // Validate if start time is before end time
+        if (meetupDto.DateTimeFrom >= meetupDto.DateTimeTo)
+        {
+            return new BadRequestObjectResult("MeetUp start time must be before end time.");
+        }
+        
+        // If the number of participants is less than or equal to 0, set it to null
+        if (meetupDto.MaxNumberOfParticipants <= 0)
+        {
+            meetupDto.MaxNumberOfParticipants = null;
+        }
+        return new OkResult();
+    }
+    
+    private static ActionResult ValidateUserId(int userId)
+    {
+        if (userId <= 0)
+        {
+            return new BadRequestObjectResult("UserId invalid");
+        }
+
+        return new OkResult();
+    }
+
+    private static ActionResult UserExists(int userId, EfDbContext context)
+    {
+        var userExists = context.Users.Any(u => u.UserId == userId);
+        if (!userExists)
+        {
+            // Return 404 if the user does not exist
+            return new NotFoundObjectResult($"User with ID {userId} does not exist.");
+        }
+        return new OkResult();
+    }
+
+    private static ActionResult ValidateMeetupId(int meetupId)
+    {
+        if (meetupId <= 0)
+        {
+            return new BadRequestObjectResult("Invalid userId or meetupId.");
+        }
+        return new OkResult();
+    }
+    
 
     /// <summary>
     /// Create a new MeetUp.
@@ -22,29 +78,33 @@ public class MeetUpController : BaseController
     [HttpPost, Route("{userId:int}")]
     public ActionResult<int> CreateMeetUp([FromRoute] int userId, [FromBody] MeetUpDetailDto meetupDto)
     {
-        if (userId <= 0)
+        var validationUserIdResult = ValidateUserId(userId);
+        if (validationUserIdResult is not OkResult)
         {
-            return BadRequest("UserId invalid");
+            return validationUserIdResult;
+        }
+        var userExistsResult = UserExists(userId, _context);
+        if (userExistsResult is not OkResult)
+        {
+            return userExistsResult;
         }
 
-        var userExists = _context.Users.Any(u => u.UserId == userId);
-        if (!userExists)
+        // Validate the input data
+        var validationResult = ValidateMeetupDetail(meetupDto);
+        if (validationResult is not OkResult)
         {
-            return NotFound($"User with ID {userId} does not exist.");
+            return validationResult;
         }
-
+        
         var newMeetUp = new MeetUps
         {
-            // todo check with frontend if validation tests are necessary: min length, max length, valid date, max participants > 0, etc
-
             MeetUpName = meetupDto.MeetUpName,
             Description = meetupDto.Description,
             DateTimeFrom = meetupDto.DateTimeFrom,
             DateTimeTo = meetupDto.DateTimeTo,
             CheckList = meetupDto.CheckList,
-            MeetUpLocation = meetupDto.MeetUpLocation
-            
-            // todo: add int MaxParticipants { get; set; } but also needs to be added in DB
+            MeetUpLocation = meetupDto.MeetUpLocation,
+            MaxNumberOfParticipants = meetupDto.MaxNumberOfParticipants
         };
 
         _context.MeetUps.Add(newMeetUp);
@@ -76,15 +136,22 @@ public class MeetUpController : BaseController
     [HttpPut, Route("{userId:int}/{meetupId:int}")]
     public ActionResult UpdateMeetUp([FromRoute] int userId, [FromRoute] int meetupId, [FromBody] MeetUpDetailDto updatedMeetUp)
     {
-        if (userId <= 0 || meetupId <= 0)
+        var validationUserIdResult = ValidateUserId(userId);
+        if (validationUserIdResult is not OkResult)
         {
-            return BadRequest("Invalid userId or meetupId.");
+            return validationUserIdResult;
         }
-
-        var userExists = _context.Users.Any(u => u.UserId == userId);
-        if (!userExists)
+        var userExistsResult = UserExists(userId, _context);
+        if (userExistsResult is not OkResult)
         {
-            return NotFound($"User with ID {userId} does not exist.");
+            return userExistsResult;
+        }
+        
+        // Validate the input data
+        var validationMeetUpIdResult = ValidateMeetupId(meetupId);
+        if (validationUserIdResult is not OkResult)
+        {
+            return validationUserIdResult;
         }
 
         var meetUp = _context.MeetUps.Find(meetupId);
@@ -100,6 +167,15 @@ public class MeetUpController : BaseController
         {
             return Forbid("User is not authorized to update this meetup.");
         }
+        
+        // Validate the input data
+        var validationResult = ValidateMeetupDetail(updatedMeetUp);
+        if (validationResult is not OkResult)
+        {
+            return validationResult;
+        }
+        
+        // todo: optional create specific update methods for only the fields that are necessary to update.
 
         // Update fields
         meetUp.MeetUpName = updatedMeetUp.MeetUpName;
@@ -108,6 +184,7 @@ public class MeetUpController : BaseController
         meetUp.Description = updatedMeetUp.Description;
         meetUp.CheckList = updatedMeetUp.CheckList;
         meetUp.MeetUpLocation = updatedMeetUp.MeetUpLocation;
+        meetUp.MaxNumberOfParticipants = updatedMeetUp.MaxNumberOfParticipants;
 
         _context.MeetUps.Update(meetUp);
         _context.SaveChanges();
