@@ -107,15 +107,21 @@ public class MeetUpController : BaseController
 =======
         if (userId <= 0)
         {
-            return BadRequest("UserId invalid");
+            return validationUserIdResult;
         }
-
-        var userExists = _context.Users.Any(u => u.UserId == userId);
-        if (!userExists)
+        var userExistsResult = UserExists(userId, _context);
+        if (userExistsResult is not OkResult)
         {
-            return NotFound($"User with ID {userId} does not exist.");
+            return userExistsResult;
         }
 
+        // Validate the input data
+        var validationResult = ValidateMeetupDetail(meetupDto);
+        if (validationResult is not OkResult)
+        {
+            return validationResult;
+        }
+        
         var newMeetUp = new MeetUps
         {
             // todo check with frontend if validation tests are necessary: min length, max length, valid date, max participants > 0, etc
@@ -167,15 +173,22 @@ public class MeetUpController : BaseController
     [HttpPut, Route("{userId:int}/{meetupId:int}")]
     public ActionResult UpdateMeetUp([FromRoute] int userId, [FromRoute] int meetupId, [FromBody] MeetUpDetailDto updatedMeetUp)
     {
-        if (userId <= 0 || meetupId <= 0)
+        var validationUserIdResult = ValidateUserId(userId);
+        if (validationUserIdResult is not OkResult)
         {
-            return BadRequest("Invalid userId or meetupId.");
+            return validationUserIdResult;
         }
-
-        var userExists = _context.Users.Any(u => u.UserId == userId);
-        if (!userExists)
+        var userExistsResult = UserExists(userId, _context);
+        if (userExistsResult is not OkResult)
         {
-            return NotFound($"User with ID {userId} does not exist.");
+            return userExistsResult;
+        }
+        
+        // Validate the input data
+        var validationMeetUpIdResult = ValidateMeetupId(meetupId);
+        if (validationUserIdResult is not OkResult)
+        {
+            return validationUserIdResult;
         }
 
         var meetUp = _context.MeetUps.Find(meetupId);
@@ -191,6 +204,15 @@ public class MeetUpController : BaseController
         {
             return Forbid("User is not authorized to update this meetup.");
         }
+        
+        // Validate the input data
+        var validationResult = ValidateMeetupDetail(updatedMeetUp);
+        if (validationResult is not OkResult)
+        {
+            return validationResult;
+        }
+        
+        // todo: optional create specific update methods for only the fields that are necessary to update.
 
         // Update fields
         meetUp.MeetUpName = updatedMeetUp.MeetUpName;
