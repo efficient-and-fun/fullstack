@@ -15,3 +15,6 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
+import dayjs from 'dayjs'
+import 'dayjs/locale/de'
+dayjs.locale('de')

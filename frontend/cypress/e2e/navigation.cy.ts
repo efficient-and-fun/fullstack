@@ -1,4 +1,7 @@
 import dayjs from "dayjs";
+import "dayjs/locale/de";
+dayjs.locale('de')
+
 describe('Navigation', () => {
     it('should navigate to Event page when clicking the Event link', () => {
       cy.visit('http://localhost:5173'); // Deine Dev-URL
