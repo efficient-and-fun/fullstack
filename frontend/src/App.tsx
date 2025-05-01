@@ -9,6 +9,8 @@ import NotificationPage from './routes/Notification';
 import SettingPage from './routes/Setting';
 import MeetUpDetailPage from "./routes/MeetUpDetail/MeetUpDetail";
 import Nav from './components/Navbar/Nav';
+import LoginPage from "./routes/Login";
+import RegisterPage from "./routes/Register";
 
 
 function App() {
@@ -24,6 +26,8 @@ function App() {
             <Route path="/notification" element={<NotificationPage />} />
             <Route path="/setting" element={<SettingPage />} />
             <Route path="/:meetUpId" element={<MeetUpDetailPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
           </Routes>
           <Nav />
         </Box>
