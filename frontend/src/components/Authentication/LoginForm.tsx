@@ -27,7 +27,7 @@ const LoginForm = () => {
         <h1 className={styles.title}>Login</h1>
         <input className={styles.inputField} placeholder="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         <input className={styles.inputField} placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        <button className={styles.btn} type="submit">Sign on</button>
+        <button className={styles.btn} type="submit">Sign in</button>
     </form>
   );
 };
