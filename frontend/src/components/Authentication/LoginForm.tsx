@@ -4,7 +4,7 @@ import styles from "./Form.module.css";
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  var url = 'http://localhost:5000/api/login';
+  var url = '/api/login';
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -15,8 +15,7 @@ const LoginForm = () => {
     });
     const data = await res.json();
     if (res.ok) {
-      localStorage.setItem('token', data.token);
-      window.location.href = '/dashboard';
+      localStorage.setItem('authToken', data.token);
     } else {
       alert('Login fehlgeschlagen');
     }
