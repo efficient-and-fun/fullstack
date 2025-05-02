@@ -53,3 +53,5 @@ WebApiTest/obj/
 **/obj/
 
 # Ignore all bin and obj folders recursively
+
+WebApi.sln.DotSettings.user
