@@ -521,4 +521,90 @@ public class UnitTestMeetUpController
         Assert.IsNotNull(notFound);
         StringAssert.Contains(notFound.Value?.ToString(), "No meetups found");
     }
+    
+         [TestMethod]
+    public void TestGetMeetUps_ReturnsBadRequest_WhenUserIdEqualsZero()
+    {
+        var options = new DbContextOptionsBuilder<EfDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+
+        using var context = new EfDbContext(options, _mockConfig.Object);
+        
+        context.Users.Add(new User
+        {
+            UserId = 1,
+            UserName = "TestUser",
+            Email = "test@test.com",
+            DietaryRestrictions = "TestDietary",
+            UserPassword = "TestPassword",
+            ProfilePicturePath = "TestProfilePicturePath"
+        });
+        context.MeetUps.Add(new MeetUps
+        {
+            MeetUpId = 1,
+            MeetUpName = "Test MeetUp",
+            DateTimeFrom = DateTime.Now,
+            DateTimeTo = DateTime.Now.AddHours(1),
+            CheckList = "Check",
+            MeetUpLocation = "Somewhere",
+            Description = "Test"
+        });
+        context.Participations.Add(new Participation { UserId = 1, MeetUpId = 1 });
+        context.SaveChanges();
+        
+        var mockLogger = new Mock<ILogger<MeetUpController>>();
+        var mockConfig = new Mock<IConfiguration>();
+        var controller = new MeetUpController(mockLogger.Object, mockConfig.Object, context);
+        var result = controller.GetMeetUps(0, DateTime.Today);
+        
+        Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+        var badRequestResult = result.Result as BadRequestObjectResult;
+        Assert.IsNotNull(badRequestResult);
+        Assert.IsInstanceOfType(badRequestResult.Value, typeof(string));
+        Assert.AreEqual("UserId invalid", badRequestResult.Value);
+    }
+
+    [TestMethod]
+    public void TestGetMeetUps_ReturnsBadRequest_WhenUserIdBelowZero()
+    {
+        var options = new DbContextOptionsBuilder<EfDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+
+        using var context = new EfDbContext(options, _mockConfig.Object);
+        
+        context.Users.Add(new User
+        {
+            UserId = 1,
+            UserName = "TestUser",
+            Email = "test@test.com",
+            DietaryRestrictions = "TestDietary",
+            UserPassword = "TestPassword",
+            ProfilePicturePath = "TestProfilePicturePath"
+        });
+        context.MeetUps.Add(new MeetUps
+        {
+            MeetUpId = 1,
+            MeetUpName = "Test MeetUp",
+            DateTimeFrom = DateTime.Now,
+            DateTimeTo = DateTime.Now.AddHours(1),
+            CheckList = "Check",
+            MeetUpLocation = "Somewhere",
+            Description = "Test"
+        });
+        context.Participations.Add(new Participation { UserId = 1, MeetUpId = 1 });
+        context.SaveChanges();
+        
+        var mockLogger = new Mock<ILogger<MeetUpController>>();
+        var mockConfig = new Mock<IConfiguration>();
+        var controller = new MeetUpController(mockLogger.Object, mockConfig.Object, context);
+        var result = controller.GetMeetUps(-1, DateTime.Today);
+        
+        Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+        var badRequestResult = result.Result as BadRequestObjectResult;
+        Assert.IsNotNull(badRequestResult);
+        Assert.IsInstanceOfType(badRequestResult.Value, typeof(string));
+        Assert.AreEqual("UserId invalid", badRequestResult.Value);
+    }
 }
