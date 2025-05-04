@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+
 namespace WebApi;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Api.Common;
@@ -26,6 +28,13 @@ public class UserController : BaseController
         }
 
         return Unauthorized(new { message = "Invalid credentials" });
+    }
+    
+    [Authorize]
+    [HttpPost("validate")]
+    public IActionResult Validate()
+    {
+        return Ok(new { token = Request.Headers["Authorization"].ToString() });
     }
 }
 
