@@ -4,12 +4,19 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using WebApi.Api.Common;
+using WebApi.Model;
 
 namespace WebApi;
 
 public interface IAuthService
 {
     Task<AuthResult> LoginAsync(string email, string password);
+    Task<AuthResult> RegisterAsync(
+        string email, 
+        string password, 
+        //string vorname, 
+        //string nachname, 
+        string username);
 }
 
 public class AuthService : IAuthService
@@ -21,17 +28,63 @@ public class AuthService : IAuthService
         _context = context;
     }
 
-    public async Task<AuthResult> LoginAsync(string email, string password)
+    public async Task<AuthResult> RegisterAsync(
+        string email, 
+        string password, 
+        //string vorname, 
+        //string nachname, 
+        string username)
     {
-        var foundUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.UserPassword == password);
-        // TODO: hier noch die Hashfunktion einfügen
-
-        if (foundUser == null)
+        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        if (existingUser != null)
         {
             return new AuthResult
             {
-                Success = false
+                Success = false,
+                Token = null,
+                ErrorMessage = "Email already registered."
             };
+        }
+
+        var existingUsername = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+        if (existingUsername != null)
+        {
+            return new AuthResult
+            {
+                Success = false,
+                Token = null,
+                ErrorMessage = "Username already registered."
+            };
+        }
+
+        var newUser = new User
+        {
+            Email = email,
+            UserPassword = BCrypt.Net.BCrypt.HashPassword(password),
+            //Vorname = vorname,
+            //Nachname = nachname,
+            UserName = username
+        };
+
+        _context.Users.Add(newUser);
+        await _context.SaveChangesAsync();
+
+        var token = GenerateJwtToken(email);
+
+        return new AuthResult
+        {
+            Success = true,
+            Token = token
+        };
+    }
+
+    public async Task<AuthResult> LoginAsync(string email, string password)
+    {
+        var foundUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+        if (foundUser == null || !BCrypt.Net.BCrypt.Verify(password, foundUser.UserPassword))
+        {
+            return new AuthResult { Success = false };
         }
 
         return new AuthResult
@@ -43,7 +96,6 @@ public class AuthService : IAuthService
 
     private string GenerateJwtToken(string email)
     {
-        // TODO: key und creds noch anpassen
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SuperSecretKey12345SuperSecretKey12345SuperSecretKey12345SuperSecretKey12345SuperSecretKey12345"));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -61,4 +113,5 @@ public class AuthResult
 {
     public bool Success { get; set; }
     public string Token { get; set; }
+    public string ErrorMessage { get; set; }
 }
