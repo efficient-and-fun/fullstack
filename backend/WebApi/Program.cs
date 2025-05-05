@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using WebApi;
 using WebApi.Api.Common;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 Console.WriteLine($"ConnectionString: {connectionString}");
 
 builder.Services.AddDbContext<EfDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Add services to the container.
 builder.Services.AddControllers(); // Add controllers
@@ -42,6 +44,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             // TODO: anpassen
         };
     });
+// Füge die Autorisierung hinzu, um geschützte Endpunkte zu ermöglichen
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -55,9 +59,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization(); // Ensure authorization is used if needed
-
-// Füge die Autorisierung hinzu, um geschützte Endpunkte zu ermöglichen
-builder.Services.AddAuthorization();
 
 app.MapControllers(); // Map controllers instead of individual endpoints
 
