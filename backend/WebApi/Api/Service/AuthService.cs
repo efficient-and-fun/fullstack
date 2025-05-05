@@ -11,12 +11,7 @@ namespace WebApi;
 public interface IAuthService
 {
     Task<AuthResult> LoginAsync(string email, string password);
-    Task<AuthResult> RegisterAsync(
-        string email, 
-        string password, 
-        //string vorname, 
-        //string nachname, 
-        string username);
+    Task<AuthResult> RegisterAsync(string email, string password, string username);
 }
 
 public class AuthService : IAuthService
@@ -31,8 +26,6 @@ public class AuthService : IAuthService
     public async Task<AuthResult> RegisterAsync(
         string email, 
         string password, 
-        //string vorname, 
-        //string nachname, 
         string username)
     {
         var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
@@ -61,8 +54,6 @@ public class AuthService : IAuthService
         {
             Email = email,
             UserPassword = BCrypt.Net.BCrypt.HashPassword(password),
-            //Vorname = vorname,
-            //Nachname = nachname,
             UserName = username
         };
 

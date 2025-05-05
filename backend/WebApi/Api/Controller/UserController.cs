@@ -10,39 +10,32 @@ public class UserController : BaseController
 {
     private readonly IAuthService _authService;
     
-    public UserController(ILogger<MeetUpController> logger, IConfiguration configuration, EfDbContext context) : base(
+    public UserController(ILogger<UserController> logger, IConfiguration configuration, EfDbContext context, IAuthService authService) : base(
         logger, configuration, context)
     {
-        _authService = new AuthService(context);
+        _authService = authService;
     }
     
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+    public async Task<IActionResult> Register(RegisterRequest request)
     {
         if (request.Password != request.Password2)
         {
-            return BadRequest(new { message = "Passwords do not match." });
+            return BadRequest(new ErrorResponse{ Message = "Passwords do not match." });
         }
 
         if (!request.IsAGBAccepted)
         {
-            return BadRequest(new { message = "AGB must be accepted." });
+            return BadRequest(new ErrorResponse{ Message = "AGB must be accepted." });
         }
 
-        var result = await _authService.RegisterAsync(
-            request.Email,
-            request.Password,
-            //request.Vorname,
-            //request.Nachname,
-            request.Username
-        );
-
-        if (result.Success)
+        var authResult = await _authService.RegisterAsync(request.Email, request.Password, request.Username);
+        if (!authResult.Success)
         {
-            return Ok(new { token = result.Token });
+            return BadRequest(new ErrorResponse{ Message = authResult.ErrorMessage });
         }
 
-        return BadRequest(new { message = result.ErrorMessage ?? "Registration failed." });
+        return Ok(new RegisterResponse { Token = authResult.Token });
     }
     
     
@@ -69,8 +62,6 @@ public class UserController : BaseController
 
 public class RegisterRequest
 {
-    //public string Vorname { get; set; }
-    //public string Nachname { get; set; }
     public string Username { get; set; }
     public string Email { get; set; }
     public string Password { get; set; }
@@ -82,4 +73,14 @@ public class LoginRequest
 {
     public string Email { get; set; }
     public string Password { get; set; }
+}
+
+public class RegisterResponse
+{
+    public string Token { get; set; }
+}
+
+public class ErrorResponse
+{
+    public string Message { get; set; }
 }
