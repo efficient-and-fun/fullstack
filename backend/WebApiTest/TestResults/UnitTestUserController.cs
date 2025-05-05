@@ -32,7 +32,7 @@ public class UserControllerTests
     }
 
     [TestMethod]
-    public async Task Register_ReturnsOk_WhenRegistrationSuccessful()
+    public async Task TestRegister_ReturnsOk_WhenRegistrationSuccessful()
     {
         // Arrange
         var request = new RegisterRequest
@@ -64,7 +64,7 @@ public class UserControllerTests
     }
     
     [TestMethod]
-    public async Task Register_ReturnsBadRequest_WhenEmailAlreadyRegistered()
+    public async Task TestRegister_ReturnsBadRequest_WhenEmailAlreadyRegistered()
     {
         // Arrange
         var request = new RegisterRequest
@@ -101,7 +101,7 @@ public class UserControllerTests
     }
     
     [TestMethod]
-    public async Task Register_ReturnsBadRequest_WhenUsernameAlreadyRegistered()
+    public async Task TestRegister_ReturnsBadRequest_WhenUsernameAlreadyRegistered()
     {
         // Arrange
         var request = new RegisterRequest
@@ -138,7 +138,7 @@ public class UserControllerTests
     }
     
     [TestMethod]
-    public async Task Register_ReturnsBadRequest_WhenPasswordsDoNotMatch()
+    public async Task TestRegister_ReturnsBadRequest_WhenPasswordsDoNotMatch()
     {
         // Arrange
         var request = new RegisterRequest
@@ -166,7 +166,7 @@ public class UserControllerTests
     }
 
     [TestMethod]
-    public async Task Register_ReturnsBadRequest_WhenAGBNotAccepted()
+    public async Task TestRegister_ReturnsBadRequest_WhenAGBNotAccepted()
     {
         // Arrange
         var request = new RegisterRequest
@@ -194,7 +194,7 @@ public class UserControllerTests
     }
 
     [TestMethod]
-    public async Task Register_ReturnsBadRequest_WhenAuthServiceFails()
+    public async Task TestRegister_ReturnsBadRequest_WhenAuthServiceFails()
     {
         // Arrange
         var request = new RegisterRequest
