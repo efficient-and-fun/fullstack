@@ -295,4 +295,69 @@ public class UserControllerTests
             Assert.AreEqual("Bearer validToken", (string) response);
         
     }
+
+    [TestMethod]
+    public async Task TestRegister_ReturnsOk_WhenProfilePicturePathExists()
+    {
+        // Arrange
+        var request = new RegisterRequest
+        {
+            Username = "maxmuster",
+            Email = "max@example.com",
+            Password = "Password123",
+            Password2 = "Password123",
+            ProfilePicturePath = "testPath",
+            IsAGBAccepted = true
+        };
+
+        _authServiceMock.Setup(s => s.RegisterAsync(
+                request.Email, request.Password, request.Username, request.ProfilePicturePath))
+            .ReturnsAsync(new AuthResult { Success = true, Token = "dummy-token" });
+
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+
+        // Act
+        var result = await controller.Register(request);
+
+        // Assert
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(200, okResult.StatusCode);
+
+        var response = okResult.Value as RegisterResponse;
+        Assert.IsNotNull(response);
+        Assert.AreEqual("dummy-token", response.Token);
+    }
+    [TestMethod]
+    public async Task TestRegister_ReturnsOk_WhenProfilePicturePathNotExists()
+    {
+        // Arrange
+        var request = new RegisterRequest
+        {
+            Username = "maxmuster",
+            Email = "max@example.com",
+            Password = "Password123",
+            Password2 = "Password123",
+            ProfilePicturePath = "",
+            IsAGBAccepted = true
+        };
+
+        _authServiceMock.Setup(s => s.RegisterAsync(
+                request.Email, request.Password, request.Username, request.ProfilePicturePath))
+            .ReturnsAsync(new AuthResult { Success = true, Token = "dummy-token" });
+
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+
+        // Act
+        var result = await controller.Register(request);
+
+        // Assert
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(200, okResult.StatusCode);
+
+        var response = okResult.Value as RegisterResponse;
+        Assert.IsNotNull(response);
+        Assert.AreEqual("dummy-token", response.Token);
+    }
 }
