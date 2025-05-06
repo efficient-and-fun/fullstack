@@ -11,7 +11,7 @@ namespace WebApi;
 public interface IAuthService
 {
     Task<AuthResult> LoginAsync(string email, string password);
-    Task<AuthResult> RegisterAsync(string email, string password, string username);
+    Task<AuthResult> RegisterAsync(string email, string password, string username, string profilePicturePath);
 }
 
 public class AuthService : IAuthService
@@ -26,7 +26,8 @@ public class AuthService : IAuthService
     public async Task<AuthResult> RegisterAsync(
         string email, 
         string password, 
-        string username)
+        string username,
+        string profilePicturePath)
     {
         var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         if (existingUser != null)
@@ -49,12 +50,18 @@ public class AuthService : IAuthService
                 ErrorMessage = "Username already registered."
             };
         }
+        // Set a default profile picture path
+        if (string.IsNullOrWhiteSpace(profilePicturePath))
+        {
+            profilePicturePath = "https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1-400x400.jpg.optimal.jpg"; 
+        }
 
         var newUser = new User
         {
             Email = email,
             UserPassword = BCrypt.Net.BCrypt.HashPassword(password),
-            UserName = username
+            UserName = username,
+            ProfilePicturePath = profilePicturePath
         };
 
         _context.Users.Add(newUser);
