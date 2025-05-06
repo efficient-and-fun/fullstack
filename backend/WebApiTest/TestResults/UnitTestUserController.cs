@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -224,5 +225,68 @@ public class UserControllerTests
         var response = badRequestResult.Value as ErrorResponse;
         Assert.IsNotNull(response);
         Assert.AreEqual("Username already registered.", response.Message);
+    }
+
+    [TestMethod]
+    public async Task TestValidate_ReturnsUnauthorized_WhenTokenIsNotPresent()
+    {
+        var request = new LoginRequest
+        {
+            Email = "max@example.com",
+            Password = "Password123"
+        };
+
+        _authServiceMock.Setup(s => s.LoginAsync(request.Email, request.Password))
+            .ReturnsAsync(new AuthResult { Success = false, ErrorMessage = "Token not present" });
+
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        
+        var result = await controller.Login(request);
+        
+        var unauthorizedResult = result as UnauthorizedObjectResult;
+        Assert.IsNotNull(unauthorizedResult);
+        Assert.AreEqual(401, unauthorizedResult.StatusCode);
+    }
+    
+    [TestMethod]
+    public async Task TestValidate_ReturnsUnauthorized_WhenTokenIsInvalid()
+    {
+        var request = new LoginRequest
+        {
+            Email = "max@example.com",
+            Password = "InvalidPassword"
+        };
+
+        _authServiceMock.Setup(s => s.LoginAsync(request.Email, request.Password))
+            .ReturnsAsync(new AuthResult { Success = false, ErrorMessage = "Invalid token" });
+
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        
+        var result = await controller.Login(request);
+        
+        var unauthorizedResult = result as UnauthorizedObjectResult;
+        Assert.IsNotNull(unauthorizedResult);
+        Assert.AreEqual(401, unauthorizedResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task TestValidate_ReturnsOk_WhenTokenIsValid()
+    {
+            var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Headers["Authorization"] = "Bearer validToken";
+            controller.ControllerContext.HttpContext = httpContext;
+            
+            var result = controller.Validate();
+            
+            var okResult = result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+
+            var response = okResult.Value;
+            Assert.IsNotNull(response);
+            Assert.AreEqual("Bearer validToken", (string) response);
+        
     }
 }
