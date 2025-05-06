@@ -56,7 +56,7 @@ public class UserController : BaseController
     [HttpPost("validate")]
     public IActionResult Validate()
     {
-        return Ok(new { token = Request.Headers["Authorization"].ToString() });
+        return Ok(Request.Headers.Authorization.ToString());
     }
 }
 
