@@ -578,7 +578,7 @@ public class UnitTestMeetUpController
         var result = controller.GetMeetUpDetails(2, 1);
 
         // Assert
-        Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
     }
 
     [TestMethod]
@@ -624,8 +624,8 @@ public class UnitTestMeetUpController
         var result = controller.GetMeetUpDetails(2, 1);
 
         // Assert
-        Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
-        var notFoundResult = result.Result as NotFoundResult;
+        Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
+        var notFoundResult = result.Result as NotFoundObjectResult;
         Assert.IsNotNull(notFoundResult);
     }
 
