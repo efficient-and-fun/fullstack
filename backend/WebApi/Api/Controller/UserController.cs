@@ -29,7 +29,7 @@ public class UserController : BaseController
             return BadRequest(new ErrorResponse{ Message = "AGB must be accepted." });
         }
 
-        var authResult = await _authService.RegisterAsync(request.Email, request.Password, request.Username);
+        var authResult = await _authService.RegisterAsync(request.Email, request.Password, request.Username, request.ProfilePicturePath);
         if (!authResult.Success)
         {
             return BadRequest(new ErrorResponse{ Message = authResult.ErrorMessage });
@@ -66,6 +66,7 @@ public class RegisterRequest
     public string Email { get; set; }
     public string Password { get; set; }
     public string Password2 { get; set; }
+    public string ProfilePicturePath { get; set; }
     public bool IsAGBAccepted { get; set; }
 }
 

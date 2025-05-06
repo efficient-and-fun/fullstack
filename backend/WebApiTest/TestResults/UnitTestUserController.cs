@@ -42,11 +42,12 @@ public class UserControllerTests
             Email = "max@example.com",
             Password = "Password123",
             Password2 = "Password123",
+            ProfilePicturePath = "testPath",
             IsAGBAccepted = true
         };
 
         _authServiceMock.Setup(s => s.RegisterAsync(
-                request.Email, request.Password, request.Username))
+                request.Email, request.Password, request.Username, request.ProfilePicturePath))
             .ReturnsAsync(new AuthResult { Success = true, Token = "dummy-token" });
 
         var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
@@ -74,12 +75,13 @@ public class UserControllerTests
             Email = "existing@example.com",
             Password = "Password123",
             Password2 = "Password123",
+            ProfilePicturePath = "testPath",
             IsAGBAccepted = true
         };
 
         // Simuliere den Fehlerfall im AuthService
         _authServiceMock.Setup(s => s.RegisterAsync(
-                request.Email, request.Password, request.Username))
+                request.Email, request.Password, request.Username, request.ProfilePicturePath))
             .ReturnsAsync(new AuthResult
             {
                 Success = false,
@@ -111,12 +113,13 @@ public class UserControllerTests
             Email = "newuser@example.com",
             Password = "Password123",
             Password2 = "Password123",
+            ProfilePicturePath = "testPath",
             IsAGBAccepted = true
         };
 
         // Simuliere den Fehlerfall im AuthService
         _authServiceMock.Setup(s => s.RegisterAsync(
-                request.Email, request.Password, request.Username))
+                request.Email, request.Password, request.Username, request.ProfilePicturePath))
             .ReturnsAsync(new AuthResult
             {
                 Success = false,
@@ -148,6 +151,7 @@ public class UserControllerTests
             Email = "max@example.com",
             Password = "Password123",
             Password2 = "DifferentPassword123", // Mismatch
+            ProfilePicturePath = "testPath",
             IsAGBAccepted = true
         };
 
@@ -176,6 +180,7 @@ public class UserControllerTests
             Email = "max@example.com",
             Password = "Password123",
             Password2 = "Password123", // Match
+            ProfilePicturePath = "testPath",
             IsAGBAccepted = false // AGB not accepted
         };
 
@@ -204,12 +209,13 @@ public class UserControllerTests
             Email = "max@example.com",
             Password = "Password123",
             Password2 = "Password123", // Match
+            ProfilePicturePath = "testPath",
             IsAGBAccepted = true
         };
 
         // Simuliere einen fehlerhaften AuthService
         _authServiceMock.Setup(s => s.RegisterAsync(
-                request.Email, request.Password, request.Username))
+                request.Email, request.Password, request.Username, request.ProfilePicturePath))
             .ReturnsAsync(new AuthResult { Success = false, ErrorMessage = "Username already registered." });
 
         var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
