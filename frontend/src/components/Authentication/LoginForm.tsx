@@ -5,7 +5,7 @@ const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<string[]>([]); // Errors are stored here
-  var url = "/api/login";
+  var url = "/api/user/login";
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -38,6 +38,7 @@ const LoginForm = () => {
       const data = await res.json();
 
       if (res.ok) {
+        console.log(data.token);
         localStorage.setItem("authToken", data.token);
         window.location.href = '/';
       } else {

@@ -2,16 +2,23 @@ import { useState } from 'react';
 import styles from "./Form.module.css";
 
 const RegisterForm = () => {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password1, setPassword1] = useState('');
   const [password2, setPassword2] = useState('');
+  const [isAGBAccepted, setAGBAccepted] = useState(false);
   const [errors, setErrors] = useState<string[]>([]); // Errors are stored here
-  const url = '/api/register';
+  const url = '/api/user/register';
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const newErrors: string[] = []; // Temporary error list
+
+    // Username validation
+    if(!username) {
+      newErrors.push('Plese enter a username.');
+    }
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -57,7 +64,7 @@ const RegisterForm = () => {
         const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password: password1 }),
+        body: JSON.stringify({ username, email, password: password1, password2: password2, profilePicturePath: "C:/temp/photo", isAGBAccepted: true }),
         });
 
         if (res.ok) {
@@ -78,6 +85,14 @@ const RegisterForm = () => {
     <form onSubmit={handleRegister} className={styles.container}>
       <h1 className={styles.title}>Registration</h1>
 
+      <input
+        className={styles.inputField}
+        placeholder="Username"
+        type="username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        required
+      />
       <input
         className={styles.inputField}
         placeholder="Email"

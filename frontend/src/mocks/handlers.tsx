@@ -29,11 +29,11 @@ export const handlers = [
     const numericId = Number(id);
     return HttpResponse.json(getEventDetailbyID(numericId))
   }),
-  http.post('/api/login', (req) => {
+  http.post('/api/user/login', (req) => {
     let response = { token : "asdf"};
     return HttpResponse.json(response);
   }),
-  http.get('/api/validate', async ({request}) => {
+  http.get('/api/user/validate', async ({request}) => {
     return HttpResponse.json({message: 'Success'});
   })
 ];
