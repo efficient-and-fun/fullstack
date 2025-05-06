@@ -43,7 +43,5 @@ public class MeetUps
     public string? CheckList { get; set; }
     [MaxLength(65535)]
     public string? MeetUpLocation { get; set; }
-
     public int? MaxNumberOfParticipants { get; set; }
-    
 }
