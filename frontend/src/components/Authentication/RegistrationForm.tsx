@@ -6,7 +6,7 @@ const RegisterForm = () => {
   const [email, setEmail] = useState('');
   const [password1, setPassword1] = useState('');
   const [password2, setPassword2] = useState('');
-  const [isAGBAccepted, setAGBAccepted] = useState(false);
+  const [isAGBAccepted, setAGBAccepted] = useState(true);
   const [errors, setErrors] = useState<string[]>([]); // Errors are stored here
   const url = '/api/user/register';
 
@@ -49,6 +49,10 @@ const RegisterForm = () => {
 
     if (!/[!@#$%^&*]/.test(password1)) {
       newErrors.push('Password must contain at least one special character (!@#$%^&*).');
+    }
+
+    if( !isAGBAccepted) {
+      newErrors.push('Please accept the terms and conditions.');
     }
 
     // If there are errors, set them in the state and stop execution
@@ -117,6 +121,16 @@ const RegisterForm = () => {
         onChange={(e) => setPassword2(e.target.value)}
         required
       />
+
+      <div className={styles.checkboxContainer}>
+        <input
+          type="checkbox"
+          id="agb"
+          checked={isAGBAccepted}
+          onChange={(e) => setAGBAccepted(e.target.checked)}
+        />
+        <label htmlFor="agb">I accept the terms and conditions</label>
+      </div>
       <button className={styles.btn} type="submit">
         Sign up
       </button>
