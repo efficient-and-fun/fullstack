@@ -17,7 +17,7 @@ public class MeetUpController : BaseController
         {
             return new BadRequestObjectResult("MeetUp name and description are required.");
         }
-        // Validate if start and end times are non-default values
+        // Validate if start or end times are non-default values
         if (meetupDto.DateTimeFrom == default || meetupDto.DateTimeTo == default)
         {
             return new BadRequestObjectResult("MeetUp start and end times are required.");
@@ -38,6 +38,7 @@ public class MeetUpController : BaseController
     
     private static ActionResult ValidateUserId(int userId)
     {
+        // Validate if userId is invalid
         if (userId <= 0)
         {
             return new BadRequestObjectResult("UserId invalid");
@@ -61,7 +62,7 @@ public class MeetUpController : BaseController
     {
         if (meetupId <= 0)
         {
-            return new BadRequestObjectResult("Invalid userId or meetupId.");
+            return new BadRequestObjectResult("MeetUpId invalid");
         }
         return new OkResult();
     }
@@ -78,6 +79,7 @@ public class MeetUpController : BaseController
     [HttpPost, Route("{userId:int}")]
     public ActionResult<int> CreateMeetUp([FromRoute] int userId, [FromBody] MeetUpDetailDto meetupDto)
     {
+        // Validate the user ID
         var validationUserIdResult = ValidateUserId(userId);
         if (validationUserIdResult is not OkResult)
         {
@@ -136,6 +138,7 @@ public class MeetUpController : BaseController
     [HttpPut, Route("{userId:int}/{meetupId:int}")]
     public ActionResult UpdateMeetUp([FromRoute] int userId, [FromRoute] int meetupId, [FromBody] MeetUpDetailDto updatedMeetUp)
     {
+        // Check if userId is valid & exists
         var validationUserIdResult = ValidateUserId(userId);
         if (validationUserIdResult is not OkResult)
         {
@@ -154,6 +157,7 @@ public class MeetUpController : BaseController
             return validationUserIdResult;
         }
 
+        // Check if the meetup exists
         var meetUp = _context.MeetUps.Find(meetupId);
         if (meetUp == null)
         {
@@ -193,7 +197,7 @@ public class MeetUpController : BaseController
     }
     
     /// <summary>
-    /// Get MeetUps of a specified user (both accepted invitations and not accepted ones). 
+    /// Get MeetUp Details for a Meetup of a specified user (both accepted invitations and not accepted ones). 
     /// </summary>
     /// <param name="userId"></param>
     /// <param name="meetupId"></param>
@@ -201,11 +205,19 @@ public class MeetUpController : BaseController
     [HttpGet, Route("{userId:int}/{meetupId:int}")]
     public ActionResult<MeetUps> GetMeetUpDetails([FromRoute] int userId, [FromRoute] int meetupId)
     {
-        if (userId <= 0)
+        // Validate the user ID
+        var validationUserIdResult = ValidateUserId(userId);
+        if (validationUserIdResult is not OkResult)
         {
-            return BadRequest("UserId invalid");
+            return validationUserIdResult;
+        }
+        var userExistsResult = UserExists(userId, _context);
+        if (userExistsResult is not OkResult)
+        {
+            return userExistsResult;
         }
         
+        // Validate the meetup ID
         if (meetupId <= 0)
         {
             return BadRequest("MeetUpId invalid");
@@ -251,15 +263,16 @@ public class MeetUpController : BaseController
     [HttpGet, Route("{userId:int}")]
     public ActionResult<IEnumerable<MeetUpBriefDto>> GetMeetUps([FromRoute] int userId, [FromQuery] DateTime currentDate)
     {
-        if (userId <= 0)
+        // Validate the user ID
+        var validationUserIdResult = ValidateUserId(userId);
+        if (validationUserIdResult is not OkResult)
         {
-            return BadRequest("UserId invalid");
+            return validationUserIdResult;
         }
-
-        var userExists = _context.Users.Any(u => u.UserId == userId);
-        if (!userExists)
+        var userExistsResult = UserExists(userId, _context);
+        if (userExistsResult is not OkResult)
         {
-            return NotFound($"User with ID {userId} does not exist.");
+            return userExistsResult;
         }
 
         var meetUps = (from m in _context.MeetUps
