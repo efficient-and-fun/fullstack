@@ -1,6 +1,6 @@
 import "./MeetUpDetail.css";
 import { useNavigate, useParams } from "react-router-dom";
-import { Box, Typography, IconButton, Stack } from "@mui/material";
+import { Box, Typography, IconButton } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import PlaceIcon from "@mui/icons-material/Place";
 import CloseIcon from "@mui/icons-material/Close";
