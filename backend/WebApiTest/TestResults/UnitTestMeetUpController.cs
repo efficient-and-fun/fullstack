@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using WebApi;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -95,8 +96,23 @@ public class UnitTestMeetUpController
 
         var controller = new MeetUpController(mockLogger.Object, mockConfig.Object, context);
 
+        // Setup fake claims (simulate JWT)
+        const int userId = 0;
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+        };
+
+        var identity = new ClaimsIdentity(claims, "TestAuth");
+        var principal = new ClaimsPrincipal(identity);
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = principal }
+        };
+        
         // Act
-        var result = controller.GetMeetUpDetails(0, 1);
+        var result = controller.GetMeetUpDetails(1);
 
         // Assert
         Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
@@ -145,8 +161,23 @@ public class UnitTestMeetUpController
 
         var controller = new MeetUpController(mockLogger.Object, mockConfig.Object, context);
 
+        // Setup fake claims (simulate JWT)
+        const int userId = -1;
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+        };
+
+        var identity = new ClaimsIdentity(claims, "TestAuth");
+        var principal = new ClaimsPrincipal(identity);
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = principal }
+        };
+        
         // Act
-        var result = controller.GetMeetUpDetails(-3, 1);
+        var result = controller.GetMeetUpDetails(1);
 
         // Assert
         Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
@@ -195,8 +226,23 @@ public class UnitTestMeetUpController
 
         var controller = new MeetUpController(mockLogger.Object, mockConfig.Object, context);
 
+        // Setup fake claims (simulate JWT)
+        const int userId = 1;
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+        };
+
+        var identity = new ClaimsIdentity(claims, "TestAuth");
+        var principal = new ClaimsPrincipal(identity);
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = principal }
+        };
+        
         // Act
-        var result = controller.GetMeetUpDetails(1, 0);
+        var result = controller.GetMeetUpDetails(0);
 
         // Assert
         Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
@@ -245,8 +291,23 @@ public class UnitTestMeetUpController
 
         var controller = new MeetUpController(mockLogger.Object, mockConfig.Object, context);
 
+        // Setup fake claims (simulate JWT)
+        const int userId = 1;
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+        };
+
+        var identity = new ClaimsIdentity(claims, "TestAuth");
+        var principal = new ClaimsPrincipal(identity);
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = principal }
+        };
+        
         // Act
-        var result = controller.GetMeetUpDetails(1, -3);
+        var result = controller.GetMeetUpDetails(-3);
 
         // Assert
         Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
@@ -260,23 +321,12 @@ public class UnitTestMeetUpController
     [TestMethod]
     public void TestGetMeetUpDetails_ReturnsNotFound_WhenUserDoesNotExist()
     {
-        // Arrange – Use real EF context with InMemory provider
         var options = new DbContextOptionsBuilder<EfDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
         using var context = new EfDbContext(options, _mockConfig.Object);
 
-        // Seed test data
-        context.Users.Add(new User
-        {
-            UserId = 1,
-            UserName = "TestUser",
-            Email = "test@test.com",
-            DietaryRestrictions = "TestDietary",
-            UserPassword = "TestPassword",
-            ProfilePicturePath = "TestProfilePicturePath"
-        });
         context.MeetUps.Add(new MeetUps
         {
             MeetUpId = 1,
@@ -287,21 +337,30 @@ public class UnitTestMeetUpController
             MeetUpLocation = "Somewhere",
             Description = "Test"
         });
-        context.Participations.Add(new Participation { UserId = 1, MeetUpId = 1 });
+
+        context.Participations.Add(new Participation { UserId = 99, MeetUpId = 1 });
         context.SaveChanges();
 
-        // Logger und Config können gemockt bleiben
         var mockLogger = new Mock<ILogger<MeetUpController>>();
         var mockConfig = new Mock<IConfiguration>();
-
         var controller = new MeetUpController(mockLogger.Object, mockConfig.Object, context);
 
+        var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "99") };
+        var identity = new ClaimsIdentity(claims, "TestAuth");
+        var principal = new ClaimsPrincipal(identity);
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = principal }
+        };
+
         // Act
-        var result = controller.GetMeetUpDetails(2, 1);
+        var result = controller.GetMeetUpDetails(1);
 
         // Assert
         Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
     }
+
 
     [TestMethod]
     public void TestGetMeetUpDetails_ReturnsNotFound_WhenMeetUpDoesNotExist()
@@ -342,8 +401,23 @@ public class UnitTestMeetUpController
 
         var controller = new MeetUpController(mockLogger.Object, mockConfig.Object, context);
 
+        // Setup fake claims (simulate JWT)
+        const int userId = 1;
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+        };
+
+        var identity = new ClaimsIdentity(claims, "TestAuth");
+        var principal = new ClaimsPrincipal(identity);
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = principal }
+        };
+        
         // Act
-        var result = controller.GetMeetUpDetails(2, 1);
+        var result = controller.GetMeetUpDetails(1);
 
         // Assert
         Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
@@ -390,8 +464,23 @@ public class UnitTestMeetUpController
 
         var controller = new MeetUpController(mockLogger.Object, mockConfig.Object, context);
 
+        // Setup fake claims (simulate JWT)
+        const int userId = 1;
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+        };
+
+        var identity = new ClaimsIdentity(claims, "TestAuth");
+        var principal = new ClaimsPrincipal(identity);
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = principal }
+        };
+        
         // Act
-        var result = controller.GetMeetUpDetails(1, 1);
+        var result = controller.GetMeetUpDetails(1);
 
         // Assert
         Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
@@ -441,8 +530,23 @@ public class UnitTestMeetUpController
 
         var controller = new MeetUpController(mockLogger.Object, mockConfig.Object, context);
 
+        // Setup fake claims (simulate JWT)
+        const int userId = 1;
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+        };
+
+        var identity = new ClaimsIdentity(claims, "TestAuth");
+        var principal = new ClaimsPrincipal(identity);
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = principal }
+        };
+        
         // Act
-        var result = controller.GetMeetUpDetails(1, 1);
+        var result = controller.GetMeetUpDetails(1);
 
         // Assert
         Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
@@ -451,20 +555,27 @@ public class UnitTestMeetUpController
     [TestMethod]
     public void TestGetMeetUps_ReturnsNotFound_WhenUserDoesNotExist()
     {
-        // Arrange – InMemory DB
         var options = new DbContextOptionsBuilder<EfDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
         using var context = new EfDbContext(options, _mockConfig.Object);
-
+        
         var mockLogger = new Mock<ILogger<MeetUpController>>();
         var mockConfig = new Mock<IConfiguration>();
-
         var controller = new MeetUpController(mockLogger.Object, mockConfig.Object, context);
 
+        var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "99") };
+        var identity = new ClaimsIdentity(claims, "TestAuth");
+        var principal = new ClaimsPrincipal(identity);
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = principal }
+        };
+
         // Act
-        var result = controller.GetMeetUps(999, DateTime.Today); // UserId does not exist
+        var result = controller.GetMeetUps(DateTime.Today);
 
         // Assert
         Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
@@ -472,6 +583,7 @@ public class UnitTestMeetUpController
         Assert.IsNotNull(notFound);
         StringAssert.Contains(notFound.Value?.ToString(), "does not exist");
     }
+
 
     [TestMethod]
     public void TestGetMeetUps_ReturnsNotFound_WhenNoMeetUpsExist()
@@ -512,8 +624,23 @@ public class UnitTestMeetUpController
 
         var controller = new MeetUpController(mockLogger.Object, mockConfig.Object, context);
 
+        // Setup fake claims (simulate JWT)
+        const int userId = 1;
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+        };
+
+        var identity = new ClaimsIdentity(claims, "TestAuth");
+        var principal = new ClaimsPrincipal(identity);
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = principal }
+        };
+        
         // Act
-        var result = controller.GetMeetUps(1, DateTime.Today);
+        var result = controller.GetMeetUps(DateTime.Today);
 
         // Assert
         Assert.IsInstanceOfType(result.Result, typeof(NotFoundObjectResult));
@@ -556,7 +683,23 @@ public class UnitTestMeetUpController
         var mockLogger = new Mock<ILogger<MeetUpController>>();
         var mockConfig = new Mock<IConfiguration>();
         var controller = new MeetUpController(mockLogger.Object, mockConfig.Object, context);
-        var result = controller.GetMeetUps(0, DateTime.Today);
+        
+        // Setup fake claims (simulate JWT)
+        const int userId = 0;
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+        };
+
+        var identity = new ClaimsIdentity(claims, "TestAuth");
+        var principal = new ClaimsPrincipal(identity);
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = principal }
+        };
+        
+        var result = controller.GetMeetUps(DateTime.Today);
         
         Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
         var badRequestResult = result.Result as BadRequestObjectResult;
@@ -599,7 +742,23 @@ public class UnitTestMeetUpController
         var mockLogger = new Mock<ILogger<MeetUpController>>();
         var mockConfig = new Mock<IConfiguration>();
         var controller = new MeetUpController(mockLogger.Object, mockConfig.Object, context);
-        var result = controller.GetMeetUps(-1, DateTime.Today);
+        
+        // Setup fake claims (simulate JWT)
+        const int userId = -1;
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+        };
+
+        var identity = new ClaimsIdentity(claims, "TestAuth");
+        var principal = new ClaimsPrincipal(identity);
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = principal }
+        };
+        
+        var result = controller.GetMeetUps(DateTime.Today);
         
         Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
         var badRequestResult = result.Result as BadRequestObjectResult;
