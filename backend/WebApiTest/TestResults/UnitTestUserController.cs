@@ -60,7 +60,7 @@ public class UserControllerTests
         Assert.IsNotNull(okResult);
         Assert.AreEqual(200, okResult.StatusCode);
 
-        var response = okResult.Value as RegisterResponse;
+        var response = okResult.Value as TokenResponse;
         Assert.IsNotNull(response);
         Assert.AreEqual("dummy-token", response.Token);
     }
@@ -325,7 +325,7 @@ public class UserControllerTests
         Assert.IsNotNull(okResult);
         Assert.AreEqual(200, okResult.StatusCode);
 
-        var response = okResult.Value as RegisterResponse;
+        var response = okResult.Value as TokenResponse;
         Assert.IsNotNull(response);
         Assert.AreEqual("dummy-token", response.Token);
     }
@@ -357,8 +357,83 @@ public class UserControllerTests
         Assert.IsNotNull(okResult);
         Assert.AreEqual(200, okResult.StatusCode);
 
-        var response = okResult.Value as RegisterResponse;
+        var response = okResult.Value as TokenResponse;
         Assert.IsNotNull(response);
         Assert.AreEqual("dummy-token", response.Token);
+    }
+
+    [TestMethod]
+    public async Task TestLogin_ReturnsOk_WhenUserLoginRequestDataIsValid()
+    {
+        var request = new LoginRequest()
+        {
+            Email = "max@example.com",
+            Password = "Password123",
+        };
+        
+        _authServiceMock.Setup(s => s.LoginAsync(request.Email, request.Password))
+            .ReturnsAsync(new AuthResult { Success = true, Token = "dummy-token" });
+        
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        
+        var result = await controller.Login(request);
+        
+        var loginResult = result as OkObjectResult;
+        Assert.IsNotNull(loginResult);
+        Assert.AreEqual(200, loginResult.StatusCode);
+        
+        var response = loginResult.Value as TokenResponse;
+        Assert.IsNotNull(response);
+        Assert.AreEqual("dummy-token", response.Token);
+    }
+
+    [TestMethod]
+    public async Task TestLogin_ReturnsUnauthorized_WhenNoUserWithEmailExists()
+    {
+        var request = new LoginRequest
+        {
+            Email = "max@example.com",
+            Password = "Password123",
+        };
+        
+        _authServiceMock.Setup(s => s.LoginAsync(request.Email, request.Password))
+            .ReturnsAsync(new AuthResult { Success = false });
+        
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var result = await controller.Login(request);
+        
+        var unauthorizedResult = result as UnauthorizedObjectResult;
+        Assert.IsNotNull(unauthorizedResult);
+        Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        
+        
+        var response = unauthorizedResult.Value as ErrorResponse;
+        Assert.IsNotNull(response);
+        Assert.AreEqual("Invalid credentials", response.Message);
+    }
+    
+    [TestMethod]
+    public async Task TestLogin_ReturnsUnauthorized_WhenPasswordForExistingUserIsWrong()
+    {
+        var request = new LoginRequest
+        {
+            Email = "max@example.com",
+            Password = "Password123",
+        };
+        
+        _authServiceMock.Setup(s => s.LoginAsync(request.Email, request.Password))
+            .ReturnsAsync(new AuthResult { Success = false });
+        
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var result = await controller.Login(request);
+        
+        var unauthorizedResult = result as UnauthorizedObjectResult;
+        Assert.IsNotNull(unauthorizedResult);
+        Assert.AreEqual(401, unauthorizedResult.StatusCode);
+        
+        
+        var response = unauthorizedResult.Value as ErrorResponse;
+        Assert.IsNotNull(response);
+        Assert.AreEqual("Invalid credentials", response.Message);
     }
 }

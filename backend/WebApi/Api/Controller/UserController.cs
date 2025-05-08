@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Build.Framework;
 
 namespace WebApi;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,11 @@ public class UserController : BaseController
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new ErrorResponse{ Message = "Invalid request" });
+        }
+        
         if (request.Password != request.Password2)
         {
             return BadRequest(new ErrorResponse{ Message = "Passwords do not match." });
@@ -35,21 +41,26 @@ public class UserController : BaseController
             return BadRequest(new ErrorResponse{ Message = authResult.ErrorMessage });
         }
 
-        return Ok(new RegisterResponse { Token = authResult.Token });
+        return Ok(new TokenResponse { Token = authResult.Token });
     }
     
     
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new ErrorResponse{ Message = "Invalid request" });
+        }
+        
         var result = await _authService.LoginAsync(request.Email, request.Password);
 
         if (result.Success)
         {
-            return Ok(new { token = result.Token });
+            return Ok(new TokenResponse { Token = result.Token });
         }
 
-        return Unauthorized(new { message = "Invalid credentials" });
+        return Unauthorized(new ErrorResponse { Message = "Invalid credentials" });
     }
     
     [Authorize]
@@ -62,21 +73,29 @@ public class UserController : BaseController
 
 public class RegisterRequest
 {
+    [Required]
     public string Username { get; set; }
+    [Required]
     public string Email { get; set; }
+    [Required]
     public string Password { get; set; }
+    [Required]
     public string Password2 { get; set; }
+    [Required]
     public string ProfilePicturePath { get; set; }
+    [Required]
     public bool IsAGBAccepted { get; set; }
 }
 
 public class LoginRequest
 {
+    [Required]
     public string Email { get; set; }
+    [Required]
     public string Password { get; set; }
 }
 
-public class RegisterResponse
+public class TokenResponse
 {
     public string Token { get; set; }
 }
