@@ -68,11 +68,24 @@ const MeetUpDetailPage: React.FC = () => {
         <Typography variant="h4" fontWeight="bold">
           {event?.meetUpName}
         </Typography>
-        {
-          <Typography variant="body1" className="meetup-description">
-            {event?.description}
-          </Typography>
-        }
+
+        <Typography variant="body1" className="meetup-description">
+          {event?.description}
+        </Typography>
+        {(event?.checklist || event?.maxNumberOfParticipants) && (
+          <Box className="meetup-extra-info">
+            {event?.checklist && (
+              <Typography variant="body2">
+                <strong>Checklist:</strong> {event.checklist}
+              </Typography>
+            )}
+            {event?.maxNumberOfParticipants != null && (
+              <Typography variant="body2">
+                <strong>Max. Number of participants:</strong> {event.maxNumberOfParticipants}
+              </Typography>
+            )}
+          </Box>
+        )}
       </Box>
     </Box>
   );

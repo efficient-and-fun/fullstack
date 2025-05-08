@@ -3,7 +3,7 @@ import './EditMeetUp.css';
 import { Box, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { MeetUpDetail } from "../../../models/MeetUpDetails";
-import { meetUpApiCall } from "../../../api/meetUpApi";
+import { meetUpApiCall, updateMeetUpApiCall } from "../../../api/meetUpApi";
 
 const EditMeetUp = () => {
     const { meetUpId } = useParams<{ meetUpId: string }>();
@@ -17,6 +17,8 @@ const EditMeetUp = () => {
         dateTimeTo: null,
         meetUpLocation: '',
         description: '',
+        checklist: '',
+        maxNumberOfParticipants: null
     });
 
     useEffect(() => {
@@ -37,13 +39,20 @@ const EditMeetUp = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         console.log("Submitted data:", meetUp);
-        goBack();
+        if (!isNew) {
+            updateMeetUpApiCall(
+                "/api/meetup",
+                1, // userId
+                meetUp,
+                () => navigate(`/${meetUpId}`),
+                (err) => alert(err)
+            );
+        }
     };
 
     const goBack = () => {
         navigate(isNew ? '/' : `/${meetUpId}`);
     };
-    console.log(meetUp.dateTimeFrom)
 
     return (
         <Box className="edit-meetup-container">
@@ -89,6 +98,19 @@ const EditMeetUp = () => {
                         name="Description"
                         placeholder="Description"
                         value={meetUp.description}
+                        onChange={handleChange}
+                    />
+                    <input
+                        name="Checklist"
+                        placeholder="Checklist"
+                        value={meetUp.checklist}
+                        onChange={handleChange}
+                    />
+                    <input
+                        type="number"
+                        name="maxNumberOfParticipants"
+                        placeholder="Max. number of participants"
+                        value={meetUp.maxNumberOfParticipants}
                         onChange={handleChange}
                     />
                     <div className="button-group">

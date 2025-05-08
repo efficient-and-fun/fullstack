@@ -1,11 +1,11 @@
 import { Box, Typography } from "@mui/material";
 import EventCard from "../EventCard/EventCard";
 import "./DailyView.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { MeetUp } from "../../../models/MeetUp";
 import RoundedBackgroundContainer from "../../General/RoundedBackgroundContainer/RoundedBackgroundContainer";
 import { Dayjs } from "dayjs";
-import {meetUpsApiCall } from "../../../api/meetUpApi";
+import { meetUpsApiCall } from "../../../api/meetUpApi";
 
 interface DailyViewProps {
   selectedDate: Dayjs;
@@ -20,34 +20,6 @@ const DailyView: React.FC<DailyViewProps> = ({ selectedDate }) => {
 
   }, [selectedDate]);
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleEntry = entries.find((entry) => entry.isIntersecting);
-        if (visibleEntry) {
-          const index = cardRefs.current.findIndex(
-            (el) => el === visibleEntry.target
-          );
-          if (index !== -1) setCurrentIndex(index);
-        }
-      },
-      {
-        root: scrollRef.current,
-        threshold: 0.8,
-      }
-    );
-
-    cardRefs.current.forEach((el) => {
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, [events]);
-
   return (
     <RoundedBackgroundContainer
       height="45vh"
@@ -58,27 +30,17 @@ const DailyView: React.FC<DailyViewProps> = ({ selectedDate }) => {
       </Typography>
 
       <Box className="daily-view-body">
-        <Box className="dot-column">
-          {events.map((_, index) => (
-            <div
-              key={index}
-              className={`dot ${currentIndex === index ? "active" : ""}`}
-            />
-          ))}
-        </Box>
-
-        <Box className="scrollable-cards" ref={scrollRef}>
-          {events.map((event, index) => (
-            <div
-              key={index}
-              ref={(el) => {
-                cardRefs.current[index] = el;
-              }}
-            >
+        {events.length === 0 ? (
+          <Typography className="no-meetups-text">
+            No MeetUps on this day
+          </Typography>
+        ) : (
+          <Box className="scrollable-cards" >
+            {events.map((event) => (
               <EventCard meetUp={event} />
-            </div>
-          ))}
-        </Box>
+            ))}
+          </Box>
+        )}
       </Box>
     </RoundedBackgroundContainer>
   );
