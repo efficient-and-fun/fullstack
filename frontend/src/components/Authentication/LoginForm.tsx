@@ -38,7 +38,6 @@ const LoginForm = () => {
       const data = await res.json();
 
       if (res.ok) {
-        console.log(data.token);
         localStorage.setItem("authToken", data.token);
         window.location.href = '/';
       } else {
