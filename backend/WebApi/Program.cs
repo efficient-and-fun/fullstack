@@ -56,7 +56,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization(); // Ensure authorization is used if needed
 
 app.MapControllers(); // Map controllers instead of individual endpoints
