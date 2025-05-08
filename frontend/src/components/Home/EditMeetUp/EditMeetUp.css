@@ -1,4 +1,4 @@
-.new-meetup-container {
+.edit-meetup-container {
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -7,17 +7,18 @@
     padding: 0;
 }
 
-.new-meetup-header {
+.edit-meetup-header {
     padding: 24px;
-    margin-bottom: 70px;
+    margin-bottom: 30px;
 }
 
-.new-meetup-title {
+.edit-meetup-title {
     font-size: 40px !important;
     font-weight: 700 !important;
 }
 
-.new-meetup-bottom-sheet {
+.edit-meetup-bottom-sheet {
+    height: 80vh;
     background: black;
     border-top-left-radius: 50px;
     padding: 24px;
@@ -25,28 +26,38 @@
     z-index: 1;
 }
 
-.new-meetup-form {
+.edit-meetup-form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    height: 100%;
 }
 
-.new-meetup-form input,
-.new-meetup-form textarea {
+.edit-meetup-form input,
+.edit-meetup-form textarea {
     border: none;
     border-radius: 12px;
-    padding: 12px;
+    padding: 16px; 
     font-size: 16px;
+    background-color: #2c2c2c;
+    color: lightgray;
+    margin-bottom: 20px;
+}
+
+
+.edit-meetup-form textarea {
+    resize: none;
+    flex-grow: 1;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 18px;
     background-color: #2c2c2c;
     color: lightgray;
 }
 
-.new-meetup-form textarea {
-    resize: none;
-    min-height: 80px;
-}
 
-.new-meetup-submit {
+.edit-meetup-submit {
     background-color: #43D675;
     color: black;
     border: none;
@@ -56,7 +67,7 @@
     cursor: pointer;
 }
 
-.new-meetup-cancel {
+.edit-meetup-cancel {
     background-color: transparent;
     color: #43D675;
     border: 2px solid #2c2c2c;
@@ -64,4 +75,11 @@
     padding: 12px;
     font-size: 16px;
     cursor: pointer;
+}
+
+.button-group {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }

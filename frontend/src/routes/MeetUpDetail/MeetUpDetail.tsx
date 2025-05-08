@@ -4,9 +4,10 @@ import { Box, Typography, IconButton } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import PlaceIcon from "@mui/icons-material/Place";
 import CloseIcon from "@mui/icons-material/Close";
+import EditIcon from "@mui/icons-material/Edit";
 import { MeetUpDetail } from "../../models/MeetUpDetails";
 import { useState, useEffect } from "react";
-import { meetUpApiCall }  from "../../api/meetUpApi";
+import { meetUpApiCall } from "../../api/meetUpApi";
 
 const MeetUpDetailPage: React.FC = () => {
   const { meetUpId } = useParams<{ meetUpId: string }>();
@@ -20,6 +21,9 @@ const MeetUpDetailPage: React.FC = () => {
 
   }, [meetUpId]);
 
+  const goToEditPage = () => {
+    navigate(`/${meetUpId}/edit`);
+  };
 
   return (
     <Box className="meetup-detail-container">
@@ -56,6 +60,7 @@ const MeetUpDetailPage: React.FC = () => {
           <PlaceIcon fontSize="small" sx={{ color: "limegreen" }} />
           <Typography color="limegreen">{event?.meetUpLocation}</Typography>
         </Box>
+        <EditIcon fontSize="small" sx={{ color: "limegreen" }} onClick={goToEditPage}></EditIcon>
       </Box>
 
       {/* Title & Description */}

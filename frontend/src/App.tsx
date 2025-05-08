@@ -9,7 +9,7 @@ import NotificationPage from './routes/Notification';
 import SettingPage from './routes/Setting';
 import MeetUpDetailPage from "./routes/MeetUpDetail/MeetUpDetail";
 import Nav from './components/Navbar/Nav';
-import NewMeetUp from "./components/Home/NewMeetUp/NewMeetUp";
+import EditMeetUp from "./components/Home/EditMeetUp/EditMeetUp";
 
 
 function App() {
@@ -25,7 +25,8 @@ function App() {
             <Route path="/notification" element={<NotificationPage />} />
             <Route path="/setting" element={<SettingPage />} />
             <Route path="/:meetUpId" element={<MeetUpDetailPage />} />
-            <Route path="/new" element={<NewMeetUp />} />
+            <Route path="/new" element={<EditMeetUp />} />
+            <Route path="/:meetUpId/edit" element={<EditMeetUp />} />
           </Routes>
           <Nav />
         </Box>
