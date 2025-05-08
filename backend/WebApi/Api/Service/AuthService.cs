@@ -67,7 +67,8 @@ public class AuthService : IAuthService
         _context.Users.Add(newUser);
         await _context.SaveChangesAsync();
 
-        var token = GenerateJwtToken(email);
+
+        var token = GenerateJwtToken(newUser.UserId, email);
 
         return new AuthResult
         {
@@ -88,17 +89,21 @@ public class AuthService : IAuthService
         return new AuthResult
         {
             Success = true,
-            Token = GenerateJwtToken(email)
+            Token = GenerateJwtToken(foundUser.UserId, foundUser.Email)
         };
     }
 
-    private string GenerateJwtToken(string email)
+    private string GenerateJwtToken(int userId, string email)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SuperSecretKey12345SuperSecretKey12345SuperSecretKey12345SuperSecretKey12345SuperSecretKey12345"));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            claims: new[] { new Claim(ClaimTypes.Name, email) },
+            claims: new[]
+            {
+                new Claim(ClaimTypes.Email, email),
+                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+            },
             expires: DateTime.UtcNow.AddHours(1),
             signingCredentials: creds
         );

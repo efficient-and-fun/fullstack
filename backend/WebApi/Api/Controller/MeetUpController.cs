@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Api.Common;
@@ -16,6 +17,7 @@ public class MeetUpController : BaseController
     /// <param name="userId"></param>
     /// <param name="meetupId"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpGet, Route("{userId:int}/{meetupId:int}")]
     public ActionResult<MeetUps> GetMeetUpDetails([FromRoute] int userId, [FromRoute] int meetupId)
     {
@@ -66,6 +68,7 @@ public class MeetUpController : BaseController
     /// <param name="userId"></param>
     /// <param name="currentDate"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpGet, Route("{userId:int}")]
     public ActionResult<IEnumerable<MeetUpBriefDto>> GetMeetUps([FromRoute] int userId, [FromQuery] DateTime currentDate)
     {
