@@ -9,8 +9,6 @@ namespace WebApi;
 public class MeetUpController : BaseController
 {
     public MeetUpController(ILogger<MeetUpController> logger, IConfiguration configuration, EfDbContext context) : base(logger, configuration, context) { }
-
-<<<<<<< HEAD
     private static ActionResult ValidateMeetupDetail(MeetUpDetailDto meetupDto)
     {
         // Validate if meetup name or description is empty
@@ -68,9 +66,6 @@ public class MeetUpController : BaseController
         return new OkResult();
     }
     
-=======
->>>>>>> 9578e3e (add create and update methods for meetup in MeetUpController)
-
     /// <summary>
     /// Create a new MeetUp.
     /// </summary>
@@ -82,7 +77,6 @@ public class MeetUpController : BaseController
     [HttpPost, Route("{userId:int}")]
     public ActionResult<int> CreateMeetUp([FromRoute] int userId, [FromBody] MeetUpDetailDto meetupDto)
     {
-<<<<<<< HEAD
         // Validate the user ID
         var validationUserIdResult = ValidateUserId(userId);
         if (validationUserIdResult is not OkResult)
@@ -104,42 +98,13 @@ public class MeetUpController : BaseController
         
         var newMeetUp = new MeetUps
         {
-=======
-        if (userId <= 0)
-        {
-            return validationUserIdResult;
-        }
-        var userExistsResult = UserExists(userId, _context);
-        if (userExistsResult is not OkResult)
-        {
-            return userExistsResult;
-        }
-
-        // Validate the input data
-        var validationResult = ValidateMeetupDetail(meetupDto);
-        if (validationResult is not OkResult)
-        {
-            return validationResult;
-        }
-        
-        var newMeetUp = new MeetUps
-        {
-            // todo check with frontend if validation tests are necessary: min length, max length, valid date, max participants > 0, etc
-
->>>>>>> 9578e3e (add create and update methods for meetup in MeetUpController)
             MeetUpName = meetupDto.MeetUpName,
             Description = meetupDto.Description,
             DateTimeFrom = meetupDto.DateTimeFrom,
             DateTimeTo = meetupDto.DateTimeTo,
             CheckList = meetupDto.CheckList,
-<<<<<<< HEAD
             MeetUpLocation = meetupDto.MeetUpLocation,
             MaxNumberOfParticipants = meetupDto.MaxNumberOfParticipants
-=======
-            MeetUpLocation = meetupDto.MeetUpLocation
-            
-            // todo: add int MaxParticipants { get; set; } but also needs to be added in DB
->>>>>>> 9578e3e (add create and update methods for meetup in MeetUpController)
         };
 
         _context.MeetUps.Add(newMeetUp);
@@ -157,77 +122,6 @@ public class MeetUpController : BaseController
 
         return Ok(newMeetUp.MeetUpId);
     }
-<<<<<<< HEAD
-=======
-    
-    /// <summary>
-    /// Updates a meetup's details if the user is a participant.
-    /// </summary>
-    /// <param name="userId">ID of the user requesting the update.</param>
-    /// <param name="meetupId">ID of the meetup to update.</param>
-    /// <param name="updatedMeetUp">The updated data for the meetup.</param>
-    /// <returns>
-    /// Returns 204 No Content on success, 400 if input is invalid, 404 if the user or meetup doesn't exist,
-    /// or 403 if the user is not a participant.
-    /// </returns>
-    [HttpPut, Route("{userId:int}/{meetupId:int}")]
-    public ActionResult UpdateMeetUp([FromRoute] int userId, [FromRoute] int meetupId, [FromBody] MeetUpDetailDto updatedMeetUp)
-    {
-        var validationUserIdResult = ValidateUserId(userId);
-        if (validationUserIdResult is not OkResult)
-        {
-            return validationUserIdResult;
-        }
-        var userExistsResult = UserExists(userId, _context);
-        if (userExistsResult is not OkResult)
-        {
-            return userExistsResult;
-        }
-        
-        // Validate the input data
-        var validationMeetUpIdResult = ValidateMeetupId(meetupId);
-        if (validationUserIdResult is not OkResult)
-        {
-            return validationUserIdResult;
-        }
-
-        var meetUp = _context.MeetUps.Find(meetupId);
-        if (meetUp == null)
-        {
-            return NotFound($"MeetUp with ID {meetupId} not found.");
-        }
-
-        // todo discuss: check if the user is the creator or authorized participant
-        var participation = _context.Participations
-            .FirstOrDefault(p => p.UserId == userId && p.MeetUpId == meetupId);
-        if (participation == null)
-        {
-            return Forbid("User is not authorized to update this meetup.");
-        }
-        
-        // Validate the input data
-        var validationResult = ValidateMeetupDetail(updatedMeetUp);
-        if (validationResult is not OkResult)
-        {
-            return validationResult;
-        }
-        
-        // todo: optional create specific update methods for only the fields that are necessary to update.
-
-        // Update fields
-        meetUp.MeetUpName = updatedMeetUp.MeetUpName;
-        meetUp.DateTimeFrom = updatedMeetUp.DateTimeFrom;
-        meetUp.DateTimeTo = updatedMeetUp.DateTimeTo;
-        meetUp.Description = updatedMeetUp.Description;
-        meetUp.CheckList = updatedMeetUp.CheckList;
-        meetUp.MeetUpLocation = updatedMeetUp.MeetUpLocation;
-
-        _context.MeetUps.Update(meetUp);
-        _context.SaveChanges();
-
-        return NoContent();
-    }
->>>>>>> 9578e3e (add create and update methods for meetup in MeetUpController)
     
     /// <summary>
     /// Updates a meetup's details if the user is a participant.

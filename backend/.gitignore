@@ -1,5 +1,6 @@
 # Ignore backend files
-backend/WebApiTest/
+backend/WebApiTest/bin
+backend/WebApiTest/obj
 
 # Node.js dependencies
 node_modules/
