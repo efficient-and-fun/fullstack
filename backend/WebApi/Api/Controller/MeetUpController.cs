@@ -19,8 +19,9 @@ public class MeetUpController : BaseController
     /// <returns></returns>
     [Authorize]
     [HttpGet, Route("{userId:int}/{meetupId:int}")]
-    public ActionResult<MeetUps> GetMeetUpDetails([FromRoute] int userId, [FromRoute] int meetupId)
+    public ActionResult<MeetUps> GetMeetUpDetails([FromRoute] int meetupId)
     {
+        var userId = GetUserId();
         if (userId <= 0)
         {
             return BadRequest("UserId invalid");
@@ -70,8 +71,9 @@ public class MeetUpController : BaseController
     /// <returns></returns>
     [Authorize]
     [HttpGet, Route("{userId:int}")]
-    public ActionResult<IEnumerable<MeetUpBriefDto>> GetMeetUps([FromRoute] int userId, [FromQuery] DateTime currentDate)
+    public ActionResult<IEnumerable<MeetUpBriefDto>> GetMeetUps([FromQuery] DateTime currentDate)
     {
+        var userId = GetUserId();
         if (userId <= 0)
         {
             return BadRequest("UserId invalid");
