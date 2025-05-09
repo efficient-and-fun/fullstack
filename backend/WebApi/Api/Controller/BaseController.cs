@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Api.Common;
@@ -5,7 +6,7 @@ using WebApi.Api.Common;
 namespace WebApi;
 
 [ApiController]
-public abstract class BaseController : Controller
+public abstract class BaseController : ControllerBase
 {
     protected readonly ILogger<BaseController> _logger;
     protected readonly IConfiguration _configuration;
@@ -17,5 +18,12 @@ public abstract class BaseController : Controller
         _logger = logger;
         _configuration = configuration;
         _context = context;
+    }
+
+    protected int GetUserId()
+    {
+        var identityClaim = this.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        if (identityClaim == null) return -1;
+        return int.Parse(identityClaim.Value);
     }
 }
