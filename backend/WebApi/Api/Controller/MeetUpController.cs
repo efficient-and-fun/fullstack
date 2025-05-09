@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Api.Common;
@@ -200,9 +201,11 @@ public class MeetUpController : BaseController
     /// <param name="userId"></param>
     /// <param name="meetupId"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpGet, Route("{userId:int}/{meetupId:int}")]
-    public ActionResult<MeetUps> GetMeetUpDetails([FromRoute] int userId, [FromRoute] int meetupId)
+    public ActionResult<MeetUps> GetMeetUpDetails([FromRoute] int meetupId)
     {
+        var userId = GetUserId();
         // Validate the user ID
         var validationUserIdResult = ValidateUserId(userId);
         if (validationUserIdResult is not OkResult)
@@ -215,7 +218,6 @@ public class MeetUpController : BaseController
             return userExistsResult;
         }
         
-        // Validate the meetup ID
         if (meetupId <= 0)
         {
             return BadRequest("MeetUpId invalid");
@@ -258,9 +260,12 @@ public class MeetUpController : BaseController
     /// <param name="userId"></param>
     /// <param name="currentDate"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpGet, Route("{userId:int}")]
-    public ActionResult<IEnumerable<MeetUpBriefDto>> GetMeetUps([FromRoute] int userId, [FromQuery] DateTime currentDate)
+    public ActionResult<IEnumerable<MeetUpBriefDto>> GetMeetUps([FromQuery] DateTime currentDate)
     {
+        var userId = GetUserId();
+        
         // Validate the user ID
         var validationUserIdResult = ValidateUserId(userId);
         if (validationUserIdResult is not OkResult)
