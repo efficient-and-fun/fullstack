@@ -1,12 +1,13 @@
 import "./MeetUpDetail.css";
 import { useNavigate, useParams } from "react-router-dom";
-import { Box, Typography, IconButton, Stack } from "@mui/material";
+import { Box, Typography, IconButton } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import PlaceIcon from "@mui/icons-material/Place";
 import CloseIcon from "@mui/icons-material/Close";
+import EditIcon from "@mui/icons-material/Edit";
 import { MeetUpDetail } from "../../models/MeetUpDetails";
 import { useState, useEffect } from "react";
-import { meetUpApiCall }  from "../../api/meetUpApi";
+import { meetUpApiCall } from "../../api/meetUpApi";
 
 const MeetUpDetailPage: React.FC = () => {
   const { meetUpId } = useParams<{ meetUpId: string }>();
@@ -20,6 +21,9 @@ const MeetUpDetailPage: React.FC = () => {
 
   }, [meetUpId]);
 
+  const goToEditPage = () => {
+    navigate(`/${meetUpId}/edit`);
+  };
 
   return (
     <Box className="meetup-detail-container">
@@ -56,6 +60,7 @@ const MeetUpDetailPage: React.FC = () => {
           <PlaceIcon fontSize="small" sx={{ color: "limegreen" }} />
           <Typography color="limegreen">{event?.meetUpLocation}</Typography>
         </Box>
+        <EditIcon fontSize="small" sx={{ color: "limegreen" }} onClick={goToEditPage}></EditIcon>
       </Box>
 
       {/* Title & Description */}
@@ -63,11 +68,24 @@ const MeetUpDetailPage: React.FC = () => {
         <Typography variant="h4" fontWeight="bold">
           {event?.meetUpName}
         </Typography>
-        {
-          <Typography variant="body1" className="meetup-description">
-            {event?.description}
-          </Typography>
-        }
+
+        <Typography variant="body1" className="meetup-description">
+          {event?.description}
+        </Typography>
+        {(event?.checklist || event?.maxNumberOfParticipants) && (
+          <Box className="meetup-extra-info">
+            {event?.checklist && (
+              <Typography variant="body2">
+                <strong>Checklist:</strong> {event.checklist}
+              </Typography>
+            )}
+            {event?.maxNumberOfParticipants != null && (
+              <Typography variant="body2">
+                <strong>Max. Number of participants:</strong> {event.maxNumberOfParticipants}
+              </Typography>
+            )}
+          </Box>
+        )}
       </Box>
     </Box>
   );

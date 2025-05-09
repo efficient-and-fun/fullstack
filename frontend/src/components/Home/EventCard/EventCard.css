@@ -16,20 +16,17 @@
     padding-bottom: 0;
 }
 
-.custom-time,
-.custom-location {
+.custom-time {
     display: flex;
     gap: 8px;
     margin-bottom: 0.5em;
 }
 
-.custom-time-icon,
-.custom-location-icon {
+.custom-time-icon{
     color: var(--primary-color);
 }
 
-.custom-time-text,
-.custom-location-text {
+.custom-time-text{
     color: var(--primary-color);
 }
 
