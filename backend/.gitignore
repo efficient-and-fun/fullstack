@@ -1,3 +1,7 @@
+# Ignore backend files
+backend/WebApiTest/bin
+backend/WebApiTest/obj
+
 # Node.js dependencies
 node_modules/
 
@@ -50,3 +54,5 @@ WebApiTest/obj/
 **/obj/
 
 # Ignore all bin and obj folders recursively
+
+WebApi.sln.DotSettings.user
