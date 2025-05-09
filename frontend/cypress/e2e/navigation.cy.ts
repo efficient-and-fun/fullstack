@@ -27,7 +27,7 @@ describe("Authentication", () => {
 });
 
 describe("Navigation", () => {
-
+  //Setup für einzelne Tests
   beforeEach(() => {
     cy.session(
       "login",
@@ -73,4 +73,4 @@ describe("Navigation", () => {
     cy.url().should("include", "/setting"); // URL sollte sich ändern
     cy.contains("Setting Page"); // Der Inhalt der Setting-Seite sollte angezeigt werden
   });
-});
+}); 
