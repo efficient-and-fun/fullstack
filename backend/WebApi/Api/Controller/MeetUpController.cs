@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Api.Common;
@@ -9,19 +10,212 @@ namespace WebApi;
 public class MeetUpController : BaseController
 {
     public MeetUpController(ILogger<MeetUpController> logger, IConfiguration configuration, EfDbContext context) : base(logger, configuration, context) { }
+    private static ActionResult ValidateMeetupDetail(MeetUpDetailDto meetupDto)
+    {
+        // Validate if meetup name or description is empty
+        if (string.IsNullOrWhiteSpace(meetupDto.MeetUpName) || string.IsNullOrWhiteSpace(meetupDto.Description))
+        {
+            return new BadRequestObjectResult("MeetUp name and description are required.");
+        }
+        // Validate if start or end times are non-default values
+        if (meetupDto.DateTimeFrom == default || meetupDto.DateTimeTo == default)
+        {
+            return new BadRequestObjectResult("MeetUp start and end times are required.");
+        }
+        // Validate if start time is before end time
+        if (meetupDto.DateTimeFrom >= meetupDto.DateTimeTo)
+        {
+            return new BadRequestObjectResult("MeetUp start time must be before end time.");
+        }
+        
+        // If the number of participants is less than or equal to 0, set it to null
+        if (meetupDto.MaxNumberOfParticipants <= 0)
+        {
+            meetupDto.MaxNumberOfParticipants = null;
+        }
+        return new OkResult();
+    }
+    
+    private static ActionResult ValidateUserId(int userId)
+    {
+        // Validate if userId is invalid
+        if (userId <= 0)
+        {
+            return new BadRequestObjectResult("UserId invalid");
+        }
+
+        return new OkResult();
+    }
+
+    private static ActionResult UserExists(int userId, EfDbContext context)
+    {
+        var userExists = context.Users.Any(u => u.UserId == userId);
+        if (!userExists)
+        {
+            // Return 404 if the user does not exist
+            return new NotFoundObjectResult($"User with ID {userId} does not exist.");
+        }
+        return new OkResult();
+    }
+
+    private static ActionResult ValidateMeetupId(int meetupId)
+    {
+        if (meetupId <= 0)
+        {
+            return new BadRequestObjectResult("MeetUpId invalid");
+        }
+        return new OkResult();
+    }
     
     /// <summary>
-    /// Get MeetUps of a specified user (both accepted invitations and not accepted ones). 
+    /// Create a new MeetUp.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="meetupDto"></param>
+    /// <returns>
+    /// Returns 200 and the ID of the newly created MeetUp on success, 400 if input is invalid, or 404 if the user doesn't exist.
+    /// </returns>
+    [HttpPost, Route("{userId:int}")]
+    public ActionResult<int> CreateMeetUp([FromRoute] int userId, [FromBody] MeetUpDetailDto meetupDto)
+    {
+        // Validate the user ID
+        var validationUserIdResult = ValidateUserId(userId);
+        if (validationUserIdResult is not OkResult)
+        {
+            return validationUserIdResult;
+        }
+        var userExistsResult = UserExists(userId, _context);
+        if (userExistsResult is not OkResult)
+        {
+            return userExistsResult;
+        }
+
+        // Validate the input data
+        var validationResult = ValidateMeetupDetail(meetupDto);
+        if (validationResult is not OkResult)
+        {
+            return validationResult;
+        }
+        
+        var newMeetUp = new MeetUps
+        {
+            MeetUpName = meetupDto.MeetUpName,
+            Description = meetupDto.Description,
+            DateTimeFrom = meetupDto.DateTimeFrom,
+            DateTimeTo = meetupDto.DateTimeTo,
+            CheckList = meetupDto.CheckList,
+            MeetUpLocation = meetupDto.MeetUpLocation,
+            MaxNumberOfParticipants = meetupDto.MaxNumberOfParticipants
+        };
+
+        _context.MeetUps.Add(newMeetUp);
+        _context.SaveChanges();
+
+        // todo discuss: Add creator as participant
+        _context.Participations.Add(new Participation
+        {
+            UserId = userId,
+            MeetUpId = newMeetUp.MeetUpId,
+            HasAcceptedInvitation = true
+        });
+
+        _context.SaveChanges();
+
+        return Ok(newMeetUp.MeetUpId);
+    }
+    
+    /// <summary>
+    /// Updates a meetup's details if the user is a participant.
+    /// </summary>
+    /// <param name="userId">ID of the user requesting the update.</param>
+    /// <param name="meetupId">ID of the meetup to update.</param>
+    /// <param name="updatedMeetUp">The updated data for the meetup.</param>
+    /// <returns>
+    /// Returns 204 No Content on success, 400 if input is invalid, 404 if the user or meetup doesn't exist,
+    /// or 403 if the user is not a participant.
+    /// </returns>
+    [HttpPut, Route("{userId:int}/{meetupId:int}")]
+    public ActionResult UpdateMeetUp([FromRoute] int userId, [FromRoute] int meetupId, [FromBody] MeetUpDetailDto updatedMeetUp)
+    {
+        // Check if userId is valid & exists
+        var validationUserIdResult = ValidateUserId(userId);
+        if (validationUserIdResult is not OkResult)
+        {
+            return validationUserIdResult;
+        }
+        var userExistsResult = UserExists(userId, _context);
+        if (userExistsResult is not OkResult)
+        {
+            return userExistsResult;
+        }
+        
+        // Validate the input data
+        var validationMeetUpIdResult = ValidateMeetupId(meetupId);
+        if (validationUserIdResult is not OkResult)
+        {
+            return validationUserIdResult;
+        }
+
+        // Check if the meetup exists
+        var meetUp = _context.MeetUps.Find(meetupId);
+        if (meetUp == null)
+        {
+            return NotFound($"MeetUp with ID {meetupId} not found.");
+        }
+
+        // todo discuss: check if the user is the creator or authorized participant
+        var participation = _context.Participations
+            .FirstOrDefault(p => p.UserId == userId && p.MeetUpId == meetupId);
+        if (participation == null)
+        {
+            return Forbid("User is not authorized to update this meetup.");
+        }
+        
+        // Validate the input data
+        var validationResult = ValidateMeetupDetail(updatedMeetUp);
+        if (validationResult is not OkResult)
+        {
+            return validationResult;
+        }
+        
+        // todo: optional create specific update methods for only the fields that are necessary to update.
+
+        // Update fields
+        meetUp.MeetUpName = updatedMeetUp.MeetUpName;
+        meetUp.DateTimeFrom = updatedMeetUp.DateTimeFrom;
+        meetUp.DateTimeTo = updatedMeetUp.DateTimeTo;
+        meetUp.Description = updatedMeetUp.Description;
+        meetUp.CheckList = updatedMeetUp.CheckList;
+        meetUp.MeetUpLocation = updatedMeetUp.MeetUpLocation;
+        meetUp.MaxNumberOfParticipants = updatedMeetUp.MaxNumberOfParticipants;
+
+        _context.MeetUps.Update(meetUp);
+        _context.SaveChanges();
+
+        return NoContent();
+    }
+    
+    /// <summary>
+    /// Get MeetUp Details for a Meetup of a specified user (both accepted invitations and not accepted ones). 
     /// </summary>
     /// <param name="userId"></param>
     /// <param name="meetupId"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpGet, Route("{userId:int}/{meetupId:int}")]
-    public ActionResult<MeetUps> GetMeetUpDetails([FromRoute] int userId, [FromRoute] int meetupId)
+    public ActionResult<MeetUps> GetMeetUpDetails([FromRoute] int meetupId)
     {
-        if (userId <= 0)
+        var userId = GetUserId();
+        // Validate the user ID
+        var validationUserIdResult = ValidateUserId(userId);
+        if (validationUserIdResult is not OkResult)
         {
-            return BadRequest("UserId invalid");
+            return validationUserIdResult;
+        }
+        var userExistsResult = UserExists(userId, _context);
+        if (userExistsResult is not OkResult)
+        {
+            return userExistsResult;
         }
         
         if (meetupId <= 0)
@@ -66,18 +260,22 @@ public class MeetUpController : BaseController
     /// <param name="userId"></param>
     /// <param name="currentDate"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpGet, Route("{userId:int}")]
-    public ActionResult<IEnumerable<MeetUpBriefDto>> GetMeetUps([FromRoute] int userId, [FromQuery] DateTime currentDate)
+    public ActionResult<IEnumerable<MeetUpBriefDto>> GetMeetUps([FromQuery] DateTime currentDate)
     {
-        if (userId <= 0)
+        var userId = GetUserId();
+        
+        // Validate the user ID
+        var validationUserIdResult = ValidateUserId(userId);
+        if (validationUserIdResult is not OkResult)
         {
-            return BadRequest("UserId invalid");
+            return validationUserIdResult;
         }
-
-        var userExists = _context.Users.Any(u => u.UserId == userId);
-        if (!userExists)
+        var userExistsResult = UserExists(userId, _context);
+        if (userExistsResult is not OkResult)
         {
-            return NotFound($"User with ID {userId} does not exist.");
+            return userExistsResult;
         }
 
         var meetUps = (from m in _context.MeetUps
