@@ -232,8 +232,6 @@ public class UserControllerTests
         Assert.IsNotNull(response);
         Assert.AreEqual("Username already registered.", response.Message);
     }
-    
-    
 
     [TestMethod]
     public async Task TestValidate_ReturnsUnauthorized_WhenTokenIsNotPresent()
@@ -297,6 +295,7 @@ public class UserControllerTests
             Assert.AreEqual("Bearer validToken", (string) response);
         
     }
+
     [TestMethod]
     public async Task TestRegister_ReturnsOk_WhenProfilePicturePathExists()
     {
