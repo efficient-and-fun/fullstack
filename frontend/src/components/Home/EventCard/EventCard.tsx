@@ -1,7 +1,6 @@
 import './EventCard.css';
-import { Typography, Chip, Stack, Card, CardContent } from '@mui/material';
+import { Typography, Card, CardContent } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import PlaceIcon from '@mui/icons-material/Place';
 import { MeetUp } from '../../../models/MeetUp';
 import { useNavigate } from 'react-router-dom';
 
@@ -41,13 +40,6 @@ const EventCard: React.FC<EventCardProps> = ({ meetUp: meetUp }) => {
                         </Typography>
                     </div>
                 )}
-
-                <div className="custom-location">
-                    <PlaceIcon fontSize="small" className="custom-location-icon" />
-                    <Typography variant="body2" className="custom-location-text">
-                        {meetUp.meetUpLocation}
-                    </Typography>
-                </div>
             </CardContent>
         </Card>
     );

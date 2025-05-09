@@ -1,46 +1,53 @@
-/* MeetUpDetailPage.css */
-
 .meetup-detail-container {
-    background-color: #1c1c1c;
-    color: white;
-    min-height: 100vh;
-    padding: 24px; /* 3 * 8px */
-    font-family: sans-serif;
-  }
-  
-  .meetup-header {
-    display: flex;
-    justify-content: flex-end;
-  }
-  
-  .meetup-close-button {
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .meetup-info-section {
-    margin-top: 32px; /* 4 * 8px */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 32px;
-  }
-  
-  .meetup-info-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .meetup-title-section {
-    margin-top: 32px;
-    text-align: center;
-  }
-  
-  .meetup-description {
-    margin-top: 16px;
-    text-align: center;
-  }
-  
+  background-color: #1c1c1c;
+  color: white;
+  min-height: 100vh;
+  padding: 24px;
+  font-family: sans-serif;
+}
+
+.meetup-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.meetup-close-button {
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.meetup-info-section {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+}
+
+.meetup-info-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.meetup-title-section {
+  margin-top: 32px;
+  text-align: center;
+}
+
+.meetup-description {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.meetup-extra-info {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.meetup-extra-info strong {
+  font-weight: bold;
+  margin-right: 4px;
+}
