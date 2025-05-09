@@ -1,11 +1,13 @@
 import { useState } from "react";
 import styles from "./Form.module.css";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<string[]>([]); // Errors are stored here
   var url = "/api/user/login";
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -39,7 +41,7 @@ const LoginForm = () => {
 
       if (res.ok) {
         localStorage.setItem("authToken", data.token);
-        window.location.href = '/';
+        navigate(`/`);
       } else {
         // Fehler vom Server anzeigen
         setErrors([data.message || "Login failed. Please try again."]);
@@ -55,7 +57,7 @@ const LoginForm = () => {
     <form onSubmit={handleLogin} className={styles.container}>
       <h1 className={styles.title}>Login</h1>
       <input
-        className={styles.inputField}
+        className={`${styles.inputField} cy-login-email`}
         placeholder="Email"
         type="email"
         value={email}
@@ -63,14 +65,14 @@ const LoginForm = () => {
         required
       />
       <input
-        className={styles.inputField}
+        className={`${styles.inputField} cy-login-pwd`}
         placeholder="Password"
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
       />
-      <button className={styles.btn} type="submit">
+      <button className={`${styles.btn} cy-login-loginbutton`} type="submit">
         Sign in
       </button>
 

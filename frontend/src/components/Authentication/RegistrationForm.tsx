@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styles from "./Form.module.css";
+import { useNavigate } from 'react-router-dom';
 
 const RegisterForm = () => {
   const [username, setUsername] = useState('');
@@ -8,6 +9,7 @@ const RegisterForm = () => {
   const [password2, setPassword2] = useState('');
   const [isAGBAccepted, setAGBAccepted] = useState(true);
   const [errors, setErrors] = useState<string[]>([]); // Errors are stored here
+  const navigate = useNavigate();
   const url = '/api/user/register';
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -70,13 +72,13 @@ const RegisterForm = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password: password1, password2: password2, profilePicturePath: "C:/temp/photo", isAGBAccepted: true }),
         });
+        const data = await res.json();
 
         if (res.ok) {
-        alert('Registration successful! Redirecting to login...');
-        window.location.href = '/login';
+        localStorage.setItem("authToken", data.token);
+        navigate("/");
         } else {
-        const errorData = await res.json(); // Try to parse error response
-        setErrors([errorData.message || 'Registration failed. Please try again.']);
+        setErrors([data.message || 'Registration failed. Please try again.']);
         }
     } catch (error) {
         // Catch network or other unexpected errors
@@ -90,7 +92,7 @@ const RegisterForm = () => {
       <h1 className={styles.title}>Registration</h1>
 
       <input
-        className={styles.inputField}
+        className={`${styles.inputField} cy-register-username`}
         placeholder="Username"
         type="username"
         value={username}
@@ -98,7 +100,7 @@ const RegisterForm = () => {
         required
       />
       <input
-        className={styles.inputField}
+        className={`${styles.inputField} cy-register-email`}
         placeholder="Email"
         type="email"
         value={email}
@@ -106,7 +108,7 @@ const RegisterForm = () => {
         required
       />
       <input
-        className={styles.inputField}
+        className={`${styles.inputField} cy-register-pwd1`}
         placeholder="Password"
         type="password"
         value={password1}
@@ -114,7 +116,7 @@ const RegisterForm = () => {
         required
       />
       <input
-        className={styles.inputField}
+        className={`${styles.inputField} cy-register-pwd2`}
         placeholder="Confirm Password"
         type="password"
         value={password2}
@@ -122,7 +124,7 @@ const RegisterForm = () => {
         required
       />
 
-      <div className={styles.checkboxContainer}>
+      <div className={`${styles.checkboxContainer} cy-register-checkboy`}>
         <input
           type="checkbox"
           id="agb"
@@ -131,7 +133,7 @@ const RegisterForm = () => {
         />
         <label htmlFor="agb">I accept the terms and conditions</label>
       </div>
-      <button className={styles.btn} type="submit">
+      <button className={`${styles.btn} cy-register-submitbutton`} type="submit">
         Sign up
       </button>
 
@@ -139,7 +141,7 @@ const RegisterForm = () => {
       {errors.length > 0 && (
         <div className={styles.errorContainer}>
           {errors.map((error, index) => (
-            <p key={index} className={styles.errorText}>
+            <p key={index} className={`${styles.errorText} cy-register-erros`}>
               {error}
             </p>
           ))}
