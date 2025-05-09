@@ -51,8 +51,8 @@ jobs:
       - name: Run Cypress end-to-end tests
         uses: cypress-io/github-action@v6
         with:
-          working-directory: dev
-          start: docker-compose -f docker-compose-ci.yml up --build
+          working-directory: frontend
+          start: docker-compose -f ../dev/docker-compose-ci.yml up --build
           wait-on: http://localhost:5173, http://localhost:5246/swagger/index.html
           wait-on-timeout: 120
           browser: electron
