@@ -40,6 +40,32 @@ public class MeetUpController : BaseController
         }
         return new OkResult();
     }
+    
+    private static ActionResult ValidateCreateMeetupDetail(CreateMeetUpDto meetupDto)
+    {
+        // Validate if meetup name or description is empty
+        if (string.IsNullOrWhiteSpace(meetupDto.MeetUpName) || string.IsNullOrWhiteSpace(meetupDto.Description))
+        {
+            return new BadRequestObjectResult("MeetUp name and description are required.");
+        }
+        // Validate if start or end times are non-default values
+        if (meetupDto.DateTimeFrom == default || meetupDto.DateTimeTo == default)
+        {
+            return new BadRequestObjectResult("MeetUp start and end times are required.");
+        }
+        // Validate if start time is before end time
+        if (meetupDto.DateTimeFrom >= meetupDto.DateTimeTo)
+        {
+            return new BadRequestObjectResult("MeetUp start time must be before end time.");
+        }
+        
+        // If the number of participants is less than or equal to 0, set it to null
+        if (meetupDto.MaxNumberOfParticipants <= 0)
+        {
+            meetupDto.MaxNumberOfParticipants = null;
+        }
+        return new OkResult();
+    }
 
     private static ActionResult ValidateMeetupId(int meetupId)
     {
@@ -60,7 +86,7 @@ public class MeetUpController : BaseController
     /// </returns>
     [Authorize]
     [HttpPost]
-    public ActionResult<int> CreateMeetUp([FromBody] MeetUpDetailDto meetupDto)
+    public ActionResult<int> CreateMeetUp([FromBody] CreateMeetUpDto meetupDto)
     {
         var userId = _authService.GetUserIdFromToken();
         if (userId == null)
@@ -72,7 +98,7 @@ public class MeetUpController : BaseController
             return NotFound($"User with ID {userId} does not exist.");
 
         // Validate the input data
-        var validationResult = ValidateMeetupDetail(meetupDto);
+        var validationResult = ValidateCreateMeetupDetail(meetupDto);
         if (validationResult is not OkResult)
         {
             return validationResult;
