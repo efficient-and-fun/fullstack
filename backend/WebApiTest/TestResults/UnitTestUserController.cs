@@ -526,4 +526,87 @@ public class UserControllerTests
         Assert.AreEqual(user.Email, dto.Email);
         Assert.AreEqual(user.ProfilePicturePath, dto.ProfilePicturePath);
     }
+    
+    [TestMethod]
+    public async Task GetFriends_ReturnsOkWithFriends_WhenFriendsExist()
+    {
+        // Arrange
+        var userId = 1;
+        var friend = new User
+        {
+            UserId = 2,
+            UserName = "Bob",
+            Email = "bob@example.com",
+            ProfilePicturePath = "/img/bob.jpg",
+            UserPassword = "Password123"
+        };
+        _context.Users.Add(friend);
+        _context.FriendConnection.Add(new FriendConnection
+        {
+            UserId = userId,
+            FriendId = friend.UserId,
+            HasAcceptedFriendRequest = true,
+            Friend = friend
+        });
+        await _context.SaveChangesAsync();
+
+        _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns(userId);
+
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+
+        // Act
+        var result = await controller.GetFriends();
+
+        // Assert
+        var okResult = result.Result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(200, okResult.StatusCode);
+
+        var friends = okResult.Value as List<UserDto>;
+        Assert.IsNotNull(friends);
+        Assert.AreEqual(1, friends.Count);
+        Assert.AreEqual(friend.UserId, friends[0].UserId);
+        Assert.AreEqual(friend.UserName, friends[0].UserName);
+        Assert.AreEqual(friend.Email, friends[0].Email);
+        Assert.AreEqual(friend.ProfilePicturePath, friends[0].ProfilePicturePath);
+    }
+
+    [TestMethod]
+    public async Task GetFriends_ReturnsOkWithEmptyList_WhenNoFriendsExist()
+    {
+        // Arrange
+        var userId = 1;
+
+        _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns(userId);
+
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+
+        // Act
+        var result = await controller.GetFriends();
+
+        // Assert
+        var okResult = result.Result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(200, okResult.StatusCode);
+
+        var friends = okResult.Value as List<UserDto>;
+        Assert.IsNotNull(friends);
+        Assert.AreEqual(0, friends.Count);
+    }
+
+    [TestMethod]
+    public async Task GetFriends_ReturnsUnauthorized_WhenUserIdIsNull()
+    {
+        // Arrange
+        _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns((int?)null);
+
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+
+        // Act
+        var result = await controller.GetFriends();
+
+        // Assert
+        Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
+    }
+
 }
