@@ -29,18 +29,6 @@ public class MeetUpDetailDto : MeetUpBriefDto
 
 }
 
-public class CreateMeetUpDto
-{
-    public string MeetUpName { get; set; }
-    public string? Description { get; set; }
-    public DateTime DateTimeFrom { get; set; }
-    public DateTime DateTimeTo { get; set; }
-    public string? CheckList { get; set; }
-    public string? MeetUpLocation { get; set; }
-    public int? MaxNumberOfParticipants { get; set; }
-}
-
-
 public class MeetUps
 {
     [Required, Key]
