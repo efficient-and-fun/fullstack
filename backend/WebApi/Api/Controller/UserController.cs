@@ -34,6 +34,30 @@ public class UserController : BaseController
         return Ok(users);
     }
     
+    [Authorize]
+    [HttpGet("friends")]
+    public async Task<ActionResult<List<UserDto>>> GetFriends()
+    {
+        var userId = _authService.GetUserIdFromToken();
+        if (userId == null)
+            return Unauthorized();
+
+        var friends = await _context.FriendConnection
+            .Where(fc => fc.UserId == userId && fc.HasAcceptedFriendRequest)
+            .Include(fc => fc.Friend)
+            .Select(fc => new UserDto
+            {
+                UserId = fc.Friend.UserId,
+                UserName = fc.Friend.UserName,
+                Email = fc.Friend.Email,
+                ProfilePicturePath = fc.Friend.ProfilePicturePath
+            })
+            .ToListAsync();
+
+        return Ok(friends);
+    }
+
+    
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
