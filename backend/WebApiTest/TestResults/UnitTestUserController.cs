@@ -435,4 +435,95 @@ public class UserControllerTests
         Assert.IsNotNull(response);
         Assert.AreEqual("Invalid credentials", response.Message);
     }
+    [TestMethod]
+    public async Task GetUsers_ReturnsOkWithUsers_WhenUsersExist()
+    {
+        // Arrange
+        _context.Users.AddRange(new List<User>
+        {
+            new User 
+            { 
+                UserId = 1, 
+                UserName = "Alice", 
+                Email = "alice@example.com", 
+                ProfilePicturePath = "/img/alice.jpg",
+                UserPassword = "Password123" // Add a dummy password
+            },
+            new User 
+            { 
+                UserId = 2, 
+                UserName = "Bob", 
+                Email = "bob@example.com", 
+                ProfilePicturePath = "/img/bob.jpg",
+                UserPassword = "Password123" // Add a dummy password
+            }
+        });
+        await _context.SaveChangesAsync();
+
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+
+        // Act
+        var result = await controller.GetUsers();
+
+        // Assert
+        var okResult = result.Result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(200, okResult.StatusCode);
+
+        var users = okResult.Value as List<UserDto>;
+        Assert.IsNotNull(users);
+        Assert.AreEqual(2, users.Count);
+    }
+
+    [TestMethod]
+    public async Task GetUsers_ReturnsOkWithEmptyList_WhenNoUsersExist()
+    {
+        // Arrange
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+
+        // Act
+        var result = await controller.GetUsers();
+
+        // Assert
+        var okResult = result.Result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(200, okResult.StatusCode);
+
+        var users = okResult.Value as List<UserDto>;
+        Assert.IsNotNull(users);
+        Assert.AreEqual(0, users.Count);
+    }
+    
+    [TestMethod]
+    public async Task GetUsers_MapsUserEntityToDtoCorrectly()
+    {
+        // Arrange
+        var user = new User
+        {
+            UserId = 1, 
+            UserName = "Alice", 
+            Email = "alice@example.com", 
+            ProfilePicturePath = "/img/alice.jpg",
+            UserPassword = "Password123" // Add a dummy password
+        };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+
+        // Act
+        var result = await controller.GetUsers();
+
+        // Assert
+        var okResult = result.Result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        var users = okResult.Value as List<UserDto>;
+        Assert.IsNotNull(users);
+        var dto = users.First();
+        Assert.AreEqual(user.UserId, dto.UserId);
+        Assert.AreEqual(user.UserName, dto.UserName);
+        Assert.AreEqual(user.Email, dto.Email);
+        Assert.AreEqual(user.ProfilePicturePath, dto.ProfilePicturePath);
+    }
 }
