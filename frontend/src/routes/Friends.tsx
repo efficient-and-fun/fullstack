@@ -8,7 +8,7 @@ const FriendsPage = () => {
   useEffect(() => {
     const fetchFriends = async () => {
       const friendsData = await new Promise<string[]>((resolve) =>
-        setTimeout(() => resolve(['Alice', 'Bob', 'Charlie']), 1000)
+        setTimeout(() => resolve(['James', 'Peter']), 1000)
       );
       setFriends(friendsData);
     };
@@ -26,10 +26,16 @@ const FriendsPage = () => {
 
   const handleAddClick = (user: string) => {
     alert('Add button clicked! ' + user);
+    //fetch machen
+    setUsers((prevUsers) => prevUsers.filter((u) => u !== user));
+    setFriends((prevFriends) => [...prevFriends, user]); 
   };
 
   const handleDeleteClick = (user: string) => {
     alert('Delete button clicked! ' + user);
+    //fetch machen
+    setFriends((prevFriends) => prevFriends.filter((f) => f !== user)); 
+    setUsers((prevUsers) => [...prevUsers, user]);
   };
 
   return (
