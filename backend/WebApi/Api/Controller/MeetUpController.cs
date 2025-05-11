@@ -15,7 +15,33 @@ public class MeetUpController : BaseController
     {
         _authService = authService;
     }
-    private static ActionResult ValidateMeetupDetail(MeetUpDetailDto meetupDto)
+    private static ActionResult ValidateMeetupCreate(MeetUpCreateDto meetupDto)
+    {
+        // Validate if meetup name or description is empty
+        if (string.IsNullOrWhiteSpace(meetupDto.MeetUpName) || string.IsNullOrWhiteSpace(meetupDto.Description))
+        {
+            return new BadRequestObjectResult("MeetUp name and description are required.");
+        }
+        // Validate if start or end times are non-default values
+        if (meetupDto.DateTimeFrom == default || meetupDto.DateTimeTo == default)
+        {
+            return new BadRequestObjectResult("MeetUp start and end times are required.");
+        }
+        // Validate if start time is before end time
+        if (meetupDto.DateTimeFrom >= meetupDto.DateTimeTo)
+        {
+            return new BadRequestObjectResult("MeetUp start time must be before end time.");
+        }
+        
+        // If the number of participants is less than or equal to 0, set it to null
+        if (meetupDto.MaxNumberOfParticipants <= 0)
+        {
+            meetupDto.MaxNumberOfParticipants = null;
+        }
+        return new OkResult();
+    }
+    
+    private static ActionResult ValidateMeetupUpdate(MeetUpDetailDto meetupDto)
     {
         // Validate if meetup name or description is empty
         if (string.IsNullOrWhiteSpace(meetupDto.MeetUpName) || string.IsNullOrWhiteSpace(meetupDto.Description))
@@ -53,14 +79,13 @@ public class MeetUpController : BaseController
     /// <summary>
     /// Create a new MeetUp.
     /// </summary>
-    /// <param name="userId"></param>
     /// <param name="meetupDto"></param>
     /// <returns>
     /// Returns 200 and the ID of the newly created MeetUp on success, 400 if input is invalid, or 404 if the user doesn't exist.
     /// </returns>
     [Authorize]
     [HttpPost]
-    public ActionResult<int> CreateMeetUp([FromBody] MeetUpDetailDto meetupDto)
+    public ActionResult<int> CreateMeetUp([FromBody] MeetUpCreateDto meetupDto)
     {
         var userId = _authService.GetUserIdFromToken();
         if (userId == null)
@@ -72,7 +97,7 @@ public class MeetUpController : BaseController
             return NotFound($"User with ID {userId} does not exist.");
 
         // Validate the input data
-        var validationResult = ValidateMeetupDetail(meetupDto);
+        var validationResult = ValidateMeetupCreate(meetupDto);
         if (validationResult is not OkResult)
         {
             return validationResult;
@@ -108,7 +133,6 @@ public class MeetUpController : BaseController
     /// <summary>
     /// Updates a meetup's details if the user is a participant.
     /// </summary>
-    /// <param name="userId">ID of the user requesting the update.</param>
     /// <param name="meetupId">ID of the meetup to update.</param>
     /// <param name="updatedMeetUp">The updated data for the meetup.</param>
     /// <returns>
@@ -147,7 +171,7 @@ public class MeetUpController : BaseController
         }
         
         // Validate the input data
-        var validationResult = ValidateMeetupDetail(updatedMeetUp);
+        var validationResult = ValidateMeetupUpdate(updatedMeetUp);
         if (validationResult is not OkResult)
         {
             return validationResult;
@@ -173,7 +197,6 @@ public class MeetUpController : BaseController
     /// <summary>
     /// Get MeetUp Details for a Meetup of a specified user (both accepted invitations and not accepted ones). 
     /// </summary>
-    /// <param name="userId"></param>
     /// <param name="meetupId"></param>
     /// <returns></returns>
     [Authorize]
@@ -228,7 +251,6 @@ public class MeetUpController : BaseController
     /// <summary>
     /// Get all MeetUps user has a participation to for a specific day.
     /// </summary>
-    /// <param name="userId"></param>
     /// <param name="currentDate"></param>
     /// <returns></returns>
     [Authorize]
@@ -290,16 +312,5 @@ public class MeetUpController : BaseController
     //         }).FirstOrDefault();
     //     
     //     return Ok(futureMeetUp);
-    // }
-    
-    // TODO: Readd this in the next sprint where this feature is actually added.
-    // [HttpPost, Route("")]
-    // public ActionResult<string> CreateMeetup(int userId, MeetUpDto meetup)
-    // {
-    //     
-    //     
-    //     // TODO: insert into db
-    //     var newMeetUpId = -1;
-    //     return Ok(newMeetUpId);
     // }
 }
