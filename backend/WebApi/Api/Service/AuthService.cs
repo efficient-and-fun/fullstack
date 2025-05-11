@@ -12,15 +12,19 @@ public interface IAuthService
 {
     Task<AuthResult> LoginAsync(string email, string password);
     Task<AuthResult> RegisterAsync(string email, string password, string username, string profilePicturePath);
+    int? GetUserIdFromToken();
+    Task<User?> GetCurrentUserAsync();
 }
 
 public class AuthService : IAuthService
 {
     private readonly EfDbContext _context;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public AuthService(EfDbContext context)
+    public AuthService(EfDbContext context, IHttpContextAccessor httpContextAccessor)
     {
         _context = context;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<AuthResult> RegisterAsync(
@@ -110,6 +114,27 @@ public class AuthService : IAuthService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+    public int? GetUserIdFromToken()
+    {
+        var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+        {
+            return userId;
+        }
+        return null;
+    }
+    
+    public async Task<User?> GetCurrentUserAsync()
+    {
+        var userId = GetUserIdFromToken();
+        if (userId.HasValue)
+        {
+            return await _context.Users.FindAsync(userId.Value);
+        }
+
+        return null;
+    }
+
 }
 
 public class AuthResult
