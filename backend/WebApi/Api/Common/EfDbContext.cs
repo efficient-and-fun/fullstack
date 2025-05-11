@@ -43,7 +43,21 @@ public class EfDbContext : DbContext
                 property.SetColumnName(property.GetColumnName().ToLower());
             }
         }
+        
+        // Configure FriendConnection relationships
+        modelBuilder.Entity<FriendConnection>()
+            .HasOne(fc => fc.Friend)
+            .WithMany(u => u.FriendOf)
+            .HasForeignKey(fc => fc.FriendId)
+            .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<FriendConnection>()
+            .HasOne(fc => fc.User)
+            .WithMany(u => u.Friends)
+            .HasForeignKey(fc => fc.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
         base.OnModelCreating(modelBuilder);
+        
+        
     }
 }
