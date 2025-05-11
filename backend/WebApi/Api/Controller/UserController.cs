@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Build.Framework;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApi;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,22 @@ public class UserController : BaseController
         logger, configuration, context)
     {
         _authService = authService;
+    }
+    
+    [Authorize]
+    [HttpGet]
+    public async Task<ActionResult<List<UserDto>>> GetUsers()
+    {
+        var users = await _context.Users
+            .Select(u => new UserDto
+            {
+                UserId = u.UserId,
+                UserName = u.UserName,
+                Email = u.Email,
+                ProfilePicturePath = u.ProfilePicturePath
+            }).ToListAsync();
+
+        return Ok(users);
     }
     
     [HttpPost("register")]
