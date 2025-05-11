@@ -19,6 +19,7 @@ public class EfDbContext : DbContext
     public DbSet<MeetUps> MeetUps { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Participation> Participations { get; set; }
+    public DbSet<FriendConnection> FriendConnection { get; set; }
     
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

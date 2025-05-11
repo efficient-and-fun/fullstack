@@ -14,6 +14,8 @@ public class User
     public string UserPassword { get; set; }
     public string ProfilePicturePath { get; set; }
     public string? DietaryRestrictions { get; set; }
+    public ICollection<FriendConnection> Friends { get; set; }
+    public ICollection<FriendConnection> FriendOf { get; set; }
 }
 
 public class UserDto
