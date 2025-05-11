@@ -6,7 +6,7 @@ using WebApi.Model;
 
 namespace WebApi;
 
-[ApiController, Route("api/meetup")]
+[ApiController, Route("api/meetups")]
 public class MeetUpController : BaseController
 {
     public MeetUpController(ILogger<MeetUpController> logger, IConfiguration configuration, EfDbContext context) : base(logger, configuration, context) { }

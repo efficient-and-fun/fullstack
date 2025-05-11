@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebApi.Api.Common;
 using WebApi.Model;
 
-[ApiController, Route("api/user")]
+[ApiController, Route("api/users")]
 public class UserController : BaseController
 {
     private readonly IAuthService _authService;
