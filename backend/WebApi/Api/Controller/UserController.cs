@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Build.Framework;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApi;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Api.Common;
 using WebApi.Model;
 
-[ApiController, Route("api/user")]
+[ApiController, Route("api/users")]
 public class UserController : BaseController
 {
     private readonly IAuthService _authService;
@@ -16,6 +17,46 @@ public class UserController : BaseController
     {
         _authService = authService;
     }
+    
+    [Authorize]
+    [HttpGet]
+    public async Task<ActionResult<List<UserDto>>> GetUsers()
+    {
+        var users = await _context.Users
+            .Select(u => new UserDto
+            {
+                UserId = u.UserId,
+                UserName = u.UserName,
+                Email = u.Email,
+                ProfilePicturePath = u.ProfilePicturePath
+            }).ToListAsync();
+
+        return Ok(users);
+    }
+    
+    [Authorize]
+    [HttpGet("friends")]
+    public async Task<ActionResult<List<UserDto>>> GetFriends()
+    {
+        var userId = _authService.GetUserIdFromToken();
+        if (userId == null)
+            return Unauthorized();
+
+        var friends = await _context.FriendConnection
+            .Where(fc => fc.UserId == userId && fc.HasAcceptedFriendRequest)
+            .Include(fc => fc.Friend)
+            .Select(fc => new UserDto
+            {
+                UserId = fc.Friend.UserId,
+                UserName = fc.Friend.UserName,
+                Email = fc.Friend.Email,
+                ProfilePicturePath = fc.Friend.ProfilePicturePath
+            })
+            .ToListAsync();
+
+        return Ok(friends);
+    }
+
     
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)

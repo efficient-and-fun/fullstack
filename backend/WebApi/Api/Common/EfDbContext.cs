@@ -19,6 +19,7 @@ public class EfDbContext : DbContext
     public DbSet<MeetUps> MeetUps { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Participation> Participations { get; set; }
+    public DbSet<FriendConnection> FriendConnection { get; set; }
     
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -42,7 +43,21 @@ public class EfDbContext : DbContext
                 property.SetColumnName(property.GetColumnName().ToLower());
             }
         }
+        
+        // Configure FriendConnection relationships
+        modelBuilder.Entity<FriendConnection>()
+            .HasOne(fc => fc.Friend)
+            .WithMany(u => u.FriendOf)
+            .HasForeignKey(fc => fc.FriendId)
+            .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<FriendConnection>()
+            .HasOne(fc => fc.User)
+            .WithMany(u => u.Friends)
+            .HasForeignKey(fc => fc.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
         base.OnModelCreating(modelBuilder);
+        
+        
     }
 }
