@@ -76,6 +76,23 @@ public class MeetUpController : BaseController
         return new OkResult();
     }
     
+    private static ActionResult ValidateUser(int? userId, EfDbContext _context)
+    {
+        if (userId == null)
+        {
+            return new UnauthorizedObjectResult("User not authenticated.");
+        }
+
+        var userExists = _context.Users.Any(u => u.UserId == userId.Value);
+        if (!userExists)
+        {
+            return new NotFoundObjectResult($"User with ID {userId} does not exist.");
+        }
+
+        return new OkResult();
+    }
+
+    
     /// <summary>
     /// Create a new MeetUp.
     /// </summary>
@@ -88,13 +105,11 @@ public class MeetUpController : BaseController
     public ActionResult<int> CreateMeetUp([FromBody] MeetUpCreateDto meetupDto)
     {
         var userId = _authService.GetUserIdFromToken();
-        if (userId == null)
+        var actionResult = ValidateUser(userId, _context);
+        if (actionResult is not OkResult)
         {
-            return Unauthorized("User not authenticated.");
+            return actionResult;
         }
-        var userExists = _context.Users.Any(u => u.UserId == userId.Value);
-        if (!userExists)
-            return NotFound($"User with ID {userId} does not exist.");
 
         // Validate the input data
         var validationResult = ValidateMeetupCreate(meetupDto);
@@ -144,13 +159,11 @@ public class MeetUpController : BaseController
     public ActionResult UpdateMeetUp([FromRoute] int meetupId, [FromBody] MeetUpDetailDto updatedMeetUp)
     {
         var userId = _authService.GetUserIdFromToken();
-        if (userId == null)
+        var actionResult = ValidateUser(userId, _context);
+        if (actionResult is not OkResult)
         {
-            return Unauthorized("User not authenticated.");
+            return actionResult;
         }
-        var userExists = _context.Users.Any(u => u.UserId == userId.Value);
-        if (!userExists)
-            return NotFound($"User with ID {userId} does not exist.");
         
         // Validate the input data
         var validationMeetUpIdResult = ValidateMeetupId(meetupId);
@@ -204,13 +217,11 @@ public class MeetUpController : BaseController
     public ActionResult<MeetUps> GetMeetUpDetails([FromRoute] int meetupId)
     {
         var userId = _authService.GetUserIdFromToken();
-        if (userId == null)
+        var actionResult = ValidateUser(userId, _context);
+        if (actionResult is not OkResult)
         {
-            return Unauthorized("User not authenticated.");
+            return actionResult;
         }
-        var userExists = _context.Users.Any(u => u.UserId == userId.Value);
-        if (!userExists)
-            return NotFound($"User with ID {userId} does not exist.");
         
         if (meetupId <= 0)
         {
@@ -258,13 +269,11 @@ public class MeetUpController : BaseController
     public ActionResult<IEnumerable<MeetUpBriefDto>> GetMeetUps([FromQuery] DateTime currentDate)
     {
         var userId = _authService.GetUserIdFromToken();
-        if (userId == null)
+        var actionResult = ValidateUser(userId, _context);
+        if (actionResult is not OkResult)
         {
-            return Unauthorized("User not authenticated.");
+            return actionResult;
         }
-        var userExists = _context.Users.Any(u => u.UserId == userId.Value);
-        if (!userExists)
-            return NotFound($"User with ID {userId} does not exist.");
 
         var meetUps = (from m in _context.MeetUps
             join p in _context.Participations on m.MeetUpId equals p.MeetUpId
