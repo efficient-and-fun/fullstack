@@ -17,6 +17,7 @@ public class UserControllerTests
     private Mock<IConfiguration> _configMock = null!;
     private EfDbContext _context = null!;
     private Mock<IAuthService> _authServiceMock = null!;
+    private Mock<IUserService> _userServiceMock = null!;
 
     [TestInitialize]
     public void Setup()
@@ -50,7 +51,7 @@ public class UserControllerTests
                 request.Email, request.Password, request.Username, request.ProfilePicturePath))
             .ReturnsAsync(new AuthResult { Success = true, Token = "dummy-token" });
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
 
         // Act
         var result = await controller.Register(request);
@@ -88,7 +89,7 @@ public class UserControllerTests
                 ErrorMessage = "Email already registered."
             });
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
 
         // Act
         var result = await controller.Register(request);
@@ -126,7 +127,7 @@ public class UserControllerTests
                 ErrorMessage = "Username already registered."
             });
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
 
         // Act
         var result = await controller.Register(request);
@@ -155,7 +156,7 @@ public class UserControllerTests
             IsAGBAccepted = true
         };
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
 
         // Act
         var result = await controller.Register(request);
@@ -184,7 +185,7 @@ public class UserControllerTests
             IsAGBAccepted = false // AGB not accepted
         };
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
 
         // Act
         var result = await controller.Register(request);
@@ -218,7 +219,7 @@ public class UserControllerTests
                 request.Email, request.Password, request.Username, request.ProfilePicturePath))
             .ReturnsAsync(new AuthResult { Success = false, ErrorMessage = "Username already registered." });
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
 
         // Act
         var result = await controller.Register(request);
@@ -245,7 +246,7 @@ public class UserControllerTests
         _authServiceMock.Setup(s => s.LoginAsync(request.Email, request.Password))
             .ReturnsAsync(new AuthResult { Success = false, ErrorMessage = "Token not present" });
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
         
         var result = await controller.Login(request);
         
@@ -266,7 +267,7 @@ public class UserControllerTests
         _authServiceMock.Setup(s => s.LoginAsync(request.Email, request.Password))
             .ReturnsAsync(new AuthResult { Success = false, ErrorMessage = "Invalid token" });
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
         
         var result = await controller.Login(request);
         
@@ -278,7 +279,7 @@ public class UserControllerTests
     [TestMethod]
     public async Task TestValidate_ReturnsOk_WhenTokenIsValid()
     {
-            var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+            var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
 
             var httpContext = new DefaultHttpContext();
             httpContext.Request.Headers["Authorization"] = "Bearer validToken";
@@ -314,7 +315,7 @@ public class UserControllerTests
                 request.Email, request.Password, request.Username, request.ProfilePicturePath))
             .ReturnsAsync(new AuthResult { Success = true, Token = "dummy-token" });
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
 
         // Act
         var result = await controller.Register(request);
@@ -346,7 +347,7 @@ public class UserControllerTests
                 request.Email, request.Password, request.Username, request.ProfilePicturePath))
             .ReturnsAsync(new AuthResult { Success = true, Token = "dummy-token" });
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
 
         // Act
         var result = await controller.Register(request);
@@ -373,7 +374,7 @@ public class UserControllerTests
         _authServiceMock.Setup(s => s.LoginAsync(request.Email, request.Password))
             .ReturnsAsync(new AuthResult { Success = true, Token = "dummy-token" });
         
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
         
         var result = await controller.Login(request);
         
@@ -398,7 +399,7 @@ public class UserControllerTests
         _authServiceMock.Setup(s => s.LoginAsync(request.Email, request.Password))
             .ReturnsAsync(new AuthResult { Success = false });
         
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
         var result = await controller.Login(request);
         
         var unauthorizedResult = result as UnauthorizedObjectResult;
@@ -423,7 +424,7 @@ public class UserControllerTests
         _authServiceMock.Setup(s => s.LoginAsync(request.Email, request.Password))
             .ReturnsAsync(new AuthResult { Success = false });
         
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
         var result = await controller.Login(request);
         
         var unauthorizedResult = result as UnauthorizedObjectResult;
@@ -460,7 +461,7 @@ public class UserControllerTests
         });
         await _context.SaveChangesAsync();
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
 
         // Act
         var result = await controller.GetUsers();
@@ -479,7 +480,7 @@ public class UserControllerTests
     public async Task GetUsers_ReturnsOkWithEmptyList_WhenNoUsersExist()
     {
         // Arrange
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
 
         // Act
         var result = await controller.GetUsers();
@@ -510,7 +511,7 @@ public class UserControllerTests
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
 
         // Act
         var result = await controller.GetUsers();
@@ -552,7 +553,7 @@ public class UserControllerTests
 
         _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns(userId);
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
 
         // Act
         var result = await controller.GetFriends();
@@ -579,7 +580,7 @@ public class UserControllerTests
 
         _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns(userId);
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
 
         // Act
         var result = await controller.GetFriends();
@@ -600,7 +601,7 @@ public class UserControllerTests
         // Arrange
         _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns((int?)null);
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
 
         // Act
         var result = await controller.GetFriends();

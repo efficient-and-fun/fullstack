@@ -6,7 +6,7 @@ namespace WebApi;
 
 public interface IUserService
 {
-    Task<UserResult> AddFriend(string userId);
+    Task<UserResult> AddFriend(int userId, string newFriend);
 }
 
 
@@ -21,8 +21,14 @@ public class UserService
 
     public async Task<UserResult> AddFriend(int userId, string newFriend)
     {
+        
         var existingFriendRequest = _context.FriendConnection.FirstOrDefault(fc => fc.UserId == userId && fc.Friend.UserName == newFriend);
 
+        if (_context.Users.FirstOrDefault(u => u.UserId == userId) == null)
+        {
+            return new UserResult { Success = false, ErrorMessage = "User not found" };
+        }
+        
         if (existingFriendRequest == null)
         {
             var friendId = GetUserIdFromUserName(newFriend);

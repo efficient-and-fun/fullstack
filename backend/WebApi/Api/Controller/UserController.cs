@@ -11,11 +11,13 @@ using WebApi.Model;
 public class UserController : BaseController
 {
     private readonly IAuthService _authService;
+    private readonly IUserService _userService;
     
-    public UserController(ILogger<UserController> logger, IConfiguration configuration, EfDbContext context, IAuthService authService) : base(
+    public UserController(ILogger<UserController> logger, IConfiguration configuration, EfDbContext context, IAuthService authService, IUserService userService) : base(
         logger, configuration, context)
     {
         _authService = authService;
+        _userService = userService;
     }
     
     [Authorize]
@@ -57,6 +59,24 @@ public class UserController : BaseController
         return Ok(friends);
     }
 
+    [Authorize]
+    [HttpPost("friends/{userId}/add")]
+    public async Task<ActionResult> GetFriend(string friendName)
+    {
+        var userId = _authService.GetUserIdFromToken();
+        if (userId == null)
+        {
+            //TODO: wann genau tritt dies auf?
+            return Unauthorized();
+        }
+        
+        var result =_userService.AddFriend((int) _authService.GetUserIdFromToken(), friendName);
+        if (result.Result.Success)
+        {
+            return Ok();
+        }
+        return BadRequest(result);
+    }
     
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
