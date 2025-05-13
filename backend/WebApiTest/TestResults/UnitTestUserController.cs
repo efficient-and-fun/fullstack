@@ -25,6 +25,7 @@ public class UserControllerTests
         _loggerMock = new Mock<ILogger<UserController>>();
         _configMock = new Mock<IConfiguration>();
         _authServiceMock = new Mock<IAuthService>();
+        _userServiceMock = new Mock<IUserService>();
         
         var options = new DbContextOptionsBuilder<EfDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
