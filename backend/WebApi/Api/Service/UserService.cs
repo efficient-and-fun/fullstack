@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using WebApi.Api.Common;
 using WebApi.Model;
 
@@ -8,7 +10,6 @@ public interface IUserService
 {
     Task<UserResult> AddFriend(int userId, string newFriend);
 }
-
 
 public class UserService
 {
@@ -21,33 +22,41 @@ public class UserService
 
     public async Task<UserResult> AddFriend(int userId, string newFriend)
     {
-        
-        var existingFriendRequest = _context.FriendConnection.FirstOrDefault(fc => fc.UserId == userId && fc.Friend.UserName == newFriend);
+        try
+        {
+            var existingFriendRequest =
+                _context.FriendConnection.FirstOrDefault(fc => fc.UserId == userId && fc.Friend.UserName == newFriend);
 
-        if (_context.Users.FirstOrDefault(u => u.UserId == userId) == null)
-        {
-            return new UserResult { Success = false, ErrorMessage = "User not found" };
-        }
-        
-        if (existingFriendRequest == null)
-        {
-            var friendId = GetUserIdFromUserName(newFriend);
-            if (friendId == -1)
+            if (_context.Users.FirstOrDefault(u => u.UserId == userId) == null)
             {
                 return new UserResult { Success = false, ErrorMessage = "User not found" };
             }
-            _context.FriendConnection.Add(
-                new FriendConnection()
+
+            if (existingFriendRequest == null)
+            {
+                var friendId = GetUserIdFromUserName(newFriend);
+                if (friendId == -1)
                 {
-                    UserId = userId,
-                    FriendId = friendId,
-                    HasAcceptedFriendRequest = true
-                    //TODO: this value needs to be adjust if the notifications are implemented
+                    return new UserResult { Success = false, ErrorMessage = "User not found" };
                 }
-            );
-            
+
+                _context.FriendConnection.Add(
+                    new FriendConnection()
+                    {
+                        UserId = userId,
+                        FriendId = friendId,
+                        HasAcceptedFriendRequest = true
+                        //TODO: this value needs to be adjust if the notifications are implemented
+                    }
+                );
+            }
         }
-        
+        catch (Exception e)
+        {
+            return new UserResult{ Success = false, ErrorMessage = e.Message };
+        }
+
+
         await _context.SaveChangesAsync();
         return new UserResult { Success = true };
     }
@@ -60,7 +69,7 @@ public class UserService
         {
             return -1;
         }
-        
+
         return user.UserId;
     }
 }

@@ -60,17 +60,15 @@ public class UserController : BaseController
     }
 
     [Authorize]
-    [HttpPost("friends/{userId}/add")]
-    public async Task<ActionResult> GetFriend(string friendName)
+    [HttpPost("friends")]
+    public async Task<ActionResult> AddFriend(string friendName)
     {
-        var userId = _authService.GetUserIdFromToken();
-        if (userId == null)
+        if (GetUserId() == -1)
         {
-            //TODO: wann genau tritt dies auf?
             return Unauthorized();
         }
         
-        var result =_userService.AddFriend((int) _authService.GetUserIdFromToken(), friendName);
+        var result =_userService.AddFriend(GetUserId(), friendName);
         if (result.Result.Success)
         {
             return Ok();
