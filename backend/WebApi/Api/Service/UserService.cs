@@ -9,6 +9,7 @@ namespace WebApi;
 public interface IUserService
 {
     Task<UserResult> AddFriend(int userId, string newFriend);
+    Task<UserResult> RemoveFriend(int userId, string newFriend);
 }
 
 public class UserService
@@ -59,6 +60,29 @@ public class UserService
 
         await _context.SaveChangesAsync();
         return new UserResult { Success = true };
+    }
+
+    public async Task<UserResult> RemoveFriend(int userId, string newFriend)
+    {
+        try
+        {
+            var existingFriendRequest = _context.FriendConnection.FirstOrDefault(fc => fc.Friend.UserName == newFriend);
+            if (existingFriendRequest == null)
+            {
+                // TODO: decide what to do in this case: error/badrequest or success.
+            }
+            else
+            {
+                _context.FriendConnection.Remove(existingFriendRequest);
+            }
+            
+            await _context.SaveChangesAsync();
+            return new UserResult { Success = true };
+        }
+        catch (Exception e)
+        {
+            return new UserResult { Success = false, ErrorMessage = e.Message };
+        }
     }
 
 

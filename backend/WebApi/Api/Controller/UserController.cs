@@ -75,6 +75,24 @@ public class UserController : BaseController
         }
         return BadRequest(result);
     }
+
+    [Authorize]
+    [HttpDelete("friends")]
+    public async Task<ActionResult> RemoveFriend(string friendName)
+    {
+        var userId = GetUserId();
+        if (userId == -1)
+        {
+            return Unauthorized();
+        }
+        
+        var result = await _userService.RemoveFriend(userId, friendName);
+        if (result.Success)
+        {
+            return Ok();
+        }
+        return BadRequest(result);
+    }
     
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
