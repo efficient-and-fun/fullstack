@@ -33,13 +33,13 @@ public class UserService : IUserService
             var existingFriendRequest = _context.FriendConnection.FirstOrDefault(fc => fc.UserId == userId && fc.Friend.UserName == newFriend);
             if (existingFriendRequest != null)
             {
-                return new UserResult { Success = false, ErrorMessage = "User is already a friend" };
+                return new UserResult { Success = false, ErrorMessage = "Connection already exists" };
             }
 
             var friendId = GetUserIdFromUserName(newFriend);
             if (friendId == -1)
             {
-                return new UserResult { Success = false, ErrorMessage = "User not found" };
+                return new UserResult { Success = false, ErrorMessage = "Friend not found" };
             }
             
             if (userId == friendId)
@@ -71,16 +71,30 @@ public class UserService : IUserService
     {
         try
         {
-            var existingFriendRequest = _context.FriendConnection.FirstOrDefault(fc => fc.Friend.UserName == newFriend);
+            if (_context.Users.FirstOrDefault(u => u.UserId == userId) == null)
+            {
+                return new UserResult { Success = false, ErrorMessage = "User not found" };
+            }
+            
+            var existingFriendRequest = _context.FriendConnection.FirstOrDefault(fc => fc.UserId == userId && fc.Friend.UserName == newFriend);
             if (existingFriendRequest == null)
             {
-                // TODO: decide what to do in this case: error/badrequest or success.
-            }
-            else
-            {
-                _context.FriendConnection.Remove(existingFriendRequest);
+                return new UserResult { Success = false, ErrorMessage = "Connection does not exist" };
             }
 
+            var friendId = GetUserIdFromUserName(newFriend);
+            if (friendId == -1)
+            {
+                return new UserResult { Success = false, ErrorMessage = "Friend not found" };
+            }
+            
+            if (userId == friendId)
+            {
+                return new UserResult { Success = false, ErrorMessage = "User cannot have themselves as friend" };
+            }
+
+            _context.FriendConnection.Remove(existingFriendRequest);
+            
             await _context.SaveChangesAsync();
             return new UserResult { Success = true };
         }

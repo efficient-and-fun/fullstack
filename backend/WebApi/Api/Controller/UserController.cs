@@ -85,18 +85,18 @@ public class UserController : BaseController
     public async Task<ActionResult> RemoveFriend(string friendName)
     {
         var userId = _authService.GetUserIdFromToken();
-        if (userId == null)
+        if (!userId.HasValue)
         {
             return Unauthorized();
         }
 
-        var result = await _userService.RemoveFriend((int)userId, friendName);
+        var result = await _userService.RemoveFriend(userId.Value, friendName);
         if (result.Success)
         {
-            return Ok();
+            return Ok(result);
         }
 
-        return BadRequest(result.ErrorMessage);
+        return BadRequest(result);
     }
 
     [HttpPost("register")]

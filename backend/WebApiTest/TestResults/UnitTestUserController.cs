@@ -655,15 +655,23 @@ public class UserControllerTests
     [TestMethod]
     public async Task TestAddFriend_ReturnsUnauthorized_WhenTokenIsNotPresent()
     {
-        await SetupDataForFriendConnection();
-        InitUserControllerAndSetCurrentUser(null);
-        
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
-            _userServiceMock.Object);
-       
-        
-        var result = await controller.AddFriend("Test");
+        var result = await _controller.AddFriend("Test");
         Assert.IsInstanceOfType(result, typeof(UnauthorizedResult));
+    }
+    
+    [TestMethod]
+    public async Task TestAddFriend_ReturnsBadRequest_WhenUserDoesNotExist()
+    {
+        var userId = 1;
+        _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns(userId);
+        _userServiceMock.Setup(s => s.AddFriend(It.IsAny<int>(), It.IsAny<string>())).Returns(Task.FromResult(new UserResult { Success = false, ErrorMessage = "User not found" }));
+        
+        var result = await _controller.AddFriend("NotExistingUser");
+        Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        var userResult = (UserResult)((BadRequestObjectResult)result).Value!;
+        Assert.IsNotNull(userResult);
+        Assert.IsFalse(userResult.Success);
+        Assert.AreEqual(userResult.ErrorMessage, "User not found");
     }
 
     [TestMethod]
@@ -701,83 +709,154 @@ public class UserControllerTests
     {
         var userId = 1;
         _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns(userId);
-        _userServiceMock.Setup(s => s.AddFriend(It.IsAny<int>(), It.IsAny<string>())).Returns(Task.FromResult(new UserResult { Success = false, ErrorMessage = "User is already a friend"}));
-        
-        
-
-        // await _context.SaveChangesAsync();
+        _userServiceMock.Setup(s => s.AddFriend(It.IsAny<int>(), It.IsAny<string>())).Returns(Task.FromResult(new UserResult { Success = false, ErrorMessage = "Connection already exists"}));
         
         var result = await _controller.AddFriend("Bob");
         Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
         var userResult = (UserResult)((BadRequestObjectResult)result).Value!;
         Assert.IsFalse(userResult.Success);
-        Assert.AreEqual("User is already a friend", userResult.ErrorMessage);
+        Assert.AreEqual("Connection already exists", userResult.ErrorMessage);
     }
-
-    private async Task SetupDataForFriendConnection()
+    
+    [TestMethod]
+    public async Task TestRemoveFriend_ReturnsOk_WhenFriendIsRemoved()
     {
-        try
-        {
-            _context.Users.AddRange(new List<User>
-            {
-                new User
-                {
-                    UserId = 1,
-                    UserName = "Alice",
-                    Email = "alice@example.com",
-                    ProfilePicturePath = "/img/alice.jpg",
-                    UserPassword = "Password123" // Add a dummy password
-                },
-                new User
-                {
-                    UserId = 2,
-                    UserName = "Bob",
-                    Email = "bob@example.com",
-                    ProfilePicturePath = "/img/bob.jpg",
-                    UserPassword = "Password123" // Add a dummy password
-                },
-                new User
-                {
-                    UserId = 3,
-                    UserName = "Test",
-                    Email = "test@example.com",
-                    ProfilePicturePath = "/img/test.jpg",
-                    UserPassword = "Password123" // Add a dummy password
-                }
-            });
-
-            _context.FriendConnection.AddRange(new List<FriendConnection>
-            {
-                new FriendConnection()
-                {
-                    UserId = 1,
-                    FriendId = 2,
-                    HasAcceptedFriendRequest = true,
-                },
-                new FriendConnection()
-                {
-                    UserId = 2,
-                    FriendId = 1,
-                    HasAcceptedFriendRequest = false,
-                }
-            });
-
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+        var userId = 1;
+        _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns(userId);
+        _userServiceMock.Setup(s => s.RemoveFriend(It.IsAny<int>(), It.IsAny<string>())).Returns(Task.FromResult(new UserResult { Success = true }));
         
+        // TODO: define case what should happen if HasAcceptedFiendRequest = true;
+        
+        var result = await _controller.RemoveFriend("Test");
+        
+        Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+        var userResult = (result as OkObjectResult)?.Value as UserResult;
+        Assert.IsNotNull(userResult);
+        Assert.IsTrue(userResult.Success);
     }
-
-    private  void InitUserControllerAndSetCurrentUser(int? userId)
+    
+    [TestMethod]
+    public async Task TestRemoveFriend_ReturnsUnauthorized_WhenTokenIsNotPresent()
     {
-         _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns(userId);
-
-        //return new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
-         //   _userServiceMock.Object);
-
+        var result = await _controller.RemoveFriend("Test");
+        Assert.IsInstanceOfType(result, typeof(UnauthorizedResult));
     }
+
+    [TestMethod]
+    public async Task TestRemoveFriend_ReturnsBadRequest_WhenUserDoesNotExist()
+    {
+        var userId = 1;
+        _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns(userId);
+        _userServiceMock.Setup(s => s.RemoveFriend(It.IsAny<int>(), It.IsAny<string>())).Returns(Task.FromResult(new UserResult { Success = false, ErrorMessage = "User not found" }));
+        
+        var result = await _controller.RemoveFriend("NotExistingUser");
+        Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        var userResult = (result as BadRequestObjectResult)?.Value as UserResult;
+        Assert.IsNotNull(userResult);
+        Assert.IsFalse(userResult.Success);
+        Assert.AreEqual(userResult.ErrorMessage, "User not found");
+    }
+
+    [TestMethod]
+    public async Task TestRemoveFriend_ReturnsBadRequest_WhenFriendIsTheUserItself()
+    {
+        var userId = 1;
+        _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns(userId);
+        _userServiceMock.Setup(s => s.RemoveFriend(It.IsAny<int>(), It.IsAny<string>())).Returns(Task.FromResult(new UserResult { Success = false, ErrorMessage = "User cannot have themselves as friend" }));
+        
+        var result = await _controller.RemoveFriend("Alice");
+        Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        var userResult = (result as BadRequestObjectResult)?.Value as UserResult;
+        Assert.IsNotNull(userResult);
+        Assert.IsFalse(userResult.Success);
+        Assert.AreEqual(userResult.ErrorMessage, "User cannot have themselves as friend");
+    }
+
+    [TestMethod]
+    public async Task TestRemoveFriend_ReturnsBadRequest_WhenConnectionDoesNotExist()
+    {
+        var userId = 1;
+        _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns(userId);
+        _userServiceMock.Setup(s => s.RemoveFriend(It.IsAny<int>(), It.IsAny<string>())).Returns(Task.FromResult(new UserResult { Success = false, ErrorMessage = "Connection does not exist"}));
+        
+        var result = await _controller.RemoveFriend("Bob");
+        Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        var userResult = (result as BadRequestObjectResult)?.Value as UserResult;
+        Assert.IsNotNull(userResult);
+        Assert.IsFalse(userResult.Success);
+        Assert.AreEqual("Connection does not exist", userResult.ErrorMessage);
+    }
+
+    [TestMethod]
+    public async Task TestRemoveFriend_ReturnsBadRequest_WhenFriendDoesNotExist()
+    {
+        var userId = 1;
+        _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns(userId);
+        _userServiceMock.Setup(s => s.RemoveFriend(It.IsAny<int>(), It.IsAny<string>())).Returns(Task.FromResult(new UserResult { Success = false, ErrorMessage = "Friend not found" }));
+        
+        var result = await _controller.RemoveFriend("NotExistingUser");
+        Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+        var userResult = (result as BadRequestObjectResult)?.Value as UserResult;
+        Assert.IsNotNull(userResult);
+        Assert.IsFalse(userResult.Success);
+        Assert.AreEqual(userResult.ErrorMessage, "Friend not found");
+    }
+    
+    // TODO: Reuse this when tests for the UserService are added.
+    // private async Task SetupDataForFriendConnection()
+    // {
+    //     try
+    //     {
+    //         _context.Users.AddRange(new List<User>
+    //         {
+    //             new User
+    //             {
+    //                 UserId = 1,
+    //                 UserName = "Alice",
+    //                 Email = "alice@example.com",
+    //                 ProfilePicturePath = "/img/alice.jpg",
+    //                 UserPassword = "Password123" // Add a dummy password
+    //             },
+    //             new User
+    //             {
+    //                 UserId = 2,
+    //                 UserName = "Bob",
+    //                 Email = "bob@example.com",
+    //                 ProfilePicturePath = "/img/bob.jpg",
+    //                 UserPassword = "Password123" // Add a dummy password
+    //             },
+    //             new User
+    //             {
+    //                 UserId = 3,
+    //                 UserName = "Test",
+    //                 Email = "test@example.com",
+    //                 ProfilePicturePath = "/img/test.jpg",
+    //                 UserPassword = "Password123" // Add a dummy password
+    //             }
+    //         });
+    //
+    //         _context.FriendConnection.AddRange(new List<FriendConnection>
+    //         {
+    //             new FriendConnection()
+    //             {
+    //                 UserId = 1,
+    //                 FriendId = 2,
+    //                 HasAcceptedFriendRequest = true,
+    //             },
+    //             new FriendConnection()
+    //             {
+    //                 UserId = 2,
+    //                 FriendId = 1,
+    //                 HasAcceptedFriendRequest = false,
+    //             }
+    //         });
+    //
+    //         await _context.SaveChangesAsync();
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         Console.WriteLine(e);
+    //         throw;
+    //     }
+    // }
 }
