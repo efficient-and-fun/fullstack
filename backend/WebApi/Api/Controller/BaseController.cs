@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,7 @@ public abstract class BaseController : ControllerBase
 {
     protected readonly ILogger<BaseController> _logger;
     protected readonly IConfiguration _configuration;
-    
+
     protected readonly EfDbContext _context;
 
     protected BaseController(ILogger<BaseController> logger, IConfiguration configuration, EfDbContext context)
@@ -19,6 +20,7 @@ public abstract class BaseController : ControllerBase
         _configuration = configuration;
         _context = context;
     }
+
 
     protected int GetUserId()
     {

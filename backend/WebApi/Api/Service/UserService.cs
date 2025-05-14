@@ -12,7 +12,7 @@ public interface IUserService
     Task<UserResult> RemoveFriend(int userId, string newFriend);
 }
 
-public class UserService
+public class UserService : IUserService
 {
     private readonly EfDbContext _context;
 
@@ -25,41 +25,42 @@ public class UserService
     {
         try
         {
-            var existingFriendRequest =
-                _context.FriendConnection.FirstOrDefault(fc => fc.UserId == userId && fc.Friend.UserName == newFriend);
-
             if (_context.Users.FirstOrDefault(u => u.UserId == userId) == null)
             {
                 return new UserResult { Success = false, ErrorMessage = "User not found" };
             }
 
-            if (existingFriendRequest == null)
+            var existingFriendRequest =
+                _context.FriendConnection.FirstOrDefault(fc => fc.UserId == userId && fc.Friend.UserName == newFriend);
+            if (existingFriendRequest != null)
             {
-                var friendId = GetUserIdFromUserName(newFriend);
-                if (friendId == -1)
-                {
-                    return new UserResult { Success = false, ErrorMessage = "User not found" };
-                }
-
-                _context.FriendConnection.Add(
-                    new FriendConnection()
-                    {
-                        UserId = userId,
-                        FriendId = friendId,
-                        HasAcceptedFriendRequest = true
-                        //TODO: this value needs to be adjust if the notifications are implemented
-                    }
-                );
+                return new UserResult { Success = false, ErrorMessage = "User is already a friend" };
             }
+
+            var friendId = GetUserIdFromUserName(newFriend);
+            if (friendId == -1)
+            {
+                return new UserResult { Success = false, ErrorMessage = "User not found" };
+            }
+
+            _context.FriendConnection.Add(
+                new FriendConnection()
+                {
+                    UserId = userId,
+                    FriendId = friendId,
+                    HasAcceptedFriendRequest = true
+                    //TODO: this value needs to be adjust if the notifications are implemented
+                }
+            );
+
+            await _context.SaveChangesAsync();
+            return new UserResult { Success = true };
         }
+
         catch (Exception e)
         {
-            return new UserResult{ Success = false, ErrorMessage = e.Message };
+            return new UserResult { Success = false, ErrorMessage = e.Message };
         }
-
-
-        await _context.SaveChangesAsync();
-        return new UserResult { Success = true };
     }
 
     public async Task<UserResult> RemoveFriend(int userId, string newFriend)
@@ -75,7 +76,7 @@ public class UserService
             {
                 _context.FriendConnection.Remove(existingFriendRequest);
             }
-            
+
             await _context.SaveChangesAsync();
             return new UserResult { Success = true };
         }

@@ -3,6 +3,7 @@ using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
 
 namespace WebApi;
+
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Api.Common;
 using WebApi.Model;
@@ -12,14 +13,15 @@ public class UserController : BaseController
 {
     private readonly IAuthService _authService;
     private readonly IUserService _userService;
-    
-    public UserController(ILogger<UserController> logger, IConfiguration configuration, EfDbContext context, IAuthService authService, IUserService userService) : base(
+
+    public UserController(ILogger<UserController> logger, IConfiguration configuration, EfDbContext context,
+        IAuthService authService, IUserService userService) : base(
         logger, configuration, context)
     {
         _authService = authService;
         _userService = userService;
     }
-    
+
     [Authorize]
     [HttpGet]
     public async Task<ActionResult<List<UserDto>>> GetUsers()
@@ -35,7 +37,7 @@ public class UserController : BaseController
 
         return Ok(users);
     }
-    
+
     [Authorize]
     [HttpGet("friends")]
     public async Task<ActionResult<List<UserDto>>> GetFriends()
@@ -61,18 +63,20 @@ public class UserController : BaseController
 
     [Authorize]
     [HttpPost("friends")]
-    public async Task<ActionResult> AddFriend(string friendName)
+    public async Task<IActionResult> AddFriend(string friendName)
     {
-        if (GetUserId() == -1)
+        var userId = GetUserId();
+        if (userId == -1)
         {
             return Unauthorized();
         }
-        
-        var result =_userService.AddFriend(GetUserId(), friendName);
-        if (result.Result.Success)
+
+        var result = await _userService.AddFriend(userId, friendName);
+        if (result.Success)
         {
             return Ok();
         }
+
         return BadRequest(result);
     }
 
@@ -85,51 +89,53 @@ public class UserController : BaseController
         {
             return Unauthorized();
         }
-        
+
         var result = await _userService.RemoveFriend(userId, friendName);
         if (result.Success)
         {
             return Ok();
         }
+
         return BadRequest(result);
     }
-    
+
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(new ErrorResponse{ Message = "Invalid request" });
+            return BadRequest(new ErrorResponse { Message = "Invalid request" });
         }
-        
+
         if (request.Password != request.Password2)
         {
-            return BadRequest(new ErrorResponse{ Message = "Passwords do not match." });
+            return BadRequest(new ErrorResponse { Message = "Passwords do not match." });
         }
 
         if (!request.IsAGBAccepted)
         {
-            return BadRequest(new ErrorResponse{ Message = "AGB must be accepted." });
+            return BadRequest(new ErrorResponse { Message = "AGB must be accepted." });
         }
 
-        var authResult = await _authService.RegisterAsync(request.Email, request.Password, request.Username, request.ProfilePicturePath);
+        var authResult = await _authService.RegisterAsync(request.Email, request.Password, request.Username,
+            request.ProfilePicturePath);
         if (!authResult.Success)
         {
-            return BadRequest(new ErrorResponse{ Message = authResult.ErrorMessage });
+            return BadRequest(new ErrorResponse { Message = authResult.ErrorMessage });
         }
 
         return Ok(new TokenResponse { Token = authResult.Token });
     }
-    
-    
+
+
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(new ErrorResponse{ Message = "Invalid request" });
+            return BadRequest(new ErrorResponse { Message = "Invalid request" });
         }
-        
+
         var result = await _authService.LoginAsync(request.Email, request.Password);
 
         if (result.Success)
@@ -139,7 +145,7 @@ public class UserController : BaseController
 
         return Unauthorized(new ErrorResponse { Message = "Invalid credentials" });
     }
-    
+
     [Authorize]
     [HttpPost("validate")]
     public IActionResult Validate()
@@ -150,26 +156,18 @@ public class UserController : BaseController
 
 public class RegisterRequest
 {
-    [Required]
-    public string Username { get; set; }
-    [Required]
-    public string Email { get; set; }
-    [Required]
-    public string Password { get; set; }
-    [Required]
-    public string Password2 { get; set; }
-    [Required]
-    public string ProfilePicturePath { get; set; }
-    [Required]
-    public bool IsAGBAccepted { get; set; }
+    [Required] public string Username { get; set; }
+    [Required] public string Email { get; set; }
+    [Required] public string Password { get; set; }
+    [Required] public string Password2 { get; set; }
+    [Required] public string ProfilePicturePath { get; set; }
+    [Required] public bool IsAGBAccepted { get; set; }
 }
 
 public class LoginRequest
 {
-    [Required]
-    public string Email { get; set; }
-    [Required]
-    public string Password { get; set; }
+    [Required] public string Email { get; set; }
+    [Required] public string Password { get; set; }
 }
 
 public class TokenResponse

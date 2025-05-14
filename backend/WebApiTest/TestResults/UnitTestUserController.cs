@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ public class UserControllerTests
     private EfDbContext _context = null!;
     private Mock<IAuthService> _authServiceMock = null!;
     private Mock<IUserService> _userServiceMock = null!;
+    private Mock<UserController> _userControllerMock = null!;
 
     [TestInitialize]
     public void Setup()
@@ -26,7 +28,8 @@ public class UserControllerTests
         _configMock = new Mock<IConfiguration>();
         _authServiceMock = new Mock<IAuthService>();
         _userServiceMock = new Mock<IUserService>();
-        
+        _userControllerMock = new Mock<UserController>();
+
         var options = new DbContextOptionsBuilder<EfDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
@@ -52,7 +55,8 @@ public class UserControllerTests
                 request.Email, request.Password, request.Username, request.ProfilePicturePath))
             .ReturnsAsync(new AuthResult { Success = true, Token = "dummy-token" });
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
 
         // Act
         var result = await controller.Register(request);
@@ -66,7 +70,7 @@ public class UserControllerTests
         Assert.IsNotNull(response);
         Assert.AreEqual("dummy-token", response.Token);
     }
-    
+
     [TestMethod]
     public async Task TestRegister_ReturnsBadRequest_WhenEmailAlreadyRegistered()
     {
@@ -90,7 +94,8 @@ public class UserControllerTests
                 ErrorMessage = "Email already registered."
             });
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
 
         // Act
         var result = await controller.Register(request);
@@ -104,7 +109,7 @@ public class UserControllerTests
         Assert.IsNotNull(error);
         Assert.AreEqual("Email already registered.", error.Message);
     }
-    
+
     [TestMethod]
     public async Task TestRegister_ReturnsBadRequest_WhenUsernameAlreadyRegistered()
     {
@@ -128,7 +133,8 @@ public class UserControllerTests
                 ErrorMessage = "Username already registered."
             });
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
 
         // Act
         var result = await controller.Register(request);
@@ -142,7 +148,7 @@ public class UserControllerTests
         Assert.IsNotNull(error);
         Assert.AreEqual("Username already registered.", error.Message);
     }
-    
+
     [TestMethod]
     public async Task TestRegister_ReturnsBadRequest_WhenPasswordsDoNotMatch()
     {
@@ -157,7 +163,8 @@ public class UserControllerTests
             IsAGBAccepted = true
         };
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
 
         // Act
         var result = await controller.Register(request);
@@ -186,7 +193,8 @@ public class UserControllerTests
             IsAGBAccepted = false // AGB not accepted
         };
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
 
         // Act
         var result = await controller.Register(request);
@@ -220,7 +228,8 @@ public class UserControllerTests
                 request.Email, request.Password, request.Username, request.ProfilePicturePath))
             .ReturnsAsync(new AuthResult { Success = false, ErrorMessage = "Username already registered." });
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
 
         // Act
         var result = await controller.Register(request);
@@ -247,15 +256,16 @@ public class UserControllerTests
         _authServiceMock.Setup(s => s.LoginAsync(request.Email, request.Password))
             .ReturnsAsync(new AuthResult { Success = false, ErrorMessage = "Token not present" });
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
-        
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
+
         var result = await controller.Login(request);
-        
+
         var unauthorizedResult = result as UnauthorizedObjectResult;
         Assert.IsNotNull(unauthorizedResult);
         Assert.AreEqual(401, unauthorizedResult.StatusCode);
     }
-    
+
     [TestMethod]
     public async Task TestValidate_ReturnsUnauthorized_WhenTokenIsInvalid()
     {
@@ -268,10 +278,11 @@ public class UserControllerTests
         _authServiceMock.Setup(s => s.LoginAsync(request.Email, request.Password))
             .ReturnsAsync(new AuthResult { Success = false, ErrorMessage = "Invalid token" });
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
-        
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
+
         var result = await controller.Login(request);
-        
+
         var unauthorizedResult = result as UnauthorizedObjectResult;
         Assert.IsNotNull(unauthorizedResult);
         Assert.AreEqual(401, unauthorizedResult.StatusCode);
@@ -280,22 +291,22 @@ public class UserControllerTests
     [TestMethod]
     public async Task TestValidate_ReturnsOk_WhenTokenIsValid()
     {
-            var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
 
-            var httpContext = new DefaultHttpContext();
-            httpContext.Request.Headers["Authorization"] = "Bearer validToken";
-            controller.ControllerContext.HttpContext = httpContext;
-            
-            var result = controller.Validate();
-            
-            var okResult = result as OkObjectResult;
-            Assert.IsNotNull(okResult);
-            Assert.AreEqual(200, okResult.StatusCode);
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Headers["Authorization"] = "Bearer validToken";
+        controller.ControllerContext.HttpContext = httpContext;
 
-            var response = okResult.Value;
-            Assert.IsNotNull(response);
-            Assert.AreEqual("Bearer validToken", (string) response);
-        
+        var result = controller.Validate();
+
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(200, okResult.StatusCode);
+
+        var response = okResult.Value;
+        Assert.IsNotNull(response);
+        Assert.AreEqual("Bearer validToken", (string)response);
     }
 
     [TestMethod]
@@ -316,7 +327,8 @@ public class UserControllerTests
                 request.Email, request.Password, request.Username, request.ProfilePicturePath))
             .ReturnsAsync(new AuthResult { Success = true, Token = "dummy-token" });
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
 
         // Act
         var result = await controller.Register(request);
@@ -330,6 +342,7 @@ public class UserControllerTests
         Assert.IsNotNull(response);
         Assert.AreEqual("dummy-token", response.Token);
     }
+
     [TestMethod]
     public async Task TestRegister_ReturnsOk_WhenProfilePicturePathNotExists()
     {
@@ -348,7 +361,8 @@ public class UserControllerTests
                 request.Email, request.Password, request.Username, request.ProfilePicturePath))
             .ReturnsAsync(new AuthResult { Success = true, Token = "dummy-token" });
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
 
         // Act
         var result = await controller.Register(request);
@@ -371,18 +385,19 @@ public class UserControllerTests
             Email = "max@example.com",
             Password = "Password123",
         };
-        
+
         _authServiceMock.Setup(s => s.LoginAsync(request.Email, request.Password))
             .ReturnsAsync(new AuthResult { Success = true, Token = "dummy-token" });
-        
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
-        
+
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
+
         var result = await controller.Login(request);
-        
+
         var loginResult = result as OkObjectResult;
         Assert.IsNotNull(loginResult);
         Assert.AreEqual(200, loginResult.StatusCode);
-        
+
         var response = loginResult.Value as TokenResponse;
         Assert.IsNotNull(response);
         Assert.AreEqual("dummy-token", response.Token);
@@ -396,23 +411,24 @@ public class UserControllerTests
             Email = "max@example.com",
             Password = "Password123",
         };
-        
+
         _authServiceMock.Setup(s => s.LoginAsync(request.Email, request.Password))
             .ReturnsAsync(new AuthResult { Success = false });
-        
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
+
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
         var result = await controller.Login(request);
-        
+
         var unauthorizedResult = result as UnauthorizedObjectResult;
         Assert.IsNotNull(unauthorizedResult);
         Assert.AreEqual(401, unauthorizedResult.StatusCode);
-        
-        
+
+
         var response = unauthorizedResult.Value as ErrorResponse;
         Assert.IsNotNull(response);
         Assert.AreEqual("Invalid credentials", response.Message);
     }
-    
+
     [TestMethod]
     public async Task TestLogin_ReturnsUnauthorized_WhenPasswordForExistingUserIsWrong()
     {
@@ -421,48 +437,51 @@ public class UserControllerTests
             Email = "max@example.com",
             Password = "Password123",
         };
-        
+
         _authServiceMock.Setup(s => s.LoginAsync(request.Email, request.Password))
             .ReturnsAsync(new AuthResult { Success = false });
-        
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
+
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
         var result = await controller.Login(request);
-        
+
         var unauthorizedResult = result as UnauthorizedObjectResult;
         Assert.IsNotNull(unauthorizedResult);
         Assert.AreEqual(401, unauthorizedResult.StatusCode);
-        
-        
+
+
         var response = unauthorizedResult.Value as ErrorResponse;
         Assert.IsNotNull(response);
         Assert.AreEqual("Invalid credentials", response.Message);
     }
+
     [TestMethod]
     public async Task GetUsers_ReturnsOkWithUsers_WhenUsersExist()
     {
         // Arrange
         _context.Users.AddRange(new List<User>
         {
-            new User 
-            { 
-                UserId = 1, 
-                UserName = "Alice", 
-                Email = "alice@example.com", 
+            new User
+            {
+                UserId = 1,
+                UserName = "Alice",
+                Email = "alice@example.com",
                 ProfilePicturePath = "/img/alice.jpg",
                 UserPassword = "Password123" // Add a dummy password
             },
-            new User 
-            { 
-                UserId = 2, 
-                UserName = "Bob", 
-                Email = "bob@example.com", 
+            new User
+            {
+                UserId = 2,
+                UserName = "Bob",
+                Email = "bob@example.com",
                 ProfilePicturePath = "/img/bob.jpg",
                 UserPassword = "Password123" // Add a dummy password
             }
         });
         await _context.SaveChangesAsync();
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
 
         // Act
         var result = await controller.GetUsers();
@@ -481,7 +500,8 @@ public class UserControllerTests
     public async Task GetUsers_ReturnsOkWithEmptyList_WhenNoUsersExist()
     {
         // Arrange
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
 
         // Act
         var result = await controller.GetUsers();
@@ -495,16 +515,16 @@ public class UserControllerTests
         Assert.IsNotNull(users);
         Assert.AreEqual(0, users.Count);
     }
-    
+
     [TestMethod]
     public async Task GetUsers_MapsUserEntityToDtoCorrectly()
     {
         // Arrange
         var user = new User
         {
-            UserId = 1, 
-            UserName = "Alice", 
-            Email = "alice@example.com", 
+            UserId = 1,
+            UserName = "Alice",
+            Email = "alice@example.com",
             ProfilePicturePath = "/img/alice.jpg",
             UserPassword = "Password123" // Add a dummy password
         };
@@ -512,7 +532,8 @@ public class UserControllerTests
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
 
         // Act
         var result = await controller.GetUsers();
@@ -528,7 +549,7 @@ public class UserControllerTests
         Assert.AreEqual(user.Email, dto.Email);
         Assert.AreEqual(user.ProfilePicturePath, dto.ProfilePicturePath);
     }
-    
+
     [TestMethod]
     public async Task GetFriends_ReturnsOkWithFriends_WhenFriendsExist()
     {
@@ -554,7 +575,8 @@ public class UserControllerTests
 
         _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns(userId);
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
 
         // Act
         var result = await controller.GetFriends();
@@ -581,7 +603,8 @@ public class UserControllerTests
 
         _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns(userId);
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
 
         // Act
         var result = await controller.GetFriends();
@@ -602,7 +625,8 @@ public class UserControllerTests
         // Arrange
         _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns((int?)null);
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
 
         // Act
         var result = await controller.GetFriends();
@@ -611,4 +635,114 @@ public class UserControllerTests
         Assert.IsInstanceOfType(result.Result, typeof(UnauthorizedResult));
     }
 
+    [TestMethod]
+    public async Task TestAddFriend_ReturnsOk_WhenFriendIsAdded()
+    {
+        var controller = InitUserControllerAndSetCurrentUser(1);
+        await SetupDataForFriendConnection();
+
+        var result = await controller.AddFriend("Test");
+        Assert.IsInstanceOfType(result, typeof(OkResult));
+    }
+
+    [TestMethod]
+    public async Task TestAddFriend_ReturnsUnauthorized_WhenTokenIsNotPresent()
+    {
+        var controller = InitUserControllerAndSetCurrentUser(null);
+        await SetupDataForFriendConnection();
+
+        var result = await controller.AddFriend("Test");
+        Assert.IsInstanceOfType(result, typeof(UnauthorizedResult));
+    }
+
+    [TestMethod]
+    public async Task TestAddFriend_ReturnsBadRequest_WhenFriendDoesNotExist()
+    {
+        var controller = InitUserControllerAndSetCurrentUser(1);
+        await SetupDataForFriendConnection();
+
+        var result = await controller.AddFriend("NotExistingUser");
+        Assert.IsInstanceOfType(result, typeof(BadRequestResult));
+    }
+
+    [TestMethod]
+    public async Task TestAddFriend_ReturnsBadRequest_WhenFriendIsTheUserItself()
+    {
+        var controller = InitUserControllerAndSetCurrentUser(1);
+        await SetupDataForFriendConnection();
+
+        var result = await controller.AddFriend("Alice");
+        Assert.IsInstanceOfType(result, typeof(BadRequestResult));
+    }
+
+    [TestMethod]
+    public async Task TestAddFriend_ReturnsBadRequest_WhenConnectionAlreadyExists()
+    {
+        var controller = InitUserControllerAndSetCurrentUser(1);
+        await SetupDataForFriendConnection();
+
+        var result = await controller.AddFriend("Bob");
+        Assert.IsInstanceOfType(result, typeof(BadRequestResult));
+    }
+
+    private async Task SetupDataForFriendConnection()
+    {
+        _context.Users.AddRange(new List<User>
+        {
+            new User
+            {
+                UserId = 1,
+                UserName = "Alice",
+                Email = "alice@example.com",
+                ProfilePicturePath = "/img/alice.jpg",
+                UserPassword = "Password123" // Add a dummy password
+            },
+            new User
+            {
+                UserId = 2,
+                UserName = "Bob",
+                Email = "bob@example.com",
+                ProfilePicturePath = "/img/bob.jpg",
+                UserPassword = "Password123" // Add a dummy password
+            },
+            new User
+            {
+                UserId = 3,
+                UserName = "Test",
+                Email = "test@example.com",
+                ProfilePicturePath = "/img/test.jpg",
+                UserPassword = "Password123" // Add a dummy password
+            }
+        });
+
+        _context.FriendConnection.AddRange(new List<FriendConnection>
+        {
+            new FriendConnection()
+            {
+                UserId = 1,
+                FriendId = 2,
+                HasAcceptedFriendRequest = true,
+            },
+            new FriendConnection()
+            {
+                UserId = 2,
+                FriendId = 1,
+                HasAcceptedFriendRequest = false,
+            }
+        });
+
+        await _context.SaveChangesAsync();
+    }
+
+    private UserController InitUserControllerAndSetCurrentUser(int? userId)
+    {
+        _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns(userId);
+        //_userControllerMock.Setup(c => c.GetUserId()).Returns((int) userId);
+        //TODO: @Dustin Das funktioniert nur mit public 
+
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
+
+        return controller;
+    }
 }
