@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Elfie.Serialization;
 using Microsoft.Extensions.Logging;
 using Moq;
 using WebApi;
@@ -19,7 +20,6 @@ public class UserControllerTests
     private EfDbContext _context = null!;
     private Mock<IAuthService> _authServiceMock = null!;
     private Mock<IUserService> _userServiceMock = null!;
-    private Mock<UserController> _userControllerMock = null!;
 
     [TestInitialize]
     public void Setup()
@@ -28,7 +28,6 @@ public class UserControllerTests
         _configMock = new Mock<IConfiguration>();
         _authServiceMock = new Mock<IAuthService>();
         _userServiceMock = new Mock<IUserService>();
-        _userControllerMock = new Mock<UserController>();
 
         var options = new DbContextOptionsBuilder<EfDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
@@ -638,19 +637,31 @@ public class UserControllerTests
     [TestMethod]
     public async Task TestAddFriend_ReturnsOk_WhenFriendIsAdded()
     {
-        var controller = InitUserControllerAndSetCurrentUser(1);
+        
+        _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns(1);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
         await SetupDataForFriendConnection();
 
+        
         var result = await controller.AddFriend("Test");
         Assert.IsInstanceOfType(result, typeof(OkResult));
+        
+        var friendConnection = await _context.FriendConnection.FirstOrDefaultAsync(fc => fc.UserId == 1 && fc.FriendId == 3);
+        Assert.IsNotNull(friendConnection);
+        Assert.IsTrue(friendConnection.HasAcceptedFriendRequest);
     }
 
     [TestMethod]
     public async Task TestAddFriend_ReturnsUnauthorized_WhenTokenIsNotPresent()
     {
-        var controller = InitUserControllerAndSetCurrentUser(null);
         await SetupDataForFriendConnection();
-
+        InitUserControllerAndSetCurrentUser(null);
+        
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
+       
+        
         var result = await controller.AddFriend("Test");
         Assert.IsInstanceOfType(result, typeof(UnauthorizedResult));
     }
@@ -658,8 +669,15 @@ public class UserControllerTests
     [TestMethod]
     public async Task TestAddFriend_ReturnsBadRequest_WhenFriendDoesNotExist()
     {
-        var controller = InitUserControllerAndSetCurrentUser(1);
         await SetupDataForFriendConnection();
+        var controller =  new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+            _userServiceMock.Object);
+        InitUserControllerAndSetCurrentUser(1);
+        
+        if (_context.FriendConnection.Any(fc => fc.Friend.UserId == 1))
+        {
+            //Test
+        }
 
         var result = await controller.AddFriend("NotExistingUser");
         Assert.IsInstanceOfType(result, typeof(BadRequestResult));
@@ -668,8 +686,10 @@ public class UserControllerTests
     [TestMethod]
     public async Task TestAddFriend_ReturnsBadRequest_WhenFriendIsTheUserItself()
     {
-        var controller = InitUserControllerAndSetCurrentUser(1);
         await SetupDataForFriendConnection();
+        InitUserControllerAndSetCurrentUser(1);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object); 
+            
 
         var result = await controller.AddFriend("Alice");
         Assert.IsInstanceOfType(result, typeof(BadRequestResult));
@@ -678,71 +698,81 @@ public class UserControllerTests
     [TestMethod]
     public async Task TestAddFriend_ReturnsBadRequest_WhenConnectionAlreadyExists()
     {
-        var controller = InitUserControllerAndSetCurrentUser(1);
         await SetupDataForFriendConnection();
-
+        InitUserControllerAndSetCurrentUser(1);
+        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object, _userServiceMock.Object);
+       
+        
         var result = await controller.AddFriend("Bob");
+        Assert.IsNull(result, "The result should not be null.");
+        
         Assert.IsInstanceOfType(result, typeof(BadRequestResult));
     }
 
     private async Task SetupDataForFriendConnection()
     {
-        _context.Users.AddRange(new List<User>
+        try
         {
-            new User
+            _context.Users.AddRange(new List<User>
             {
-                UserId = 1,
-                UserName = "Alice",
-                Email = "alice@example.com",
-                ProfilePicturePath = "/img/alice.jpg",
-                UserPassword = "Password123" // Add a dummy password
-            },
-            new User
-            {
-                UserId = 2,
-                UserName = "Bob",
-                Email = "bob@example.com",
-                ProfilePicturePath = "/img/bob.jpg",
-                UserPassword = "Password123" // Add a dummy password
-            },
-            new User
-            {
-                UserId = 3,
-                UserName = "Test",
-                Email = "test@example.com",
-                ProfilePicturePath = "/img/test.jpg",
-                UserPassword = "Password123" // Add a dummy password
-            }
-        });
+                new User
+                {
+                    UserId = 1,
+                    UserName = "Alice",
+                    Email = "alice@example.com",
+                    ProfilePicturePath = "/img/alice.jpg",
+                    UserPassword = "Password123" // Add a dummy password
+                },
+                new User
+                {
+                    UserId = 2,
+                    UserName = "Bob",
+                    Email = "bob@example.com",
+                    ProfilePicturePath = "/img/bob.jpg",
+                    UserPassword = "Password123" // Add a dummy password
+                },
+                new User
+                {
+                    UserId = 3,
+                    UserName = "Test",
+                    Email = "test@example.com",
+                    ProfilePicturePath = "/img/test.jpg",
+                    UserPassword = "Password123" // Add a dummy password
+                }
+            });
 
-        _context.FriendConnection.AddRange(new List<FriendConnection>
+            _context.FriendConnection.AddRange(new List<FriendConnection>
+            {
+                new FriendConnection()
+                {
+                    UserId = 1,
+                    FriendId = 2,
+                    HasAcceptedFriendRequest = true,
+                },
+                new FriendConnection()
+                {
+                    UserId = 2,
+                    FriendId = 1,
+                    HasAcceptedFriendRequest = false,
+                }
+            });
+
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception e)
         {
-            new FriendConnection()
-            {
-                UserId = 1,
-                FriendId = 2,
-                HasAcceptedFriendRequest = true,
-            },
-            new FriendConnection()
-            {
-                UserId = 2,
-                FriendId = 1,
-                HasAcceptedFriendRequest = false,
-            }
-        });
-
-        await _context.SaveChangesAsync();
+            Console.WriteLine(e);
+            throw;
+        }
+        
     }
 
-    private UserController InitUserControllerAndSetCurrentUser(int? userId)
+    private  void InitUserControllerAndSetCurrentUser(int? userId)
     {
-        _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns(userId);
-        //_userControllerMock.Setup(c => c.GetUserId()).Returns((int) userId);
-        //TODO: @Dustin Das funktioniert nur mit public 
+         _authServiceMock.Setup(s => s.GetUserIdFromToken()).Returns(userId);
 
-        var controller = new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
-            _userServiceMock.Object);
+        //return new UserController(_loggerMock.Object, _configMock.Object, _context, _authServiceMock.Object,
+         //   _userServiceMock.Object);
 
-        return controller;
     }
 }

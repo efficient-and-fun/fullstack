@@ -65,13 +65,13 @@ public class UserController : BaseController
     [HttpPost("friends")]
     public async Task<IActionResult> AddFriend(string friendName)
     {
-        var userId = GetUserId();
-        if (userId == -1)
+        var userId = _authService.GetUserIdFromToken();
+        if (userId == null)
         {
             return Unauthorized();
         }
 
-        var result = await _userService.AddFriend(userId, friendName);
+        var result = await _userService.AddFriend((int)userId, friendName);
         if (result.Success)
         {
             return Ok();
@@ -84,19 +84,19 @@ public class UserController : BaseController
     [HttpDelete("friends")]
     public async Task<ActionResult> RemoveFriend(string friendName)
     {
-        var userId = GetUserId();
-        if (userId == -1)
+        var userId = _authService.GetUserIdFromToken();
+        if (userId == null)
         {
             return Unauthorized();
         }
 
-        var result = await _userService.RemoveFriend(userId, friendName);
+        var result = await _userService.RemoveFriend((int)userId, friendName);
         if (result.Success)
         {
             return Ok();
         }
 
-        return BadRequest(result);
+        return BadRequest(result.ErrorMessage);
     }
 
     [HttpPost("register")]

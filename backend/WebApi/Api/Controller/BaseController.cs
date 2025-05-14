@@ -20,12 +20,4 @@ public abstract class BaseController : ControllerBase
         _configuration = configuration;
         _context = context;
     }
-
-
-    protected int GetUserId()
-    {
-        var identityClaim = this.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        if (identityClaim == null) return -1;
-        return int.Parse(identityClaim.Value);
-    }
 }

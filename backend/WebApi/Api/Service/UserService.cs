@@ -29,7 +29,7 @@ public class UserService : IUserService
             {
                 return new UserResult { Success = false, ErrorMessage = "User not found" };
             }
-
+            
             var existingFriendRequest =
                 _context.FriendConnection.FirstOrDefault(fc => fc.UserId == userId && fc.Friend.UserName == newFriend);
             if (existingFriendRequest != null)
@@ -42,8 +42,13 @@ public class UserService : IUserService
             {
                 return new UserResult { Success = false, ErrorMessage = "User not found" };
             }
+            
+            if (userId == friendId)
+            {
+                return new UserResult { Success = false, ErrorMessage = "Find real friends" };
+            }
 
-            _context.FriendConnection.Add(
+             _context.FriendConnection.Add(
                 new FriendConnection()
                 {
                     UserId = userId,
