@@ -63,18 +63,18 @@ public class UserController : BaseController
 
     [Authorize]
     [HttpPost("friends")]
-    public async Task<IActionResult> AddFriend(string friendName)
+    public async Task<ActionResult> AddFriend(string friendName)
     {
         var userId = _authService.GetUserIdFromToken();
-        if (userId == null)
+        if (!userId.HasValue)
         {
             return Unauthorized();
         }
 
-        var result = await _userService.AddFriend((int)userId, friendName);
+        var result = await _userService.AddFriend(userId.Value, friendName);
         if (result.Success)
         {
-            return Ok();
+            return Ok(result);
         }
 
         return BadRequest(result);
