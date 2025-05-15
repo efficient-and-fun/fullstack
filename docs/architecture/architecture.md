@@ -43,12 +43,8 @@ difficulty in keeping track of event details. Our app addresses these challenges
 - Continuous Integration and Delivery (CI/CD) is enforced via **GitHub Actions** workflows.
 - Contributions follow a branching strategy and pull request process defined by the team.
 
-### 2.3 Legal and Licensing Constraints
-- The codebase and dependencies must comply with **open-source licenses** compatible with **MIT** or similar.
-- All third-party packages must be vetted for license compliance before integration.
-
 ### 2.4 Standards and Guidelines
-- Frontend UI must comply with **mobile-first design principles** (responsive layout, accessibility considerations).
+- Frontend UI must comply with **mobile-first design principles**.
 - Backend APIs should follow RESTful principles with JSON as the data format.
 - Code quality is enforced using linters and formatters (e.g., ESLint, Prettier for frontend; .NET analyzers for backend).
 - Infrastructure must be fully **declarative**, version-controlled, and reproducible via Helm and Argo CD.
@@ -58,6 +54,7 @@ difficulty in keeping track of event details. Our app addresses these challenges
 - **.NET SDK** is required for backend development and API generation.
 - **Docker**, **Kubernetes**, **Helm**, and **Argo CD** form the deployment toolchain.
 - Project management and issue tracking are conducted through **GitHub Projects** and Issues.
+- 
 ## 3. Context and Scope
 ## 4. Solution Strategy
 ## 5. Building Block View
