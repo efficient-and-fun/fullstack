@@ -26,6 +26,38 @@ difficulty in keeping track of event details. Our app addresses these challenges
                                                                                                            
 
 ## 2. Constraints
+
+### 2.1 Technical Constraints
+- **Frontend** is implemented using **JavaScript with React**, built and bundled via **Vite**.
+- **Backend** is developed using **.NET**.
+- The application must run in modern **browsers** and support a **mobile-first** responsive design.
+- **PostgreSQL** is used as the relational database system.
+- **Docker** is used for containerization across environments.
+- **Helm Charts** are used for Kubernetes deployment configuration.
+- The application is deployed using **Argo CD** (GitOps) and **GitHub Actions**.
+- The static frontend build is also deployed via **GitHub Pages** when needed.
+
+### 2.2 Organizational Constraints
+- The project is developed collaboratively by a **team of 9 people**.
+- Source code and collaboration are managed through **GitHub**.
+- Continuous Integration and Delivery (CI/CD) is enforced via **GitHub Actions** workflows.
+- Contributions follow a branching strategy and pull request process defined by the team.
+
+### 2.3 Legal and Licensing Constraints
+- The codebase and dependencies must comply with **open-source licenses** compatible with **MIT** or similar.
+- All third-party packages must be vetted for license compliance before integration.
+
+### 2.4 Standards and Guidelines
+- Frontend UI must comply with **mobile-first design principles** (responsive layout, accessibility considerations).
+- Backend APIs should follow RESTful principles with JSON as the data format.
+- Code quality is enforced using linters and formatters (e.g., ESLint, Prettier for frontend; .NET analyzers for backend).
+- Infrastructure must be fully **declarative**, version-controlled, and reproducible via Helm and Argo CD.
+
+### 2.5 Tooling Constraints
+- **Vite** is required for frontend development and hot module replacement.
+- **.NET SDK** is required for backend development and API generation.
+- **Docker**, **Kubernetes**, **Helm**, and **Argo CD** form the deployment toolchain.
+- Project management and issue tracking are conducted through **GitHub Projects** and Issues.
 ## 3. Context and Scope
 ## 4. Solution Strategy
 ## 5. Building Block View
