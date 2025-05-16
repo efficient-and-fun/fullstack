@@ -1,5 +1,5 @@
 import { MeetUp } from "../models/MeetUp";
-import { MeetUpDetail } from "../models/MeetUpDetails";
+import { MeetUpDetail, NewMeetUpDetail } from "../models/MeetUpDetails";
 import { Dayjs } from "dayjs";
 
 function meetUpsApiCall(
@@ -65,13 +65,11 @@ function meetUpApiCall(
 }
 
 function updateMeetUpApiCall(
-  baseURL: string,
-  userId: number,
   meetUp: MeetUpDetail,
   onSuccess: () => void,
   onError?: (error: unknown) => void
 ) {
-  const url = `${baseURL}/${userId}/${meetUp.meetUpId}`;
+  const url = `/api/meetup/${meetUp.meetUpId}`;
 
   fetch(url, {
     method: "PUT",
@@ -106,4 +104,44 @@ function updateMeetUpApiCall(
     });
 }
 
-export { meetUpsApiCall, meetUpApiCall, updateMeetUpApiCall }
+function createMeetUpApiCall(
+  meetUp: NewMeetUpDetail,
+  onSuccess: () => void,
+  onError?: (error: unknown) => void
+) {
+  const url = `/api/meetups`;
+
+  fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      ...meetUp,
+      dateTimeFrom: meetUp.dateTimeFrom
+        ? new Date(meetUp.dateTimeFrom).toISOString()
+        : null,
+      dateTimeTo: meetUp.dateTimeTo
+        ? new Date(meetUp.dateTimeTo).toISOString()
+        : null,
+    }),
+  })
+    .then(async (res) => {
+      if (!res.ok) {
+        throw new Error(`Fehler createMeetUpApiCall (Status ${res.status})`);
+      }
+
+      const contentLength = res.headers.get("Content-Length");
+      if (contentLength && parseInt(contentLength) > 0) {
+        await res.json(); // handle returned data if needed
+      }
+
+      onSuccess();
+    })
+    .catch((err) => {
+      console.error(err);
+      if (onError) onError(err);
+    });
+}
+
+export { meetUpsApiCall, meetUpApiCall, updateMeetUpApiCall, createMeetUpApiCall }

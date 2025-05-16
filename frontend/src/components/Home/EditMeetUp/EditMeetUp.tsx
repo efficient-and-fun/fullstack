@@ -3,7 +3,7 @@ import './EditMeetUp.css';
 import { Box, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { MeetUpDetail } from "../../../models/MeetUpDetails";
-import { meetUpApiCall, updateMeetUpApiCall } from "../../../api/meetUpApi";
+import { createMeetUpApiCall, meetUpApiCall, updateMeetUpApiCall } from "../../../api/meetUpApi";
 
 const EditMeetUp = () => {
     const { meetUpId } = useParams<{ meetUpId: string }>();
@@ -41,12 +41,14 @@ const EditMeetUp = () => {
         console.log("Submitted data:", meetUp);
         if (!isNew) {
             updateMeetUpApiCall(
-                "/api/meetup",
-                1, // userId
                 meetUp,
                 () => navigate(`/${meetUpId}`),
                 (err) => alert(err)
             );
+        } else {
+            createMeetUpApiCall(meetUp,
+                () => navigate(`/${meetUpId}`),
+                (err) => alert(err))
         }
     };
 
