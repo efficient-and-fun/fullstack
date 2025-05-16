@@ -17,14 +17,13 @@ const EditMeetUp = () => {
         dateTimeTo: null,
         meetUpLocation: '',
         description: '',
-        checklist: '',
+        checkList: '',
         maxNumberOfParticipants: null
     });
 
     useEffect(() => {
         if (!isNew) {
-            const url = "/api/meetUp/1/";
-            meetUpApiCall(url, setMeetUp, parseInt(meetUpId!));
+            meetUpApiCall(setMeetUp, parseInt(meetUpId!));
         }
     }, [isNew, meetUpId]);
 
@@ -46,9 +45,11 @@ const EditMeetUp = () => {
                 (err) => alert(err)
             );
         } else {
-            createMeetUpApiCall(meetUp,
-                () => navigate(`/${meetUpId}`),
-                (err) => alert(err))
+            createMeetUpApiCall(
+                meetUp,
+                (newId) => navigate(`/${newId}`),
+                (err) => alert(err)
+            );
         }
     };
 
@@ -103,9 +104,9 @@ const EditMeetUp = () => {
                         onChange={handleChange}
                     />
                     <input
-                        name="Checklist"
+                        name="CheckList"
                         placeholder="Checklist"
-                        value={meetUp.checklist}
+                        value={meetUp.checkList}
                         onChange={handleChange}
                     />
                     <input

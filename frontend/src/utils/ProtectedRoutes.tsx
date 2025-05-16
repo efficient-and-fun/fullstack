@@ -8,7 +8,7 @@ const ProtectedRoutes = () => {
     const verifyToken = async () => {
       if (token) {
         try {
-          const response = await fetch("api/users/validate", {
+          const response = await fetch("/api/users/validate", {
             method: "POST",
             headers: {
               Authorization: `Bearer ${token}`,

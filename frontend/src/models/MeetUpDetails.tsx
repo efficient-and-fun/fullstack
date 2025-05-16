@@ -5,7 +5,7 @@ export interface MeetUpDetail {
     dateTimeTo?: Date | null;
     meetUpLocation: string;
     description?: string;
-    checklist?: string;
+    checkList?: string;
     maxNumberOfParticipants: number;
 }
 
@@ -15,6 +15,6 @@ export interface MeetUpDetail {
     dateTimeTo?: Date | null;
     meetUpLocation: string;
     description?: string;
-    checklist?: string;
+    checkList?: string;
     maxNumberOfParticipants: number;
 }
