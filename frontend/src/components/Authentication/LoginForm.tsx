@@ -6,7 +6,7 @@ const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<string[]>([]); // Errors are stored here
-  var url = "/api/user/login";
+  var url = "/api/users/login";
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {

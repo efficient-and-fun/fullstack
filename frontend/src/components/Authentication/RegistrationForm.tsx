@@ -10,7 +10,7 @@ const RegisterForm = () => {
   const [isAGBAccepted, setAGBAccepted] = useState(true);
   const [errors, setErrors] = useState<string[]>([]); // Errors are stored here
   const navigate = useNavigate();
-  const url = '/api/user/register';
+  const url = '/api/users/register';
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
