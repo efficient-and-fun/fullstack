@@ -1,6 +1,9 @@
 import { MeetUp } from "../models/MeetUp";
 import { MeetUpDetail } from "../models/MeetUpDetails";
 import { Dayjs } from "dayjs";
+import { jwtDecode } from "jwt-decode";
+
+const baseUserURL = "/api/users";
 
 function meetUpsApiCall(
   baseURL: string,
@@ -25,9 +28,7 @@ function meetUpsApiCall(
         dateTimeFrom: meetUp.dateTimeFrom
           ? new Date(meetUp.dateTimeFrom)
           : null,
-        dateTimeTo: meetUp.dateTimeTo
-          ? new Date(meetUp.dateTimeTo)
-          : null,
+        dateTimeTo: meetUp.dateTimeTo ? new Date(meetUp.dateTimeTo) : null,
       }));
       setEvents(meetUps);
     })
@@ -61,7 +62,7 @@ function meetUpApiCall(
     .catch((err) => {
       console.log(err);
     })
-    .finally(() => { });
+    .finally(() => {});
 }
 
 function updateMeetUpApiCall(
@@ -106,4 +107,41 @@ function updateMeetUpApiCall(
     });
 }
 
-export { meetUpsApiCall, meetUpApiCall, updateMeetUpApiCall }
+async function authApiCall(endpoint: string, body: string) {
+  try {
+    const url = baseUserURL + endpoint;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: body,
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      localStorage.setItem("authToken", data.token);
+      saveUserId(data.token);
+      return {ok: true, message: "API call succeded."}
+    } else {
+      return { ok: false, message: data.message };
+    }
+  } catch (error) {
+    // Catch network or other unexpected error:
+    console.error("Error during api call:", error);
+  }
+}
+
+async function saveUserId(tokenBase64: string) {
+  interface MyClaims {
+    email: string;
+    id: string;
+    expireDate: string;
+  }
+  const payload = jwtDecode<MyClaims>(tokenBase64);
+  const userId =
+    payload[
+      "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+    ];
+  localStorage.setItem("userId", userId);
+}
+
+export { meetUpsApiCall, meetUpApiCall, updateMeetUpApiCall, authApiCall };
