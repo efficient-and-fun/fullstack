@@ -3,14 +3,22 @@ import { MeetUpDetail, NewMeetUpDetail } from "../models/MeetUpDetails";
 import { Dayjs } from "dayjs";
 import { jwtDecode } from "jwt-decode";
 
-const baseUserURL = "/api/users";
+const API_BASE_USERS = "/api/users";
+const API_BASE_MEETUPS = "/api/meetups";
 
-const API_BASE = "/api/meetups";
 const AUTH_HEADER = () => ({
+  "Content-Type": "application/json",
   Authorization: `Bearer ${localStorage.getItem("authToken")}`,
 });
 
-const parseMeetUpDates = <T extends { dateTimeFrom?: string | Date | null; dateTimeTo?: string | Date | null }>(meetUp: T): T => ({
+const parseMeetUpDates = <
+  T extends {
+    dateTimeFrom?: string | Date | null;
+    dateTimeTo?: string | Date | null;
+  }
+>(
+  meetUp: T
+): T => ({
   ...meetUp,
   dateTimeFrom: meetUp.dateTimeFrom ? new Date(meetUp.dateTimeFrom) : null,
   dateTimeTo: meetUp.dateTimeTo ? new Date(meetUp.dateTimeTo) : null,
@@ -20,7 +28,9 @@ async function meetUpsApiCall(
   setEvents: React.Dispatch<React.SetStateAction<MeetUp[]>>,
   selectedDate: Dayjs
 ) {
-  const url = `${API_BASE}/?currentDate=${selectedDate.format("YYYY-MM-DD")}`;
+  const url = `${API_BASE_MEETUPS}/?currentDate=${selectedDate.format(
+    "YYYY-MM-DD"
+  )}`;
 
   try {
     const res = await fetch(url, {
@@ -29,7 +39,8 @@ async function meetUpsApiCall(
     });
 
     if (res.status === 404) return setEvents([]);
-    if (!res.ok) throw new Error(`Fehler meetUpsApiCall (Status ${res.status})`);
+    if (!res.ok)
+      throw new Error(`Fehler meetUpsApiCall (Status ${res.status})`);
 
     const data = (await res.json()) as MeetUp[];
     const meetUps = data.map(parseMeetUpDates);
@@ -45,7 +56,7 @@ async function meetUpApiCall(
   id: number
 ) {
   try {
-    const res = await fetch(`${API_BASE}/${id}`, {
+    const res = await fetch(`${API_BASE_MEETUPS}/${id}`, {
       method: "GET",
       headers: AUTH_HEADER(),
     });
@@ -64,23 +75,27 @@ async function updateMeetUpApiCall(
   onSuccess: () => void,
   onError?: (error: unknown) => void
 ) {
-  const url = `${API_BASE}/${meetUp.meetUpId}`;
+  const url = `${API_BASE_MEETUPS}/${meetUp.meetUpId}`;
 
   try {
     const res = await fetch(url, {
       method: "PUT",
       headers: {
-        "Content-Type": "application/json",
         ...AUTH_HEADER(),
       },
       body: JSON.stringify({
         ...meetUp,
-        dateTimeFrom: meetUp.dateTimeFrom ? new Date(meetUp.dateTimeFrom).toISOString() : null,
-        dateTimeTo: meetUp.dateTimeTo ? new Date(meetUp.dateTimeTo).toISOString() : null,
+        dateTimeFrom: meetUp.dateTimeFrom
+          ? new Date(meetUp.dateTimeFrom).toISOString()
+          : null,
+        dateTimeTo: meetUp.dateTimeTo
+          ? new Date(meetUp.dateTimeTo).toISOString()
+          : null,
       }),
     });
 
-    if (!res.ok) throw new Error(`Fehler updateMeetUpApiCall (Status ${res.status})`);
+    if (!res.ok)
+      throw new Error(`Fehler updateMeetUpApiCall (Status ${res.status})`);
 
     const contentLength = res.headers.get("Content-Length");
     if (contentLength && parseInt(contentLength) > 0) await res.json();
@@ -99,22 +114,26 @@ async function createMeetUpApiCall(
 ) {
   const payload = {
     ...fullMeetUp,
-    dateTimeFrom: fullMeetUp.dateTimeFrom ? new Date(fullMeetUp.dateTimeFrom).toISOString() : null,
-    dateTimeTo: fullMeetUp.dateTimeTo ? new Date(fullMeetUp.dateTimeTo).toISOString() : null,
+    dateTimeFrom: fullMeetUp.dateTimeFrom
+      ? new Date(fullMeetUp.dateTimeFrom).toISOString()
+      : null,
+    dateTimeTo: fullMeetUp.dateTimeTo
+      ? new Date(fullMeetUp.dateTimeTo).toISOString()
+      : null,
     maxNumberOfParticipants: Number(fullMeetUp.maxNumberOfParticipants),
   };
 
   try {
-    const res = await fetch(API_BASE, {
+    const res = await fetch(API_BASE_MEETUPS, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         ...AUTH_HEADER(),
       },
       body: JSON.stringify(payload),
     });
 
-    if (!res.ok) throw new Error(`Fehler createMeetUpApiCall (Status ${res.status})`);
+    if (!res.ok)
+      throw new Error(`Fehler createMeetUpApiCall (Status ${res.status})`);
 
     const data = await res.json();
     onSuccess(data);
@@ -124,23 +143,70 @@ async function createMeetUpApiCall(
   }
 }
 
-async function authApiCall(endpoint: string, body: string) {
+async function authApiCall(
+  endpoint: string,
+  body: string
+) {
+  const url = API_BASE_USERS + endpoint;
   try {
-    const url = baseUserURL + endpoint;
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: body,
     });
-
+    
     const data = await res.json();
     if (res.ok) {
       localStorage.setItem("authToken", data.token);
-      saveUserId(data.token);
-      return {ok: true, message: "API call succeded."}
+      if (localStorage.getItem("userId") === null) {
+        saveUserId(data.token);
+      }
+      return { ok: true, message: "API call succeded." };
     } else {
       return { ok: false, message: data.message };
     }
+  } catch (error) {
+    // Catch network or other unexpected error:
+    console.error("Error during api call:", error);
+  }
+}
+
+async function validateApiCall(endpoint: string) {
+  const url = API_BASE_USERS + endpoint;
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: AUTH_HEADER(),
+      body: ""
+    });
+
+    if (res.ok) {
+      return {ok: true, message: "API call succeded."};
+    } else {
+      return {ok: false, message: res.status};
+    }
+  } catch (error) {
+    console.error("Error during api call:", error);
+  }
+
+}
+
+async function friendsApiCall(endpoint: string, method: string, payload: string = "") {
+  const body = payload === ""? null : "body: " + JSON.stringify(payload);
+  try {
+    const url = API_BASE_USERS + endpoint;
+    const res = await fetch(url, {
+      method: method,
+      headers: AUTH_HEADER(),
+      body
+    });
+
+    if (!res.ok) {
+      throw new Error(`Fehler friendsApiCall (Status ${res.status})`);
+    } else {
+      return res;
+    }
+    
   } catch (error) {
     // Catch network or other unexpected error:
     console.error("Error during api call:", error);
@@ -161,4 +227,12 @@ async function saveUserId(tokenBase64: string) {
   localStorage.setItem("userId", userId);
 }
 
-export { meetUpsApiCall, meetUpApiCall, updateMeetUpApiCall, authApiCall };
+export {
+  meetUpsApiCall,
+  meetUpApiCall,
+  createMeetUpApiCall,
+  updateMeetUpApiCall,
+  authApiCall,
+  validateApiCall,
+  friendsApiCall,
+};

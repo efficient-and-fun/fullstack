@@ -36,8 +36,6 @@ const LoginForm = () => {
     });
     const data = await authApiCall(endpoint, userData);
 
-    console.log(data);
-
     if (data.ok) {
       navigate("/");
     } else {

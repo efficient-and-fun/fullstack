@@ -1,29 +1,22 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { validateApiCall } from "../api/meetUpApi";
 const ProtectedRoutes = () => {
   const token = localStorage.getItem("authToken");
   const navigate = useNavigate();
   const location = useLocation();
+  const endpoint = "/validate";
   useEffect(() => {
     const verifyToken = async () => {
       if (token) {
-        try {
-          const response = await fetch("/api/users/validate", {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+        const data = await validateApiCall(endpoint);
 
-          if (!response.ok) {
-            localStorage.removeItem("authToken");
-            navigate("/login", { replace: true });
-          }
-        } catch (error) {
-          console.error("Token verification failed:", error);
+        if (!data.ok) {
           localStorage.removeItem("authToken");
           navigate("/login", { replace: true });
         }
+
+
       } else {
         navigate("/login", { replace: true });
       }
