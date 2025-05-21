@@ -9,7 +9,34 @@ namespace WebApi;
 public class MeetUpController : BaseController
 {
     public MeetUpController(ILogger<MeetUpController> logger, IConfiguration configuration, EfDbContext context) : base(logger, configuration, context) { }
-    private static ActionResult ValidateMeetupDetail(MeetUpDetailDto meetupDto)
+    
+	private static ActionResult ValidateMeetupDetail(MeetUpDetailDto meetupDto)
+    {
+        // Validate if meetup name or description is empty
+        if (string.IsNullOrWhiteSpace(meetupDto.MeetUpName) || string.IsNullOrWhiteSpace(meetupDto.Description))
+        {
+            return new BadRequestObjectResult("MeetUp name and description are required.");
+        }
+        // Validate if start or end times are non-default values
+        if (meetupDto.DateTimeFrom == default || meetupDto.DateTimeTo == default)
+        {
+            return new BadRequestObjectResult("MeetUp start and end times are required.");
+        }
+        // Validate if start time is before end time
+        if (meetupDto.DateTimeFrom >= meetupDto.DateTimeTo)
+        {
+            return new BadRequestObjectResult("MeetUp start time must be before end time.");
+        }
+        
+        // If the number of participants is less than or equal to 0, set it to null
+        if (meetupDto.MaxNumberOfParticipants <= 0)
+        {
+            meetupDto.MaxNumberOfParticipants = null;
+        }
+        return new OkResult();
+    }
+
+	private static ActionResult ValidateMeetupCreationDetail(MeetUpCreationDto meetupDto)
     {
         // Validate if meetup name or description is empty
         if (string.IsNullOrWhiteSpace(meetupDto.MeetUpName) || string.IsNullOrWhiteSpace(meetupDto.Description))
@@ -75,7 +102,7 @@ public class MeetUpController : BaseController
     /// Returns 200 and the ID of the newly created MeetUp on success, 400 if input is invalid, or 404 if the user doesn't exist.
     /// </returns>
     [HttpPost, Route("{userId:int}")]
-    public ActionResult<int> CreateMeetUp([FromRoute] int userId, [FromBody] MeetUpDetailDto meetupDto)
+    public ActionResult<int> CreateMeetUp([FromRoute] int userId, [FromBody] MeetUpCreationDto meetupDto)
     {
         // Validate the user ID
         var validationUserIdResult = ValidateUserId(userId);
@@ -90,7 +117,7 @@ public class MeetUpController : BaseController
         }
 
         // Validate the input data
-        var validationResult = ValidateMeetupDetail(meetupDto);
+        var validationResult = ValidateMeetupCreationDetail(meetupDto);
         if (validationResult is not OkResult)
         {
             return validationResult;
@@ -235,9 +262,8 @@ public class MeetUpController : BaseController
             join u in _context.Users
                 on p.UserId equals u.UserId
             where u.UserId == userId && m.MeetUpId == meetupId
-            select new MeetUpDetailDto()
+            select new MeetUpCreationDto()
             {
-                MeetUpId = m.MeetUpId,
                 MeetUpName = m.MeetUpName,
                 DateTimeFrom = m.DateTimeFrom,
                 DateTimeTo = m.DateTimeTo,
