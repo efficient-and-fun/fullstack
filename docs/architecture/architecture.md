@@ -84,6 +84,27 @@ Concrete implementation of `IAuthService`, responsible for:
 - Generating signed JWT tokens with claims (UserId, Email)
 - Validating user credentials
 
+### Component: `FriendController`
+
+Handles friendship APIs:
+- Send friend request: `POST /api/friends/request`
+- Accept/reject request: `POST /api/friends/respond`
+- List friend requests: `GET /api/friends/requests`
+- List friends: `GET /api/friends/list`
+
+### Component: `IFriendService`
+
+- Interface for friend request logic
+- Abstracts business rules
+
+### Component: `FriendService`
+
+- Concrete logic:
+  - Send, accept, reject friend requests
+  - Manage friendships
+- Validates uniqueness/self-requests
+- Interacts with `EfDbContext`
+
 
 ## 6. Runtime View
 ### Scenario: User Registration
@@ -106,6 +127,23 @@ Concrete implementation of `IAuthService`, responsible for:
 4. On success, JWT token is generated.
 5. Token is returned to the client.
 
+```
+#### Scenario: Sending a Friend Request
+```text
+1. Client sends POST to /api/friends/request with ReceiverId
+2. FriendController validates, checks for duplicates
+3. FriendService creates a FriendRequest with status Pending
+4. Saved via EfDbContext
+5. 200 OK returned
+
+```
+#### Scenario: Accepting a Friend Request
+```text
+1. Client sends POST to /api/friends/respond with RequestId and Accept = true
+2. Controller validates ownership
+3. FriendService sets request to Accepted and creates Friendship
+4. Saved via EfDbContext
+5. 200 OK returned
 ```
 ## 7. Deployment View
 As this is the scope of a school project we were limited to the available hardware environemnt our school provided. Therefore we choose to use rancher paired with argoCD to host our enivronment. Our building pipline uses Github Actions. In the following sectino a typical CI-CD pipeline run is described. It triggers when something is pushed into the dev branch on the fullstack repository.
@@ -199,6 +237,8 @@ Define `IAuthService` interface and implement it with `AuthService`.
 - Hardcoded secret key in code: should be moved to secure configuration or environment variables.
 - No roles or permission claims in JWT yet.
 - Error messages are not localized or standardized.
+- Friend system has no notifications yet
+- Friend request spam not rate-limited
 
 ## 12. Glossary
 | Term          | Description                                                                                 |
@@ -210,3 +250,6 @@ Define `IAuthService` interface and implement it with `AuthService`.
 | **AuthService** | Service implementing authentication and registration logic.                               |
 | **IAuthService** | Interface abstracting authentication logic, enabling clean separation and testing.       |
 | **[Authorize]** | ASP.NET Core attribute to protect endpoints by validating JWT tokens.                     |
+| **FriendRequest**     | 	Represents a pending friend connection                      |
+| **Friendship**     | Mutual relationship between two users                      |
+| **FriendService**     | Handles friend logic, including send/accept/reject operations                      |
