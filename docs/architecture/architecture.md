@@ -26,14 +26,64 @@ difficulty in keeping track of event details. Our app addresses these challenges
                                                                                                            
 
 ## 2. Constraints
+- Authentication must follow security best practices such as password hashing and input validation.
+- No third-party authentication providers (like Google/Facebook OAuth) are used – authentication is handled internally via JWT.
+- User passwords must never be stored in plaintext; secure password hashing (BCrypt) is mandatory.
+
 ## 3. Context and Scope
 ## 4. Solution Strategy
 ## 5. Building Block View
+### Component: `UserController`
+Responsible for handling all user-related HTTP API endpoints, including:
+
+- User registration (`POST /api/users/register`)
+- User login (`POST /api/users/login`)
+- Validating JWT tokens (`POST /api/users/validate`)
+- User and friends management (protected routes)
+
+### Component: `IAuthService`
+Encapsulates authentication logic, such as:
+
+- Registering new users
+- Verifying credentials
+- Generating JSON Web Tokens (JWT)
+
+### Component: `EfDbContext`
+Entity Framework Core database context for persisting and querying users and friendships.
+
+### Component: `AuthService`
+Concrete implementation of `IAuthService`, responsible for:
+
+- Password hashing and verification using BCrypt 
+- Creating new users in the database 
+- Generating signed JWT tokens with claims (UserId, Email)
+- Validating user credentials
+
+
 ## 6. Runtime View
+### Scenario: User Registration
+
+```text
+1. Client sends a POST request to /api/users/register with email, password, username, and optional profile picture.
+2. UserController validates the request and calls AuthService.RegisterAsync.
+3. AuthService checks for duplicate email and username.
+4. Password is hashed with BCrypt.
+5. New user is stored in the database.
+6. JWT token is generated with claims and 1-hour expiration.
+7. Token is returned to the client.
+```
+
+#### Scenario: User Login
+```text
+1. Client sends a POST request to /api/users/login with email and password.
+2. UserController calls AuthService.LoginAsync.
+3. AuthService verifies password against stored hash.
+4. On success, JWT token is generated.
+5. Token is returned to the client.
+
+```
 ## 7. Deployment View
 As this is the scope of a school project we were limited to the available hardware environemnt our school provided. Therefore we choose to use rancher paired with argoCD to host our enivronment. Our building pipline uses Github Actions. In the following sectino a typical CI-CD pipeline run is described. It triggers when something is pushed into the dev branch on the fullstack repository.
-
-
 
 ### GitHub Actions
 1. We use two different building pipelines for frontend and backend. They get triggered when there are changes in the folder backend or frontend in the dev branch. The action runs all the test.
@@ -54,12 +104,84 @@ Main is the running application. It mirrows the state of the main branch in the 
     
 ## 8. Cross-cutting Concepts
 How is the deployment process?
+
+### Authentication and Authorization
+- JWT-based stateless authentication using signed tokens.
+- Tokens contain claims: at minimum **Email** and **UserId**.
+- Tokens expire after 1 hour.
+- Tokens are sent by clients in the HTTP `Authorization: Bearer <token>` header.
+- ASP.NET Core `[Authorize]` attribute enforces token validation on protected API endpoints.
+- Passwords are securely hashed with BCrypt; never stored or transmitted in plaintext.
+- Authentication errors are returned as `AuthResult` objects including success status and error messages.
+- Clients are responsible for securely storing tokens (e.g., `localStorage`) and attaching them to requests.
+
+### Password and Input Validation
+- Strong password hashing using BCrypt.
+- Server-side validation of required fields: email, username, password, and AGB acceptance.
+- Clear error messages returned for duplicate emails or usernames.
+
 ## 9. Architecture Decisions
+
+### Use of JWT for Authentication
+**Context:**  
+The system requires scalable, stateless authentication for REST APIs.
+
+**Decision:**  
+Use JSON Web Tokens (JWT) with signed claims.
+
+**Rationale:**
+- Stateless authentication avoids server-side session storage.
+- JWTs are widely supported and easily integrated in client-server communication.
+- ASP.NET Core’s `[Authorize]` attribute simplifies enforcement.
+
+**Implications:**
+- Secure management of secret signing key is essential.
+- Clients must securely store and transmit tokens.
+- Token expiration (1 hour) means refresh mechanisms may be required in the future (not implemented yet).
+
+
+### Authentication Logic via IAuthService
+**Context:**  
+Authentication-related logic should be separated from controllers to improve testability and reusability.
+
+**Decision:**  
+Define `IAuthService` interface and implement it with `AuthService`.
+
+**Rationale:**
+- Clear separation of concerns.
+- Easier unit testing and mocking.
+- Enables reuse across middleware or other components.
+
+**Implications:**
+- Dependency Injection required.
+- Controllers delegate authentication tasks to this service.
 
 ### HTTP Methoden:
 - POST: Creation / Insert
 - PUT: Update
 
 ## 10. Quality Requirements
+| Quality Attribute | Requirement                                                                 |
+|-------------------|------------------------------------------------------------------------------|
+| **Security**      | Passwords must be securely hashed; no plain-text storage.                    |
+| **Reliability**   | JWT tokens must be validated before accessing protected resources.           |
+| **Usability**     | Users must receive clear feedback during login and registration failures.    |
+
 ## 11. Risks and Technical Debt
+#### #### Authentication and Authorization
+- No token refresh implemented: tokens expire after 1 hour, possibly affecting user experience.
+- No rate limiting or CAPTCHA on login endpoint: risk of brute-force attacks.
+- Hardcoded secret key in code: should be moved to secure configuration or environment variables.
+- No roles or permission claims in JWT yet.
+- Error messages are not localized or standardized.
+
 ## 12. Glossary
+| Term          | Description                                                                                 |
+|---------------|---------------------------------------------------------------------------------------------|
+| **JWT**       | JSON Web Token, a signed token format used for stateless authentication and authorization.  |
+| **BCrypt**    | A strong hashing algorithm used for securely storing passwords.                             |
+| **Claim**     | Key-value pairs in JWT tokens that represent user data or permissions.                      |
+| **EfDbContext** | Entity Framework Core context for database access.                                        |
+| **AuthService** | Service implementing authentication and registration logic.                               |
+| **IAuthService** | Interface abstracting authentication logic, enabling clean separation and testing.       |
+| **[Authorize]** | ASP.NET Core attribute to protect endpoints by validating JWT tokens.                     |
