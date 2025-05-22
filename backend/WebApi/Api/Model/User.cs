@@ -1,8 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using WebApi.Api.Model;
 
-namespace WebApi.Model;
+namespace WebApi.Api.Model;
 
 [Table("Users")]
 public class User

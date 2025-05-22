@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Api.Common;
-using WebApi.Model;
+using WebApi.Api.Model;
 
 namespace WebApi.Api.Controller;
 

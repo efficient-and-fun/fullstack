@@ -6,7 +6,7 @@ using Moq;
 using WebApi;
 using WebApi.Api.Common;
 using WebApi.Api.Controller;
-using WebApi.Model;
+using WebApi.Api.Model;
 
 namespace WebApiTest.ApiTests;
 
@@ -116,7 +116,7 @@ public class MeetUpControllerTests
         });
         _context.SaveChanges();
 
-        var result = _controller.UpdateMeetUp(1, new MeetUpDetailDto
+        var result = _controller.UpdateMeetUp(1, new MeetUp
         {
             MeetUpId = 1,
             MeetUpName = "Updated",

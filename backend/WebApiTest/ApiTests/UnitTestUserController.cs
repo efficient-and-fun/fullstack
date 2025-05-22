@@ -8,7 +8,6 @@ using WebApi;
 using WebApi.Api.Common;
 using WebApi.Api.Controller;
 using WebApi.Api.Model;
-using WebApi.Model;
 
 namespace WebApiTest.ApiTests;
 

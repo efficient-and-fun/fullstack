@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Api.Common;
-using WebApi.Model;
+using WebApi.Api.Model;
 
 namespace WebApi.Api.Controller;
 
@@ -76,7 +76,7 @@ public class MeetUpController : BaseController
     /// </returns>
     [Authorize]
     [HttpPut, Route("{meetupId:int}")]
-    public ActionResult UpdateMeetUp([FromRoute] int meetupId, [FromBody] MeetUpDetailDto updatedMeetUp)
+    public ActionResult UpdateMeetUp([FromRoute] int meetupId, [FromBody] MeetUp updatedMeetUp)
     {
         var userId = _authService.GetUserIdFromToken();
         var actionResult = ValidateUser(userId, Context);
@@ -160,7 +160,7 @@ public class MeetUpController : BaseController
             join u in Context.Users
                 on p.UserId equals u.UserId
             where u.UserId == userId.Value && m.MeetUpId == meetupId
-            select new MeetUpDetailDto()
+            select new MeetUp()
             {
                 MeetUpId = m.MeetUpId,
                 MeetUpName = m.MeetUpName,
@@ -235,7 +235,7 @@ public class MeetUpController : BaseController
         return new OkResult();
     }
     
-    private static ActionResult ValidateMeetupUpdate(MeetUpDetailDto meetupDto)
+    private static ActionResult ValidateMeetupUpdate(MeetUp meetupDto)
     {
         if (string.IsNullOrWhiteSpace(meetupDto.MeetUpName) || string.IsNullOrWhiteSpace(meetupDto.Description))
         {

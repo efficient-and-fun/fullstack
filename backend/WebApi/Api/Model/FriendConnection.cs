@@ -1,6 +1,4 @@
-﻿using WebApi.Model;
-
-namespace WebApi.Api.Model;
+﻿namespace WebApi.Api.Model;
 
 public class FriendConnection
 {

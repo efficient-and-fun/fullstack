@@ -1,8 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace WebApi.Model;
+namespace WebApi.Api.Model;
 
 public class MeetUpBriefDto
 {
@@ -19,7 +17,7 @@ public class MeetUpBriefDto
     public string? MeetUpLocation { get; set; }
 }
 
-public class MeetUpDetailDto : MeetUpBriefDto
+public class MeetUp : MeetUpBriefDto
 {
     [MaxLength(65535)]
     public string? Description { get; set; }

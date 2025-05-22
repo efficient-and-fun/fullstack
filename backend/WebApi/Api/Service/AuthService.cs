@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using WebApi.Api.Common;
-using WebApi.Model;
+using WebApi.Api.Model;
 
 namespace WebApi;
 
@@ -54,7 +54,7 @@ public class AuthService : IAuthService
                 ErrorMessage = "Username already registered."
             };
         }
-        // Set a default profile picture path
+        
         if (string.IsNullOrWhiteSpace(profilePicturePath))
         {
             profilePicturePath = "https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1-400x400.jpg.optimal.jpg"; 
@@ -70,8 +70,7 @@ public class AuthService : IAuthService
 
         _context.Users.Add(newUser);
         await _context.SaveChangesAsync();
-
-
+        
         var token = GenerateJwtToken(newUser.UserId, email);
 
         return new AuthResult
@@ -134,7 +133,6 @@ public class AuthService : IAuthService
 
         return null;
     }
-
 }
 
 public class AuthResult
