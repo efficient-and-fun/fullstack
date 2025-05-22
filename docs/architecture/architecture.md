@@ -291,7 +291,6 @@ Define `IAuthService` interface and implement it with `AuthService`.
 - Friend request spam not rate-limited
 
 ## 12. Glossary
-## 12. Glossary
 | Term              | Description                                                                                                 |
 |-------------------|-------------------------------------------------------------------------------------------------------------|
 | **[Authorize]**   | ASP.NET Core attribute to protect endpoints by validating JWT tokens.                                       |
