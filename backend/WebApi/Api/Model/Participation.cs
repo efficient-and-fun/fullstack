@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace WebApi.Model;
+namespace WebApi.Api.Model;
 
 [Table("Participations")]
 public class Participation
