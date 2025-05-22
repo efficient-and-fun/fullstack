@@ -114,6 +114,7 @@ Responsible for handling all user-related HTTP API endpoints, including:
 - User registration (`POST /api/users/register`)
 - User login (`POST /api/users/login`)
 - Validating JWT tokens (`POST /api/users/validate`)
+- Get all friends for current user (`GET /api/users/friends`)
 - User and friends management (protected routes)
 
 ### Component: `IAuthService`
@@ -133,28 +134,6 @@ Concrete implementation of `IAuthService`, responsible for:
 - Creating new users in the database 
 - Generating signed JWT tokens with claims (UserId, Email)
 - Validating user credentials
-
-### Component: `FriendController`
-
-Handles friendship APIs:
-- Send friend request: `POST /api/friends/request`
-- Accept/reject request: `POST /api/friends/respond`
-- List friend requests: `GET /api/friends/requests`
-- List friends: `GET /api/friends/list`
-
-### Component: `IFriendService`
-
-- Interface for friend request logic
-- Abstracts business rules
-
-### Component: `FriendService`
-
-- Concrete logic:
-  - Send, accept, reject friend requests
-  - Manage friendships
-- Validates uniqueness/self-requests
-- Interacts with `EfDbContext`
-
 
 ## 6. Runtime View
 ### Scenario: User Registration
@@ -176,24 +155,6 @@ Handles friendship APIs:
 3. AuthService verifies password against stored hash.
 4. On success, JWT token is generated.
 5. Token is returned to the client.
-
-```
-#### Scenario: Sending a Friend Request
-```text
-1. Client sends POST to /api/friends/request with ReceiverId
-2. FriendController validates, checks for duplicates
-3. FriendService creates a FriendRequest with status Pending
-4. Saved via EfDbContext
-5. 200 OK returned
-
-```
-#### Scenario: Accepting a Friend Request
-```text
-1. Client sends POST to /api/friends/respond with RequestId and Accept = true
-2. Controller validates ownership
-3. FriendService sets request to Accepted and creates Friendship
-4. Saved via EfDbContext
-5. 200 OK returned
 ```
 ## 7. Deployment View
 As this is the scope of a school project we were limited to the available hardware environemnt our school provided. Therefore we choose to use rancher paired with argoCD to host our enivronment. Our building pipline uses Github Actions. In the following sectino a typical CI-CD pipeline run is described. It triggers when something is pushed into the dev branch on the fullstack repository.
@@ -288,7 +249,6 @@ Define `IAuthService` interface and implement it with `AuthService`.
 - No roles or permission claims in JWT yet.
 - Error messages are not localized or standardized.
 - Friend system has no notifications yet
-- Friend request spam not rate-limited
 
 ## 12. Glossary
 | Term              | Description                                                                                                 |
@@ -301,14 +261,11 @@ Define `IAuthService` interface and implement it with `AuthService`.
 | **Claim**         | Key-value pairs in JWT tokens that represent user data or permissions.                                      |
 | **Docker**        | A platform for developing, shipping, and running applications in containers.                                |
 | **EfDbContext**   | Entity Framework Core context for database access.                                                          |
-| **FriendRequest** | Represents a pending friend connection.                                                                     |
-| **FriendService** | Handles friend logic, including send/accept/reject operations.                                             |
 | **Friendship**    | Mutual relationship between two users.                                                                      |
 | **GHCR**          | GitHub Container Registry, used for storing and distributing Docker images.                                 |
 | **GitOps**        | A deployment model using Git as the source of truth for declarative infrastructure and applications.        |
 | **Helm**          | A package manager for Kubernetes, used to define, install, and upgrade applications.                        |
 | **IAuthService**  | Interface abstracting authentication logic, enabling clean separation and testing.                          |
-| **IFriendService**| Interface for friend request logic, abstracts business rules.                                               |
 | **JWT**           | JSON Web Token, a signed token format used for stateless authentication and authorization.                  |
 | **Kubernetes**    | An open-source system for automating deployment, scaling, and management of containerized applications.     |
 | **Rancher**       | A container management platform for deploying and managing Kubernetes clusters.                             |
