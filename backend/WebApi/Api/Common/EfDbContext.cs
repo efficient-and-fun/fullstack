@@ -21,7 +21,6 @@ public class EfDbContext : DbContext
     public DbSet<Participation> Participations { get; set; }
     public DbSet<FriendConnection> FriendConnection { get; set; }
     
-    
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
@@ -34,17 +33,14 @@ public class EfDbContext : DbContext
     {
         foreach (var entity in modelBuilder.Model.GetEntityTypes())
         {
-            // Set table name to lowercase
             entity.SetTableName(entity.GetTableName().ToLower());
 
             foreach (var property in entity.GetProperties())
             {
-                // Set column names to lowercase
                 property.SetColumnName(property.GetColumnName().ToLower());
             }
         }
         
-        // Configure FriendConnection relationships
         modelBuilder.Entity<FriendConnection>()
             .HasOne(fc => fc.Friend)
             .WithMany(u => u.FriendOf)
