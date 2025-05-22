@@ -22,8 +22,7 @@ difficulty in keeping track of event details. Our app addresses these challenges
 | **Individual Users**             | Need an intuitive interface for event discovery, booking, and participation.             |
 | **Event Organizers**             | Require efficient tools for event creation, attendee management, and logistics planning. |
 | **Friend Groups**                | Benefit from collaborative planning features for shared events.                          |
-| **Business& Public Event Hosts** | Need visibility to attract attendees and manage large-scale event logistics.             | 
-                                                                                                           
+| **Business& Public Event Hosts** | Need visibility to attract attendees and manage large-scale event logistics.             |                
 
 ## 2. Constraints
 
@@ -56,7 +55,58 @@ difficulty in keeping track of event details. Our app addresses these challenges
 - Project management and issue tracking are conducted through **GitHub Projects** and Issues.
 
 ## 3. Context and Scope
+### System Boundaries
+The Plananaz app consists of three main subsystems:
+
+**Frontend**: React-based web application (served via Vite, deployed with Docker/GitHub Pages).
+**Backend**: .NET Web API (handles business logic, authentication, and data access).
+**Database**: PostgreSQL (stores users, events, friendships, bookings).
+
+**Out of scope**: External calendar providers (e.g., Google Calendar), third-party authentication providers, and external event listing services.
+
+### Interaction Diagram
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant Database
+
+    User->>Frontend: Uses web app (browser/mobile)
+    Frontend->>Backend: Sends API requests (login, register, events, friends)
+    Backend->>Database: Reads/writes data (users, events, bookings, friendships)
+    Backend-->>Frontend: Returns API responses (JSON)
+    Frontend-->>User: Updates UI
+```
+
+### Contextual Overview
+The system is a centralized event management platform for private and public events. Users interact with the frontend via browsers or mobile devices. The frontend communicates with the backend using RESTful APIs. The backend manages business logic, authentication, and data persistence, interfacing with a PostgreSQL database. 
+
 ## 4. Solution Strategy
+The solution is designed to maximize modularity, scalability, and maintainability while leveraging modern development and deployment practices. The main strategies are:
+
+- **Separation of Concerns:**  
+  The system is split into frontend, backend, and database subsystems. Each is developed and deployed independently, allowing for clear responsibility boundaries and easier maintenance.
+
+- **Modern Technology Stack:**  
+  - **Frontend:** Built with React and Vite for fast development and a responsive, mobile-first user experience.
+  - **Backend:** Implemented in .NET Web API, following RESTful principles and using JWT for stateless authentication.
+  - **Database:** PostgreSQL is used for reliable relational data storage.
+
+- **API-First Communication:**  
+  All interactions between frontend and backend use RESTful APIs with JSON, ensuring loose coupling and enabling future integration with other clients or services.
+
+- **Security by Design:**  
+  Authentication and authorization are handled using JWT tokens. Passwords are securely hashed with BCrypt. Sensitive operations are protected by ASP.NET Core’s `[Authorize]` attribute.
+
+- **DevOps and Automation:**  
+  - **CI/CD:** Automated testing, building, and deployment using GitHub Actions.
+  - **Containerization:** Docker is used for consistent environments across development, testing, and production.
+  - **Kubernetes & GitOps:** Helm charts and Argo CD manage deployments, ensuring reproducibility and easy rollbacks.
+
+- **Collaboration and Quality:**  
+  Code quality is enforced via linters, formatters, and code reviews. The team follows a defined branching and pull request strategy to ensure high-quality contributions.
+
 ## 5. Building Block View
 ### Component: `UserController`
 Responsible for handling all user-related HTTP API endpoints, including:
