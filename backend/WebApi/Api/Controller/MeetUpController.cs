@@ -111,8 +111,6 @@ public class MeetUpController : BaseController
             return validationResult;
         }
         
-        // TODO: optional create specific update methods for only the fields that are necessary to update.
-
         meetUp.MeetUpName = updatedMeetUp.MeetUpName;
         meetUp.DateTimeFrom = updatedMeetUp.DateTimeFrom;
         meetUp.DateTimeTo = updatedMeetUp.DateTimeTo;
@@ -172,9 +170,6 @@ public class MeetUpController : BaseController
                 MeetUpLocation = m.MeetUpLocation,
                 Description = m.Description,
             }).FirstOrDefault();
-        
-        // TODO: weiteres Beispiel, remove at some later stage.
-        // var foundMeetUp = await Context.MeetUps.Where(m => m.MeetUpId == meetupId).FirstOrDefaultAsync();
         
         return Ok(foundMeetUp);
     }
