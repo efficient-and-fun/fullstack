@@ -116,6 +116,8 @@ Responsible for handling all user-related HTTP API endpoints, including:
 - Validating JWT tokens (`POST /api/users/validate`)
 - Get all friends for current user (`GET /api/users/friends`)
 - User and friends management (protected routes)
+  - Add Friend
+  - Remove Friend
 
 ### Component: `IAuthService`
 Encapsulates authentication logic, such as:
@@ -134,6 +136,13 @@ Concrete implementation of `IAuthService`, responsible for:
 - Creating new users in the database 
 - Generating signed JWT tokens with claims (UserId, Email)
 - Validating user credentials
+
+### Component: `MeetUpController`
+Responsible for handling all meet up - related HTTP API endpoints, including:
+- Create MeetUp (`POST /api/meetups`)
+- Update MeetUp (`PUT /api/meetups/meetupid`)
+- Get MeetUp Details (`GET /api/meetups/meetupid`)
+- Get MeetUp for user for specific day with participation (`GET /api/meetups/`)
 
 ## 6. Runtime View
 ### Scenario: User Registration
@@ -155,6 +164,13 @@ Concrete implementation of `IAuthService`, responsible for:
 3. AuthService verifies password against stored hash.
 4. On success, JWT token is generated.
 5. Token is returned to the client.
+```
+
+#### Scenario: User Add Friend
+```text
+1. Client sends a POST request to /api/users/friends with FriendName.
+2. UserController validates the request
+3. UserService adds the friend.
 ```
 ## 7. Deployment View
 As this is the scope of a school project we were limited to the available hardware environemnt our school provided. Therefore we choose to use rancher paired with argoCD to host our enivronment. Our building pipline uses Github Actions. In the following sectino a typical CI-CD pipeline run is described. It triggers when something is pushed into the dev branch on the fullstack repository.
@@ -233,6 +249,7 @@ Define `IAuthService` interface and implement it with `AuthService`.
 ### HTTP Methoden:
 - POST: Creation / Insert
 - PUT: Update
+- DELETE: Remove
 
 ## 10. Quality Requirements
 | Quality Attribute | Requirement                                                                 |
@@ -262,6 +279,7 @@ Define `IAuthService` interface and implement it with `AuthService`.
 | **Docker**        | A platform for developing, shipping, and running applications in containers.                                |
 | **EfDbContext**   | Entity Framework Core context for database access.                                                          |
 | **Friendship**    | Mutual relationship between two users.                                                                      |
+| **MeetUp**        | A scheduled gathering created by a user, involving one or more participants, which may either be an independent social event or organized around attending an external event together.planned                                                                      |
 | **GHCR**          | GitHub Container Registry, used for storing and distributing Docker images.                                 |
 | **GitOps**        | A deployment model using Git as the source of truth for declarative infrastructure and applications.        |
 | **Helm**          | A package manager for Kubernetes, used to define, install, and upgrade applications.                        |
