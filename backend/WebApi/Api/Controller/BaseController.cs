@@ -1,23 +1,20 @@
-using System.Runtime.CompilerServices;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WebApi.Api.Common;
 
-namespace WebApi;
+namespace WebApi.Api.Controller;
 
 [ApiController]
 public abstract class BaseController : ControllerBase
 {
-    protected readonly ILogger<BaseController> _logger;
-    protected readonly IConfiguration _configuration;
+    protected readonly ILogger<BaseController> Logger;
+    protected readonly IConfiguration Configuration;
 
-    protected readonly EfDbContext _context;
+    protected readonly EfDbContext Context;
 
     protected BaseController(ILogger<BaseController> logger, IConfiguration configuration, EfDbContext context)
     {
-        _logger = logger;
-        _configuration = configuration;
-        _context = context;
+        Logger = logger;
+        Configuration = configuration;
+        Context = context;
     }
 }

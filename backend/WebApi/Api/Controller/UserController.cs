@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
+using WebApi.Api.Controller;
 
 namespace WebApi;
 
@@ -26,7 +27,7 @@ public class UserController : BaseController
     [HttpGet]
     public async Task<ActionResult<List<UserDto>>> GetUsers()
     {
-        var users = await _context.Users
+        var users = await Context.Users
             .Select(u => new UserDto
             {
                 UserId = u.UserId,
@@ -46,7 +47,7 @@ public class UserController : BaseController
         if (userId == null)
             return Unauthorized();
 
-        var friends = await _context.FriendConnection
+        var friends = await Context.FriendConnection
             .Where(fc => fc.UserId == userId && fc.HasAcceptedFriendRequest)
             .Include(fc => fc.Friend)
             .Select(fc => new UserDto

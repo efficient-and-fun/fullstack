@@ -807,7 +807,7 @@ public class UserControllerTests
     // {
     //     try
     //     {
-    //         _context.Users.AddRange(new List<User>
+    //         Context.Users.AddRange(new List<User>
     //         {
     //             new User
     //             {
@@ -835,7 +835,7 @@ public class UserControllerTests
     //             }
     //         });
     //
-    //         _context.FriendConnection.AddRange(new List<FriendConnection>
+    //         Context.FriendConnection.AddRange(new List<FriendConnection>
     //         {
     //             new FriendConnection()
     //             {
@@ -851,7 +851,7 @@ public class UserControllerTests
     //             }
     //         });
     //
-    //         await _context.SaveChangesAsync();
+    //         await Context.SaveChangesAsync();
     //     }
     //     catch (Exception e)
     //     {
