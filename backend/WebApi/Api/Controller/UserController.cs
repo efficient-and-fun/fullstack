@@ -63,7 +63,7 @@ public class UserController : BaseController
 
     [Authorize]
     [HttpPost("friends")]
-    public async Task<ActionResult> AddFriend(string friendName)
+    public async Task<ActionResult> AddFriend([FromQuery] string friendName)
     {
         var userId = _authService.GetUserIdFromToken();
         if (!userId.HasValue)
@@ -82,7 +82,7 @@ public class UserController : BaseController
 
     [Authorize]
     [HttpDelete("friends")]
-    public async Task<ActionResult> RemoveFriend(string friendName)
+    public async Task<ActionResult> RemoveFriend([FromQuery] string friendName)
     {
         var userId = _authService.GetUserIdFromToken();
         if (!userId.HasValue)
