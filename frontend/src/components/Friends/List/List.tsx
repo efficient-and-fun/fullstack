@@ -7,9 +7,10 @@ interface ListProps {
   handleNoItemsText?: string;
   items: string[];
   onButtonClick: (item: string) => void;
+  classExtension: string;
 }
 
-const List = ({ type, text, handleNoItemsText, items, onButtonClick }: ListProps) => {
+const List = ({ type, text, handleNoItemsText, items, onButtonClick, classExtension }: ListProps) => {
   return (
     <div className="list-container">
       <h1>{text}</h1>
@@ -18,7 +19,7 @@ const List = ({ type, text, handleNoItemsText, items, onButtonClick }: ListProps
       ) : (
         <ul>
           {items.map((item, index) => (
-            <li key={index} className="list-item">
+            <li key={index} className={`list-item ${classExtension}${index}`}>
               {item}
               <CustomButton
                 type={type}

@@ -65,6 +65,7 @@ const FriendsPage = () => {
         handleNoItemsText="Click + to add frineds!"
         type="delete"
         onButtonClick={handleDeleteClick}
+        classExtension="cy-friends-friends"
       />
 
       <List
@@ -73,6 +74,7 @@ const FriendsPage = () => {
         handleNoItemsText="No users yet"
         type="add"
         onButtonClick={handleAddClick}
+        classExtension="cy-friends-users"
       />
     </div>
   );
