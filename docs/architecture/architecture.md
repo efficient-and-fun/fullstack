@@ -281,7 +281,7 @@ Define `IAuthService` interface and implement it with `AuthService`.
 | **Usability**     | Users must receive clear feedback during login and registration failures.    |
 
 ## 11. Risks and Technical Debt
-#### Authentication and Authorization
+### Authentication and Authorization
 - No token refresh implemented: tokens expire after 1 hour, possibly affecting user experience.
 - No rate limiting or CAPTCHA on login endpoint: risk of brute-force attacks.
 - Hardcoded secret key in code: should be moved to secure configuration or environment variables.
