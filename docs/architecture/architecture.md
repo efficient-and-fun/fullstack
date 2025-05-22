@@ -291,15 +291,25 @@ Define `IAuthService` interface and implement it with `AuthService`.
 - Friend request spam not rate-limited
 
 ## 12. Glossary
-| Term          | Description                                                                                 |
-|---------------|---------------------------------------------------------------------------------------------|
-| **JWT**       | JSON Web Token, a signed token format used for stateless authentication and authorization.  |
-| **BCrypt**    | A strong hashing algorithm used for securely storing passwords.                             |
-| **Claim**     | Key-value pairs in JWT tokens that represent user data or permissions.                      |
-| **EfDbContext** | Entity Framework Core context for database access.                                        |
-| **AuthService** | Service implementing authentication and registration logic.                               |
-| **IAuthService** | Interface abstracting authentication logic, enabling clean separation and testing.       |
-| **[Authorize]** | ASP.NET Core attribute to protect endpoints by validating JWT tokens.                     |
-| **FriendRequest**     | 	Represents a pending friend connection                      |
-| **Friendship**     | Mutual relationship between two users                      |
-| **FriendService**     | Handles friend logic, including send/accept/reject operations                      |
+## 12. Glossary
+| Term              | Description                                                                                                 |
+|-------------------|-------------------------------------------------------------------------------------------------------------|
+| **[Authorize]**   | ASP.NET Core attribute to protect endpoints by validating JWT tokens.                                       |
+| **Argo CD**       | A declarative, GitOps continuous delivery tool for Kubernetes.                                              |
+| **AuthService**   | Service implementing authentication and registration logic.                                                 |
+| **BCrypt**        | A strong hashing algorithm used for securely storing passwords.                                             |
+| **CI/CD**         | Continuous Integration and Continuous Deployment/Delivery, automating code build, test, and deployment.     |
+| **Claim**         | Key-value pairs in JWT tokens that represent user data or permissions.                                      |
+| **Docker**        | A platform for developing, shipping, and running applications in containers.                                |
+| **EfDbContext**   | Entity Framework Core context for database access.                                                          |
+| **FriendRequest** | Represents a pending friend connection.                                                                     |
+| **FriendService** | Handles friend logic, including send/accept/reject operations.                                             |
+| **Friendship**    | Mutual relationship between two users.                                                                      |
+| **GHCR**          | GitHub Container Registry, used for storing and distributing Docker images.                                 |
+| **GitOps**        | A deployment model using Git as the source of truth for declarative infrastructure and applications.        |
+| **Helm**          | A package manager for Kubernetes, used to define, install, and upgrade applications.                        |
+| **IAuthService**  | Interface abstracting authentication logic, enabling clean separation and testing.                          |
+| **IFriendService**| Interface for friend request logic, abstracts business rules.                                               |
+| **JWT**           | JSON Web Token, a signed token format used for stateless authentication and authorization.                  |
+| **Kubernetes**    | An open-source system for automating deployment, scaling, and management of containerized applications.     |
+| **Rancher**       | A container management platform for deploying and managing Kubernetes clusters.                             |
