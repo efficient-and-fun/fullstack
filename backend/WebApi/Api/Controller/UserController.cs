@@ -1,58 +1,138 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Build.Framework;
-
-namespace WebApi;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Build.Framework;
+using Microsoft.EntityFrameworkCore;
 using WebApi.Api.Common;
-using WebApi.Model;
+using WebApi.Api.Model;
 
-[ApiController, Route("api/user")]
+namespace WebApi.Api.Controller;
+
+[ApiController, Route("api/users")]
 public class UserController : BaseController
 {
     private readonly IAuthService _authService;
-    
-    public UserController(ILogger<UserController> logger, IConfiguration configuration, EfDbContext context, IAuthService authService) : base(
-        logger, configuration, context)
+    private readonly IUserService _userService;
+
+    public UserController(ILogger<UserController> logger, IConfiguration configuration, EfDbContext context, IAuthService authService, IUserService userService) : base(logger, configuration, context)
     {
         _authService = authService;
+        _userService = userService;
     }
-    
+
+    [Authorize]
+    [HttpGet]
+    public async Task<ActionResult<List<UserDto>>> GetUsers()
+    {
+        var users = await Context.Users
+            .Select(u => new UserDto
+            {
+                UserId = u.UserId,
+                UserName = u.UserName,
+                Email = u.Email,
+                ProfilePicturePath = u.ProfilePicturePath
+            }).ToListAsync();
+
+        return Ok(users);
+    }
+
+    [Authorize]
+    [HttpGet("friends")]
+    public async Task<ActionResult<List<UserDto>>> GetFriends()
+    {
+        var userId = _authService.GetUserIdFromToken();
+        if (userId == null)
+            return Unauthorized();
+
+        var friends = await Context.FriendConnection
+            .Where(fc => fc.UserId == userId && fc.HasAcceptedFriendRequest)
+            .Include(fc => fc.Friend)
+            .Select(fc => new UserDto
+            {
+                UserId = fc.Friend.UserId,
+                UserName = fc.Friend.UserName,
+                Email = fc.Friend.Email,
+                ProfilePicturePath = fc.Friend.ProfilePicturePath
+            })
+            .ToListAsync();
+
+        return Ok(friends);
+    }
+
+    [Authorize]
+    [HttpPost("friends")]
+    public async Task<ActionResult> AddFriend([FromQuery] string friendName)
+    {
+        var userId = _authService.GetUserIdFromToken();
+        if (!userId.HasValue)
+        {
+            return Unauthorized();
+        }
+
+        var result = await _userService.AddFriend(userId.Value, friendName);
+        if (result.Success)
+        {
+            return Ok(result);
+        }
+
+        return BadRequest(result);
+    }
+
+    [Authorize]
+    [HttpDelete("friends")]
+    public async Task<ActionResult> RemoveFriend([FromQuery] string friendName)
+    {
+        var userId = _authService.GetUserIdFromToken();
+        if (!userId.HasValue)
+        {
+            return Unauthorized();
+        }
+
+        var result = await _userService.RemoveFriend(userId.Value, friendName);
+        if (result.Success)
+        {
+            return Ok(result);
+        }
+
+        return BadRequest(result);
+    }
+
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(new ErrorResponse{ Message = "Invalid request" });
+            return BadRequest(new ErrorResponse { Message = "Invalid request" });
         }
-        
+
         if (request.Password != request.Password2)
         {
-            return BadRequest(new ErrorResponse{ Message = "Passwords do not match." });
+            return BadRequest(new ErrorResponse { Message = "Passwords do not match." });
         }
 
         if (!request.IsAGBAccepted)
         {
-            return BadRequest(new ErrorResponse{ Message = "AGB must be accepted." });
+            return BadRequest(new ErrorResponse { Message = "AGB must be accepted." });
         }
 
-        var authResult = await _authService.RegisterAsync(request.Email, request.Password, request.Username, request.ProfilePicturePath);
+        var authResult = await _authService.RegisterAsync(request.Email, request.Password, request.Username,
+            request.ProfilePicturePath);
         if (!authResult.Success)
         {
-            return BadRequest(new ErrorResponse{ Message = authResult.ErrorMessage });
+            return BadRequest(new ErrorResponse { Message = authResult.ErrorMessage });
         }
 
         return Ok(new TokenResponse { Token = authResult.Token });
     }
-    
-    
+
+
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(new ErrorResponse{ Message = "Invalid request" });
+            return BadRequest(new ErrorResponse { Message = "Invalid request" });
         }
-        
+
         var result = await _authService.LoginAsync(request.Email, request.Password);
 
         if (result.Success)
@@ -62,7 +142,7 @@ public class UserController : BaseController
 
         return Unauthorized(new ErrorResponse { Message = "Invalid credentials" });
     }
-    
+
     [Authorize]
     [HttpPost("validate")]
     public IActionResult Validate()
@@ -73,26 +153,18 @@ public class UserController : BaseController
 
 public class RegisterRequest
 {
-    [Required]
-    public string Username { get; set; }
-    [Required]
-    public string Email { get; set; }
-    [Required]
-    public string Password { get; set; }
-    [Required]
-    public string Password2 { get; set; }
-    [Required]
-    public string ProfilePicturePath { get; set; }
-    [Required]
-    public bool IsAGBAccepted { get; set; }
+    [Required] public string Username { get; set; }
+    [Required] public string Email { get; set; }
+    [Required] public string Password { get; set; }
+    [Required] public string Password2 { get; set; }
+    [Required] public string ProfilePicturePath { get; set; }
+    [Required] public bool IsAGBAccepted { get; set; }
 }
 
 public class LoginRequest
 {
-    [Required]
-    public string Email { get; set; }
-    [Required]
-    public string Password { get; set; }
+    [Required] public string Email { get; set; }
+    [Required] public string Password { get; set; }
 }
 
 public class TokenResponse
