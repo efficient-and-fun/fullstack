@@ -1,16 +1,16 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Elfie.Serialization;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using WebApi;
-using WebApi.Model;
 using WebApi.Api.Common;
-using Microsoft.EntityFrameworkCore;
+using WebApi.Api.Controller;
+using WebApi.Api.Model;
+using WebApi.Model;
 
-namespace WebApiTest;
+namespace WebApiTest.ApiTests;
 
 [TestClass]
 public class UserControllerTests

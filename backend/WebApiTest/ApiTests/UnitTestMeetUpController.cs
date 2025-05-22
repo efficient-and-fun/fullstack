@@ -1,18 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using WebApi;
-using WebApi.Model;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Moq;
+using WebApi;
 using WebApi.Api.Common;
 using WebApi.Api.Controller;
+using WebApi.Model;
 
-namespace WebApiTest;
+namespace WebApiTest.ApiTests;
 
 [TestClass]
 public class MeetUpControllerTests

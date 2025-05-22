@@ -1,13 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
-using WebApi.Api.Controller;
-
-namespace WebApi;
-
-using Microsoft.AspNetCore.Mvc;
 using WebApi.Api.Common;
 using WebApi.Model;
+
+namespace WebApi.Api.Controller;
 
 [ApiController, Route("api/users")]
 public class UserController : BaseController
@@ -15,9 +13,7 @@ public class UserController : BaseController
     private readonly IAuthService _authService;
     private readonly IUserService _userService;
 
-    public UserController(ILogger<UserController> logger, IConfiguration configuration, EfDbContext context,
-        IAuthService authService, IUserService userService) : base(
-        logger, configuration, context)
+    public UserController(ILogger<UserController> logger, IConfiguration configuration, EfDbContext context, IAuthService authService, IUserService userService) : base(logger, configuration, context)
     {
         _authService = authService;
         _userService = userService;
