@@ -63,7 +63,10 @@ public class UserService : IUserService
 
         catch (Exception e)
         {
-            return new UserResult { Success = false, ErrorMessage = e.Message };
+            
+            Console.WriteLine($"An error occurred in AddFriend: {e}");
+            
+            return new UserResult { Success = false, ErrorMessage = "An unexpected error occurred. Please try again later." };
         }
     }
 
