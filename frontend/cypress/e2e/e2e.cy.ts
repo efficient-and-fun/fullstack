@@ -51,14 +51,14 @@ describe("Navigation", () => {
   });
   it("should navigate to Home page when clicking the Home link", () => {
     cy.visit(baseURL);
-    cy.contains("Home").click(); // Link mit Text "Home" anklicken
-    cy.url().should("include", "/"); // URL sollte sich ändern
+    cy.contains("Home").click(); // Link mit Text "Home" anklicken.
+    cy.url().should("include", "/"); // URL sollte sich ändern.
     cy.get(".MuiTypography-h6").contains(dayjs().format("DD. MMMM YYYY"));
   });
   it("should navigate to Event page when clicking the Notification link", () => {
     cy.visit(baseURL);
-    cy.contains("Notification").click(); // Link mit Text "Notification" anklicken
-    cy.url().should("include", "/notification"); // URL sollte sich ändern
+    cy.contains("Notification").click(); // Link mit Text "Notification" anklicken.
+    cy.url().should("include", "/notification"); // URL sollte sich ändern.
     cy.contains("Notification Page"); // Der Inhalt der Event-Seite sollte angezeigt werden.
   });
   it("should navigate to Friends page when clicking the Friends link", () => {
