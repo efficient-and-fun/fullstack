@@ -42,7 +42,7 @@ jobs:
         working-directory: frontend
 
       - name: Set up Docker Compose
-        uses: docker/compose-action@v2
+        uses: docker/setup-compose-action@v1
 
       - name: Run Cypress end-to-end tests
         uses: cypress-io/github-action@v6

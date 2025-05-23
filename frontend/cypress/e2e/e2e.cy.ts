@@ -45,7 +45,7 @@ describe("Navigation", () => {
 
   it("should navigate to Event page when clicking the Event link", () => {
     cy.visit(baseURL);
-    cy.contains("Event").click(); // Link mit Text "Event" anklicken
+    cy.contains("Event").click(); // Link mit Text "Event" anklicken.
     cy.url().should("include", "/event"); // URL sollte sich ändern.
     cy.contains("Event Page"); // Der Inhalt der Event-Seite sollte angezeigt werden.
   });
