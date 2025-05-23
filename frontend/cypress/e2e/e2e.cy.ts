@@ -47,7 +47,7 @@ describe("Navigation", () => {
     cy.visit(baseURL);
     cy.contains("Event").click(); // Link mit Text "Event" anklicken
     cy.url().should("include", "/event"); // URL sollte sich ändern
-    cy.contains("Event Page"); // Der Inhalt der Event-Seite sollte angezeigt werden
+    cy.contains("Event Page"); // Der Inhalt der Event-Seite sollte angezeigt werden.
   });
   it("should navigate to Home page when clicking the Home link", () => {
     cy.visit(baseURL);
@@ -59,18 +59,18 @@ describe("Navigation", () => {
     cy.visit(baseURL);
     cy.contains("Notification").click(); // Link mit Text "Notification" anklicken
     cy.url().should("include", "/notification"); // URL sollte sich ändern
-    cy.contains("Notification Page"); // Der Inhalt der Event-Seite sollte angezeigt werden
+    cy.contains("Notification Page"); // Der Inhalt der Event-Seite sollte angezeigt werden.
   });
   it("should navigate to Friends page when clicking the Friends link", () => {
     cy.visit(baseURL);
     cy.contains("Friends").click(); // Link mit Text "Friends" anklicken
     cy.url().should("include", "/friends"); // URL sollte sich ändern
-    cy.contains("My Friends"); // Der Inhalt der Friends-Seite sollte angezeigt werden
+    cy.contains("My Friends"); // Der Inhalt der Friends-Seite sollte angezeigt werden.
   });
   it("should navigate to Setting page when clicking the Setting link", () => {
     cy.visit(baseURL);
     cy.contains("Setting").click(); // Link mit Text "Setting" anklicken
     cy.url().should("include", "/setting"); // URL sollte sich ändern
-    cy.contains("Setting Page"); // Der Inhalt der Setting-Seite sollte angezeigt werden
+    cy.contains("Setting Page"); // Der Inhalt der Setting-Seite sollte angezeigt werden.
   });
 }); 
