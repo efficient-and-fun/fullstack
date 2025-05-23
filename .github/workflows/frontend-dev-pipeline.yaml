@@ -52,7 +52,7 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           working-directory: frontend
-          start: docker-compose -f ../dev/docker-compose-ci.yml up --build
+          start: docker compose -f ../dev/docker-compose-ci.yml up --build
           wait-on: http://localhost:5173, http://localhost:5246/swagger/index.html
           wait-on-timeout: 120
           browser: chrome
