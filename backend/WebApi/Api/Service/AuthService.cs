@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using WebApi.Api.Common;
-using WebApi.Model;
+using WebApi.Api.Model;
 
 namespace WebApi;
 
@@ -12,15 +12,19 @@ public interface IAuthService
 {
     Task<AuthResult> LoginAsync(string email, string password);
     Task<AuthResult> RegisterAsync(string email, string password, string username, string profilePicturePath);
+    int? GetUserIdFromToken();
+    Task<User?> GetCurrentUserAsync();
 }
 
 public class AuthService : IAuthService
 {
     private readonly EfDbContext _context;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public AuthService(EfDbContext context)
+    public AuthService(EfDbContext context, IHttpContextAccessor httpContextAccessor)
     {
         _context = context;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<AuthResult> RegisterAsync(
@@ -50,7 +54,7 @@ public class AuthService : IAuthService
                 ErrorMessage = "Username already registered."
             };
         }
-        // Set a default profile picture path
+        
         if (string.IsNullOrWhiteSpace(profilePicturePath))
         {
             profilePicturePath = "https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1-400x400.jpg.optimal.jpg"; 
@@ -66,8 +70,7 @@ public class AuthService : IAuthService
 
         _context.Users.Add(newUser);
         await _context.SaveChangesAsync();
-
-
+        
         var token = GenerateJwtToken(newUser.UserId, email);
 
         return new AuthResult
@@ -110,11 +113,31 @@ public class AuthService : IAuthService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+    public int? GetUserIdFromToken()
+    {
+        var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+        {
+            return userId;
+        }
+        return null;
+    }
+    
+    public async Task<User?> GetCurrentUserAsync()
+    {
+        var userId = GetUserIdFromToken();
+        if (userId.HasValue)
+        {
+            return await _context.Users.FindAsync(userId.Value);
+        }
+
+        return null;
+    }
 }
 
 public class AuthResult
 {
     public bool Success { get; set; }
-    public string Token { get; set; }
-    public string ErrorMessage { get; set; }
+    public string? Token { get; set; }
+    public string? ErrorMessage { get; set; }
 }

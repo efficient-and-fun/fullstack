@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using WebApi.Model;
+using WebApi.Api.Model;
 
 namespace WebApi.Api.Common;
 
@@ -19,7 +19,7 @@ public class EfDbContext : DbContext
     public DbSet<MeetUps> MeetUps { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Participation> Participations { get; set; }
-    
+    public DbSet<FriendConnection> FriendConnection { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -33,16 +33,27 @@ public class EfDbContext : DbContext
     {
         foreach (var entity in modelBuilder.Model.GetEntityTypes())
         {
-            // Set table name to lowercase
             entity.SetTableName(entity.GetTableName().ToLower());
 
             foreach (var property in entity.GetProperties())
             {
-                // Set column names to lowercase
                 property.SetColumnName(property.GetColumnName().ToLower());
             }
         }
+        
+        modelBuilder.Entity<FriendConnection>()
+            .HasOne(fc => fc.Friend)
+            .WithMany(u => u.FriendOf)
+            .HasForeignKey(fc => fc.FriendId)
+            .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<FriendConnection>()
+            .HasOne(fc => fc.User)
+            .WithMany(u => u.Friends)
+            .HasForeignKey(fc => fc.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
         base.OnModelCreating(modelBuilder);
+        
+        
     }
 }
