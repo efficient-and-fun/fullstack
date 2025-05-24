@@ -1,12 +1,13 @@
 import { useState } from "react";
 import styles from "./Form.module.css";
 import { useNavigate } from "react-router-dom";
+import { authApiCall } from "../../api/meetUpApi";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<string[]>([]); // Errors are stored here
-  var url = "/api/user/login";
+  var endpoint = "/login";
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -29,29 +30,22 @@ const LoginForm = () => {
       setErrors([]); // Fehler zurücksetzen, wenn keine Validierungsprobleme vorliegen
     }
 
-    // API-Aufruf in einem try-catch-Block
-    try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+    const userData = JSON.stringify({
+      email,
+      password: password,
+    });
+    const data = await authApiCall(endpoint, userData);
 
-      const data = await res.json();
-
-      if (res.ok) {
-        localStorage.setItem("authToken", data.token);
-        navigate(`/`);
-      } else {
-        // Fehler vom Server anzeigen
-        setErrors([data.message || "Login failed. Please try again."]);
-      }
-    } catch (error) {
-      // Netzwerk- oder andere unerwartete Fehler abfangen
-      setErrors(["An unexpected error occurred. Please try again later."]);
-      console.error("Error during login:", error);
+    if (data.ok) {
+      navigate("/");
+    } else {
+      setErrors([data.message || "Login failed. Please try again."]);
     }
-  };
+  }
+
+  const navigateToRegister = () => {
+    navigate("/register");
+  }
 
   return (
     <form onSubmit={handleLogin} className={styles.container}>
@@ -74,6 +68,9 @@ const LoginForm = () => {
       />
       <button className={`${styles.btn} cy-login-loginbutton`} type="submit">
         Sign in
+      </button>
+      <button className={ `${styles.btn} cy-login-registerbutton`} onClick={navigateToRegister}>
+        Sign up
       </button>
 
       {/* Error display */}
