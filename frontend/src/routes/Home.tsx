@@ -7,6 +7,7 @@ import HomeHeader from '../components/Home/Header/HomeHeader';
 const HomePage = () => {
   const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
 
+
   return (
     <>
       <HomeHeader></HomeHeader>

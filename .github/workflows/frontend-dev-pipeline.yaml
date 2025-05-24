@@ -45,14 +45,14 @@ jobs:
         run: npm run test
         working-directory: frontend
 
-      - name: Install Docker docker-compose
-        run: sudo apt-get update && sudo apt-get install -y docker-compose
+      - name: Set up Docker Compose
+        uses: docker/setup-compose-action@v1
 
       - name: Run Cypress end-to-end tests
         uses: cypress-io/github-action@v6
         with:
           working-directory: frontend
-          start: docker-compose -f ../dev/docker-compose-ci.yml up --build
+          start: docker compose -f ../dev/docker-compose-ci.yml up --build
           wait-on: http://localhost:5173, http://localhost:5246/swagger/index.html
           wait-on-timeout: 120
-          browser: electron
+          browser: chrome

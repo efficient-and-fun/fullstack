@@ -19,6 +19,7 @@
     "@mui/material": "^7.0.2",
     "@mui/x-date-pickers": "^7.28.3",
     "dayjs": "^1.11.13",
+    "jwt-decode": "^4.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.5.0"

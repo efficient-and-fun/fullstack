@@ -7,6 +7,7 @@ const LogOut = () => {
     
     const handleLogOut = async (e) => {
         localStorage.removeItem("authToken");
+        localStorage.removeItem("userId");
         navigate("/login", { replace: true });
     }
 

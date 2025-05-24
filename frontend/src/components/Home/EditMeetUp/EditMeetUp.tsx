@@ -3,7 +3,7 @@ import './EditMeetUp.css';
 import { Box, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { MeetUpDetail } from "../../../models/MeetUpDetails";
-import { meetUpApiCall, updateMeetUpApiCall } from "../../../api/meetUpApi";
+import { createMeetUpApiCall, meetUpApiCall, updateMeetUpApiCall } from "../../../api/meetUpApi";
 
 const EditMeetUp = () => {
     const { meetUpId } = useParams<{ meetUpId: string }>();
@@ -17,14 +17,13 @@ const EditMeetUp = () => {
         dateTimeTo: null,
         meetUpLocation: '',
         description: '',
-        checklist: '',
+        checkList: '',
         maxNumberOfParticipants: null
     });
 
     useEffect(() => {
         if (!isNew) {
-            const url = "/api/meetUp/1/";
-            meetUpApiCall(url, setMeetUp, parseInt(meetUpId!));
+            meetUpApiCall(setMeetUp, parseInt(meetUpId!));
         }
     }, [isNew, meetUpId]);
 
@@ -41,10 +40,14 @@ const EditMeetUp = () => {
         console.log("Submitted data:", meetUp);
         if (!isNew) {
             updateMeetUpApiCall(
-                "/api/meetup",
-                1, // userId
                 meetUp,
                 () => navigate(`/${meetUpId}`),
+                (err) => alert(err)
+            );
+        } else {
+            createMeetUpApiCall(
+                meetUp,
+                (newId) => navigate(`/${newId}`),
                 (err) => alert(err)
             );
         }
@@ -101,9 +104,9 @@ const EditMeetUp = () => {
                         onChange={handleChange}
                     />
                     <input
-                        name="Checklist"
+                        name="CheckList"
                         placeholder="Checklist"
-                        value={meetUp.checklist}
+                        value={meetUp.checkList}
                         onChange={handleChange}
                     />
                     <input
