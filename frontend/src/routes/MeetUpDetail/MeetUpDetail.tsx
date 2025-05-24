@@ -16,9 +16,7 @@ const MeetUpDetailPage: React.FC = () => {
   const [event, setEvent] = useState<MeetUpDetail>();
 
   useEffect(() => {
-    const url = "/api/meetUp/1/";
-    meetUpApiCall(url, setEvent, parseInt(meetUpId));
-
+    meetUpApiCall(setEvent, parseInt(meetUpId));
   }, [meetUpId]);
 
   const goToEditPage = () => {
@@ -72,11 +70,11 @@ const MeetUpDetailPage: React.FC = () => {
         <Typography variant="body1" className="meetup-description">
           {event?.description}
         </Typography>
-        {(event?.checklist || event?.maxNumberOfParticipants) && (
+        {(event?.checkList || event?.maxNumberOfParticipants) && (
           <Box className="meetup-extra-info">
-            {event?.checklist && (
+            {event?.checkList && (
               <Typography variant="body2">
-                <strong>Checklist:</strong> {event.checklist}
+                <strong>Checklist:</strong> {event.checkList}
               </Typography>
             )}
             {event?.maxNumberOfParticipants != null && (
