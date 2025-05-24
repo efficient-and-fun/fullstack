@@ -5,6 +5,16 @@ export interface MeetUpDetail {
     dateTimeTo?: Date | null;
     meetUpLocation: string;
     description?: string;
-    checklist?: string;
+    checkList?: string;
+    maxNumberOfParticipants: number;
+}
+
+ export interface NewMeetUpDetail {
+    meetUpName: string;
+    dateTimeFrom?: Date | null;
+    dateTimeTo?: Date | null;
+    meetUpLocation: string;
+    description?: string;
+    checkList?: string;
     maxNumberOfParticipants: number;
 }
