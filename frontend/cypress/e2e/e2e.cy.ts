@@ -23,6 +23,7 @@ describe("Authentication", () => {
     cy.get(".cy-register-pwd2").type(`${creds.pwd2}`);
     cy.get(".cy-register-submitbutton").click();
     cy.contains("Home"); //Startseite sollte geladen werden können.
+    cy.window().its("localStorage.authToken").should("be.a", "string");
   });
 });
 
