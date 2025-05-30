@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Api.Common;
@@ -16,6 +17,7 @@ public class MeetUpController : BaseController
     {
         _authService = authService;
     }
+
     
     /// <summary>
     /// Create a new MeetUp.
@@ -28,19 +30,12 @@ public class MeetUpController : BaseController
     [HttpPost]
     public ActionResult<int> CreateMeetUp([FromBody] MeetUpCreateDto meetupDto)
     {
-        var userId = _authService.GetUserIdFromToken();
-        var actionResult = ValidateUser(userId, Context);
-        if (actionResult is not OkResult)
-        {
-            return actionResult;
-        }
+        var (validation, userId) = ValidateCommon(_authService, Context);
+        if (validation != null) return validation;
 
-        var validationResult = ValidateMeetupCreate(meetupDto);
-        if (validationResult is not OkResult)
-        {
-            return validationResult;
-        }
-        
+        var validationResult = ValidateMeetupDto(meetupDto);
+        if (validationResult != null) return validationResult;
+
         var newMeetUp = new MeetUps
         {
             MeetUpName = meetupDto.MeetUpName,
@@ -49,7 +44,7 @@ public class MeetUpController : BaseController
             DateTimeTo = meetupDto.DateTimeTo,
             CheckList = meetupDto.CheckList,
             MeetUpLocation = meetupDto.MeetUpLocation,
-            MaxNumberOfParticipants = meetupDto.MaxNumberOfParticipants
+            MaxNumberOfParticipants = meetupDto.MaxNumberOfParticipants > 0 ? meetupDto.MaxNumberOfParticipants : null
         };
 
         Context.MeetUps.Add(newMeetUp);
@@ -67,7 +62,6 @@ public class MeetUpController : BaseController
 
         return Ok(newMeetUp.MeetUpId);
     }
-    
     /// <summary>
     /// Updates a meetup's details if the user is a participant.
     /// </summary>
@@ -77,93 +71,67 @@ public class MeetUpController : BaseController
     /// Returns 204 No Content on success, 400 if input is invalid, 404 if the user or meetup doesn't exist,
     /// or 403 if the user is not a participant.
     /// </returns>
+
     [Authorize]
     [HttpPut, Route("{meetupId:int}")]
     public ActionResult UpdateMeetUp([FromRoute] int meetupId, [FromBody] MeetUp updatedMeetUp)
     {
-        var userId = _authService.GetUserIdFromToken();
-        var actionResult = ValidateUser(userId, Context);
-        if (actionResult is not OkResult)
-        {
-            return actionResult;
-        }
-        
-        var validationMeetUpIdResult = ValidateMeetupId(meetupId);
-        if (validationMeetUpIdResult is not OkResult)
-        {
-            return validationMeetUpIdResult;
-        }
+        var (validation, userId) = ValidateCommon(_authService, Context);
+        if (validation != null) return validation;
+
+        if (meetupId <= 0) return BadRequest("MeetUpId invalid");
 
         var meetUp = Context.MeetUps.Find(meetupId);
-        if (meetUp == null)
-        {
-            return NotFound($"MeetUp with ID {meetupId} not found.");
-        }
+        if (meetUp == null) return NotFound($"MeetUp with ID {meetupId} not found.");
 
-        // TODO discuss: check if the user is the creator or authorized participant
         var participation = Context.Participations
             .FirstOrDefault(p => p.UserId == userId.Value && p.MeetUpId == meetupId);
-        if (participation == null)
-        {
-            return Forbid("User is not authorized to update this meetup.");
-        }
         
-        var validationResult = ValidateMeetupUpdate(updatedMeetUp);
-        if (validationResult is not OkResult)
-        {
-            return validationResult;
-        }
-        
+        // TODO discuss: check if the user is the creator or authorized participant
+        if (participation == null) return Forbid("User is not authorized to update this meetup.");
+
+        var validationResult = ValidateMeetupDto(updatedMeetUp);
+        if (validationResult != null) return validationResult;
+
         meetUp.MeetUpName = updatedMeetUp.MeetUpName;
         meetUp.DateTimeFrom = updatedMeetUp.DateTimeFrom;
         meetUp.DateTimeTo = updatedMeetUp.DateTimeTo;
         meetUp.Description = updatedMeetUp.Description;
         meetUp.CheckList = updatedMeetUp.CheckList;
         meetUp.MeetUpLocation = updatedMeetUp.MeetUpLocation;
-        meetUp.MaxNumberOfParticipants = updatedMeetUp.MaxNumberOfParticipants;
+        meetUp.MaxNumberOfParticipants = updatedMeetUp.MaxNumberOfParticipants > 0 ? updatedMeetUp.MaxNumberOfParticipants : null;
 
         Context.MeetUps.Update(meetUp);
         Context.SaveChanges();
 
         return NoContent();
     }
-    
+
     /// <summary>
     /// Get MeetUp Details for a Meetup of a specified user (both accepted invitations and not accepted ones). 
     /// </summary>
     /// <param name="meetupId"></param>
     /// <returns></returns>
+
     [Authorize]
     [HttpGet, Route("{meetupId:int}")]
     public ActionResult<MeetUps> GetMeetUpDetails([FromRoute] int meetupId)
     {
-        var userId = _authService.GetUserIdFromToken();
-        var actionResult = ValidateUser(userId, Context);
-        if (actionResult is not OkResult)
-        {
-            return actionResult;
-        }
-        
-        if (meetupId <= 0)
-        {
-            return BadRequest("MeetUpId invalid");
-        }
-        
+        var (validation, userId) = ValidateCommon(_authService, Context);
+        if (validation != null) return validation;
+
+        if (meetupId <= 0) return BadRequest("MeetUpId invalid");
+
         var user = Context.Users.FirstOrDefault(u => u.UserId == userId.Value);
         var meetUp = Context.MeetUps.FirstOrDefault(m => m.MeetUpId == meetupId);
         var participation = Context.Participations.FirstOrDefault(p => p.UserId == userId.Value && p.MeetUpId == meetupId);
-        if (user == null || meetUp == null || participation == null)
-        {
-            return NotFound();
-        }
-        
+        if (user == null || meetUp == null || participation == null) return NotFound();
+
         var foundMeetUp = (from m in Context.MeetUps
-            join p in Context.Participations
-                on m.MeetUpId equals p.MeetUpId
-            join u in Context.Users
-                on p.UserId equals u.UserId
+            join p in Context.Participations on m.MeetUpId equals p.MeetUpId
+            join u in Context.Users on p.UserId equals u.UserId
             where u.UserId == userId.Value && m.MeetUpId == meetupId
-            select new MeetUp()
+            select new MeetUp
             {
                 MeetUpId = m.MeetUpId,
                 MeetUpName = m.MeetUpName,
@@ -173,7 +141,7 @@ public class MeetUpController : BaseController
                 MeetUpLocation = m.MeetUpLocation,
                 Description = m.Description,
             }).FirstOrDefault();
-        
+
         return Ok(foundMeetUp);
     }
 
@@ -186,12 +154,8 @@ public class MeetUpController : BaseController
     [HttpGet]
     public ActionResult<IEnumerable<MeetUpBriefDto>> GetMeetUps([FromQuery] DateTime currentDate)
     {
-        var userId = _authService.GetUserIdFromToken();
-        var actionResult = ValidateUser(userId, Context);
-        if (actionResult is not OkResult)
-        {
-            return actionResult;
-        }
+        var (validation, userId) = ValidateCommon(_authService, Context);
+        if (validation != null) return validation;
 
         var meetUps = (from m in Context.MeetUps
             join p in Context.Participations on m.MeetUpId equals p.MeetUpId
@@ -206,85 +170,36 @@ public class MeetUpController : BaseController
                 DateTimeTo = m.DateTimeTo
             }).ToList();
 
-        if (meetUps.Count == 0)
+        if (!meetUps.Any())
         {
             return NotFound($"No meetups found for user {userId.Value} on {currentDate:yyyy-MM-dd}.");
         }
         return Ok(meetUps);
     }
-    
-    private static ActionResult ValidateMeetupCreate(MeetUpCreateDto meetupDto)
+
+    private static ActionResult ValidateMeetupDto(dynamic dto)
     {
-        if (string.IsNullOrWhiteSpace(meetupDto.MeetUpName) || string.IsNullOrWhiteSpace(meetupDto.Description))
-        {
+        if (string.IsNullOrWhiteSpace(dto.MeetUpName) || string.IsNullOrWhiteSpace(dto.Description))
             return new BadRequestObjectResult("MeetUp name and description are required.");
-        }
-        
-        if (meetupDto.DateTimeFrom == default || meetupDto.DateTimeTo == default)
-        {
+
+        if (dto.DateTimeFrom == DateTime.MinValue || dto.DateTimeTo == DateTime.MinValue)
             return new BadRequestObjectResult("MeetUp start and end times are required.");
-        }
 
-        if (meetupDto.DateTimeFrom >= meetupDto.DateTimeTo)
-        {
+        if (dto.DateTimeFrom >= dto.DateTimeTo)
             return new BadRequestObjectResult("MeetUp start time must be before end time.");
-        }
-        
-        if (meetupDto.MaxNumberOfParticipants <= 0)
-        {
-            meetupDto.MaxNumberOfParticipants = null;
-        }
-        
-        return new OkResult();
-    }
-    
-    private static ActionResult ValidateMeetupUpdate(MeetUp meetupDto)
-    {
-        if (string.IsNullOrWhiteSpace(meetupDto.MeetUpName) || string.IsNullOrWhiteSpace(meetupDto.Description))
-        {
-            return new BadRequestObjectResult("MeetUp name and description are required.");
-        }
 
-        if (meetupDto.DateTimeFrom == default || meetupDto.DateTimeTo == default)
-        {
-            return new BadRequestObjectResult("MeetUp start and end times are required.");
-        }
-
-        if (meetupDto.DateTimeFrom >= meetupDto.DateTimeTo)
-        {
-            return new BadRequestObjectResult("MeetUp start time must be before end time.");
-        }
-        
-        if (meetupDto.MaxNumberOfParticipants <= 0)
-        {
-            meetupDto.MaxNumberOfParticipants = null;
-        }
-        
-        return new OkResult();
+        return null;
     }
 
-    private static ActionResult ValidateMeetupId(int meetupId)
+    private static (ActionResult? Result, int? UserId) ValidateCommon(IAuthService authService, EfDbContext context)
     {
-        if (meetupId <= 0)
-        {
-            return new BadRequestObjectResult("MeetUpId invalid");
-        }
-        return new OkResult();
-    }
-    
-    private static ActionResult ValidateUser(int? userId, EfDbContext context)
-    {
+        var userId = authService.GetUserIdFromToken();
         if (userId == null)
-        {
-            return new UnauthorizedObjectResult("User not authenticated.");
-        }
+            return (new UnauthorizedObjectResult("User not authenticated."), null);
 
         var userExists = context.Users.Any(u => u.UserId == userId.Value);
-        if (!userExists)
-        {
-            return new NotFoundObjectResult($"User with ID {userId} does not exist.");
-        }
-
-        return new OkResult();
+        return userExists 
+            ? (null, userId) 
+            : (new NotFoundObjectResult($"User with ID {userId} does not exist."), null);
     }
 }
