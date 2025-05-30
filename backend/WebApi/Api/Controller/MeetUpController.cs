@@ -4,7 +4,10 @@ using WebApi.Api.Common;
 using WebApi.Api.Model;
 
 namespace WebApi.Api.Controller;
-
+/// <summary>
+/// Controller for managing MeetUps.
+/// Provides endpoints to create, update, and retrieve MeetUps.
+/// </summary>
 [ApiController, Route("api/meetups")]
 public class MeetUpController : BaseController
 {
