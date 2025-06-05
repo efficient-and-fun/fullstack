@@ -175,7 +175,8 @@ Responsible for handling all meet up - related HTTP API endpoints, including:
 ## 7. Deployment View
 As this is the scope of a school project we were limited to the available hardware environment our school provided. Therefore, we choose to use rancher paired with argoCD to host our environment. Our building pipeline uses Github Actions. In the following section a typical CI-CD pipeline run is described. It triggers when something is pushed into the dev branch on the fullstack repository.
 
-![Arc42 deployment view.png](../media/Arc42 deployment view.png)
+# Add image so it is displayed on github:
+[!Arc42 deployment view.png](../media/Arc42%20deployment%20view.png)
 
 ### GitHub Actions
 1. We use two different building pipelines for frontend and backend. They get triggered when there are changes in the folder backend or frontend in the dev branch. The action runs all the test.
