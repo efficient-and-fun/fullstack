@@ -14,11 +14,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setze SONAR_TOKEN
-        run: echo "Token geladen"
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -56,10 +51,10 @@ jobs:
       
 
       - name: Build & Tests (Backend)
-        working-directory: Backend
+        working-directory: backend
         run: |
-          dotnet restore MeinBackend.sln
-          dotnet build MeinBackend.sln -c Release
+          dotnet restore WebApi.sln
+          dotnet build WebApi.sln -c Release
       
       - name: SonarCloud End Analyse
         working-directory: backend
