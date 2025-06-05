@@ -173,24 +173,26 @@ Responsible for handling all meet up - related HTTP API endpoints, including:
 3. UserService adds the friend.
 ```
 ## 7. Deployment View
-As this is the scope of a school project we were limited to the available hardware environemnt our school provided. Therefore we choose to use rancher paired with argoCD to host our enivronment. Our building pipline uses Github Actions. In the following sectino a typical CI-CD pipeline run is described. It triggers when something is pushed into the dev branch on the fullstack repository.
+As this is the scope of a school project we were limited to the available hardware environment our school provided. Therefore, we choose to use rancher paired with argoCD to host our environment. Our building pipeline uses GitHub Actions. In the following section a typical CI-CD pipeline run is described. It triggers when something is pushed into the dev branch on the fullstack repository.
+
+![Arc42 deployment view.png](../media/Arc42%20deployment%20view.png)
 
 ### GitHub Actions
 1. We use two different building pipelines for frontend and backend. They get triggered when there are changes in the folder backend or frontend in the dev branch. The action runs all the test.
 2. If all tests pass a Docker image gets built and pushed to the GHCR of the organization. It is tagged with the current commit hash. 
-3. At last the workflow updates the operation repository, using a dipsatch event. It changes the image tag to the newly built one.
+3. At last the workflow updates the operation repository, using a dispatch event. It changes the image tag to the newly built one.
 
 ### Argo CD
 4. ArgoCD watches the dev and main branch for changes. It realizes, that there were changes in the operations repository. It pulls the updated manifest and compares it to the current one.
-5. If there are changes detected. ArgoCD tells rancher what ressources to update.
-7. If there are problems with the newly applied ressources ArgoCD tells Rancher to fall back to a older working version.
+5. If there are changes detected. ArgoCD tells rancher what resources to update.
+6. If there are problems with the newly applied resources ArgoCD tells Rancher to fall back to an older working version.
 
 ### Rancher
-6. Rancher pulls the new image and tries to set it up.
+7. Rancher pulls the new image and tries to set it up.
 
-On the Rancher Kluster there are two running namespaces staging and production.
-Staging is used for testing reasons to run the application in the real environment. It mirrows the state of the dev branch in the operations repository.
-Main is the running application. It mirrows the state of the main branch in the operations repository. To release a new version we need to create a pull request from dev to main branch in the operations repository.
+On the Rancher Cluster there are two running namespaces staging and production.
+Staging is used for testing reasons to run the application in the real environment. It mirrors the state of the dev branch in the operations' repository.
+Main is the running application. It mirrors the state of the main branch in the operations' repository. To release a new version we need to create a pull request from dev to main branch in the operations' repository.
     
 ## 8. Cross-cutting Concepts
 How is the deployment process?
@@ -252,11 +254,11 @@ Define `IAuthService` interface and implement it with `AuthService`.
 - DELETE: Remove
 
 ## 10. Quality Requirements
-| Quality Attribute | Requirement                                                                 |
-|-------------------|------------------------------------------------------------------------------|
-| **Security**      | Passwords must be securely hashed; no plain-text storage.                    |
-| **Reliability**   | JWT tokens must be validated before accessing protected resources.           |
-| **Usability**     | Users must receive clear feedback during login and registration failures.    |
+| Quality Attribute | Requirement                                                               |
+|-------------------|---------------------------------------------------------------------------|
+| **Security**      | Passwords must be securely hashed; no plain-text storage.                 |
+| **Reliability**   | JWT tokens must be validated before accessing protected resources.        |
+| **Usability**     | Users must receive clear feedback during login and registration failures. |
 
 ## 11. Risks and Technical Debt
 ### Authentication and Authorization
@@ -268,22 +270,22 @@ Define `IAuthService` interface and implement it with `AuthService`.
 - Friend system has no notifications yet
 
 ## 12. Glossary
-| Term              | Description                                                                                                 |
-|-------------------|-------------------------------------------------------------------------------------------------------------|
-| **[Authorize]**   | ASP.NET Core attribute to protect endpoints by validating JWT tokens.                                       |
-| **Argo CD**       | A declarative, GitOps continuous delivery tool for Kubernetes.                                              |
-| **AuthService**   | Service implementing authentication and registration logic.                                                 |
-| **BCrypt**        | A strong hashing algorithm used for securely storing passwords.                                             |
-| **CI/CD**         | Continuous Integration and Continuous Deployment/Delivery, automating code build, test, and deployment.     |
-| **Claim**         | Key-value pairs in JWT tokens that represent user data or permissions.                                      |
-| **Docker**        | A platform for developing, shipping, and running applications in containers.                                |
-| **EfDbContext**   | Entity Framework Core context for database access.                                                          |
-| **Friendship**    | Mutual relationship between two users.                                                                      |
-| **MeetUp**        | A scheduled gathering created by a user, involving one or more participants, which may either be an independent social event or organized around attending an external event together.planned                                                                      |
-| **GHCR**          | GitHub Container Registry, used for storing and distributing Docker images.                                 |
-| **GitOps**        | A deployment model using Git as the source of truth for declarative infrastructure and applications.        |
-| **Helm**          | A package manager for Kubernetes, used to define, install, and upgrade applications.                        |
-| **IAuthService**  | Interface abstracting authentication logic, enabling clean separation and testing.                          |
-| **JWT**           | JSON Web Token, a signed token format used for stateless authentication and authorization.                  |
-| **Kubernetes**    | An open-source system for automating deployment, scaling, and management of containerized applications.     |
-| **Rancher**       | A container management platform for deploying and managing Kubernetes clusters.                             |
+| Term             | Description                                                                                                                                                                                   |
+|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **[Authorize]**  | ASP.NET Core attribute to protect endpoints by validating JWT tokens.                                                                                                                         |
+| **Argo CD**      | A declarative, GitOps continuous delivery tool for Kubernetes.                                                                                                                                |
+| **AuthService**  | Service implementing authentication and registration logic.                                                                                                                                   |
+| **BCrypt**       | A strong hashing algorithm used for securely storing passwords.                                                                                                                               |
+| **CI/CD**        | Continuous Integration and Continuous Deployment/Delivery, automating code build, test, and deployment.                                                                                       |
+| **Claim**        | Key-value pairs in JWT tokens that represent user data or permissions.                                                                                                                        |
+| **Docker**       | A platform for developing, shipping, and running applications in containers.                                                                                                                  |
+| **EfDbContext**  | Entity Framework Core context for database access.                                                                                                                                            |
+| **Friendship**   | Mutual relationship between two users.                                                                                                                                                        |
+| **MeetUp**       | A scheduled gathering created by a user, involving one or more participants, which may either be an independent social event or organized around attending an external event together.planned |
+| **GHCR**         | GitHub Container Registry, used for storing and distributing Docker images.                                                                                                                   |
+| **GitOps**       | A deployment model using Git as the source of truth for declarative infrastructure and applications.                                                                                          |
+| **Helm**         | A package manager for Kubernetes, used to define, install, and upgrade applications.                                                                                                          |
+| **IAuthService** | Interface abstracting authentication logic, enabling clean separation and testing.                                                                                                            |
+| **JWT**          | JSON Web Token, a signed token format used for stateless authentication and authorization.                                                                                                    |
+| **Kubernetes**   | An open-source system for automating deployment, scaling, and management of containerized applications.                                                                                       |
+| **Rancher**      | A container management platform for deploying and managing Kubernetes clusters.                                                                                                               |
