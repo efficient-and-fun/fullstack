@@ -1,16 +1,17 @@
-import { useState } from 'react';
+import { useState } from "react";
 import styles from "./Form.module.css";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { authApiCall } from "../../api/meetUpApi";
 
 const RegisterForm = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password1, setPassword1] = useState('');
-  const [password2, setPassword2] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password1, setPassword1] = useState("");
+  const [password2, setPassword2] = useState("");
   const [isAGBAccepted, setAGBAccepted] = useState(true);
   const [errors, setErrors] = useState<string[]>([]); // Errors are stored here
   const navigate = useNavigate();
-  const url = '/api/user/register';
+  const endpoint = "/register";
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,43 +19,45 @@ const RegisterForm = () => {
     const newErrors: string[] = []; // Temporary error list
 
     // Username validation
-    if(!username) {
-      newErrors.push('Plese enter a username.');
+    if (!username) {
+      newErrors.push("Plese enter a username.");
     }
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      newErrors.push('Please enter a valid email address.');
+      newErrors.push("Please enter a valid email address.");
     }
 
     // Password validation
     if (password1 !== password2) {
-      newErrors.push('Passwords do not match.');
+      newErrors.push("Passwords do not match.");
     }
 
     if (password1.length < 8) {
-      newErrors.push('Password must be at least 8 characters long.');
+      newErrors.push("Password must be at least 8 characters long.");
     }
 
     if (!/[A-Z]/.test(password1)) {
-      newErrors.push('Password must contain at least one uppercase letter.');
+      newErrors.push("Password must contain at least one uppercase letter.");
     }
 
     if (!/[a-z]/.test(password1)) {
-      newErrors.push('Password must contain at least one lowercase letter.');
+      newErrors.push("Password must contain at least one lowercase letter.");
     }
 
     if (!/[0-9]/.test(password1)) {
-      newErrors.push('Password must contain at least one number.');
+      newErrors.push("Password must contain at least one number.");
     }
 
     if (!/[!@#$%^&*]/.test(password1)) {
-      newErrors.push('Password must contain at least one special character (!@#$%^&*).');
+      newErrors.push(
+        "Password must contain at least one special character (!@#$%^&*)."
+      );
     }
 
-    if( !isAGBAccepted) {
-      newErrors.push('Please accept the terms and conditions.');
+    if (!isAGBAccepted) {
+      newErrors.push("Please accept the terms and conditions.");
     }
 
     // If there are errors, set them in the state and stop execution
@@ -62,28 +65,24 @@ const RegisterForm = () => {
       setErrors(newErrors);
       return;
     } else {
-        setErrors([]); // Clear errors if no validation issues
+      setErrors([]); // Clear errors if no validation issues
     }
 
-    // Try to make the API call
-    try {
-        const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password: password1, password2: password2, profilePicturePath: "C:/temp/photo", isAGBAccepted: true }),
-        });
-        const data = await res.json();
+    const userData = JSON.stringify({
+      username,
+      email,
+      password: password1,
+      password2: password2,
+      profilePicturePath: "C:/temp/photo",
+      isAGBAccepted: true,
+    });
 
-        if (res.ok) {
-        localStorage.setItem("authToken", data.token);
-        navigate("/");
-        } else {
-        setErrors([data.message || 'Registration failed. Please try again.']);
-        }
-    } catch (error) {
-        // Catch network or other unexpected errors
-        setErrors(['An unexpected error occurred. Please try again later.']);
-        console.error('Error during registration:', error);
+    const data = await authApiCall(endpoint, userData);
+
+    if (data.ok) {
+      navigate("/");
+    } else {
+      setErrors([data.message || "Registration failed. Please try again."]);
     }
   };
 
@@ -133,7 +132,10 @@ const RegisterForm = () => {
         />
         <label htmlFor="agb">I accept the terms and conditions</label>
       </div>
-      <button className={`${styles.btn} cy-register-submitbutton`} type="submit">
+      <button
+        className={`${styles.btn} cy-register-submitbutton`}
+        type="submit"
+      >
         Sign up
       </button>
 

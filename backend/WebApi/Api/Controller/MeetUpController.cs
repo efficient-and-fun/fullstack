@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Api.Common;
@@ -17,7 +16,6 @@ public class MeetUpController : BaseController
     {
         _authService = authService;
     }
-
     
     /// <summary>
     /// Create a new MeetUp.
@@ -112,7 +110,6 @@ public class MeetUpController : BaseController
     /// </summary>
     /// <param name="meetupId"></param>
     /// <returns></returns>
-
     [Authorize]
     [HttpGet, Route("{meetupId:int}")]
     public ActionResult<MeetUps> GetMeetUpDetails([FromRoute] int meetupId)
