@@ -6,21 +6,55 @@ using WebApi.Api.Model;
 
 namespace WebApi;
 
+/// <summary>
+/// Defines user-related operations such as managing friendships.
+/// </summary>
 public interface IUserService
 {
+    /// <summary>
+    /// Adds a friend to the specified user.
+    /// </summary>
+    /// <param name="userId">The ID of the user who wants to add a friend.</param>
+    /// <param name="newFriend">The username of the friend to be added.</param>
+    /// <returns>
+    /// A <see cref="UserResult"/> indicating success or failure of the operation.
+    /// </returns>
     Task<UserResult> AddFriend(int userId, string newFriend);
+    /// <summary>
+    /// Removes a friend from the specified user's friend list.
+    /// </summary>
+    /// <param name="userId">The ID of the user who wants to remove a friend.</param>
+    /// <param name="newFriend">The username of the friend to be removed.</param>
+    /// <returns>
+    /// A <see cref="UserResult"/> indicating success or failure of the operation.
+    /// </returns>
     Task<UserResult> RemoveFriend(int userId, string newFriend);
 }
 
+/// <summary>
+/// Provides user-related operations such as adding and removing friends.
+/// </summary>
 public class UserService : IUserService
 {
     private readonly EfDbContext _context;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UserService"/> class with the given database context.
+    /// </summary>
+    /// <param name="context">Entity Framework database context.</param>
     public UserService(EfDbContext context)
     {
         _context = context;
     }
 
+    /// <summary>
+    /// Adds a friend to the specified user's friend list.
+    /// </summary>
+    /// <param name="userId">The ID of the user who wants to add a friend.</param>
+    /// <param name="newFriend">The username of the friend to be added.</param>
+    /// <returns>
+    /// A <see cref="UserResult"/> indicating success or failure and an optional error message.
+    /// </returns>
     public async Task<UserResult> AddFriend(int userId, string newFriend)
     {
         try
@@ -70,6 +104,14 @@ public class UserService : IUserService
         }
     }
 
+    /// <summary>
+    /// Removes a friend from the specified user's friend list.
+    /// </summary>
+    /// <param name="userId">The ID of the user who wants to remove a friend.</param>
+    /// <param name="newFriend">The username of the friend to be removed.</param>
+    /// <returns>
+    /// A <see cref="UserResult"/> indicating success or failure and an optional error message.
+    /// </returns>
     public async Task<UserResult> RemoveFriend(int userId, string newFriend)
     {
         try
@@ -107,8 +149,7 @@ public class UserService : IUserService
         }
     }
 
-
-    public int GetUserIdFromUserName(string username)
+    private int GetUserIdFromUserName(string username)
     {
         var user = _context.Users.FirstOrDefault(u => u.UserName == username);
         if (user == null)
@@ -120,8 +161,18 @@ public class UserService : IUserService
     }
 }
 
+/// <summary>
+/// Represents the result of a user-related operation, such as adding or removing a friend.
+/// </summary>
 public class UserResult
 {
+    /// <summary>
+    /// Indicates whether the operation was successful.
+    /// </summary>
     public bool Success { get; set; }
-    public string ErrorMessage { get; set; }
+
+    /// <summary>
+    /// An optional error message describing why the operation failed; <c>null</c> if successful.
+    /// </summary>
+    public string? ErrorMessage { get; set; }
 }
