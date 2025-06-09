@@ -11,7 +11,7 @@
 ## 📑 Table of Contents
 
 1. [Introduction](#introduction)
-2. [Getting Started](#getting-started)
+2. [Getting Started](#getting-started)<br>
    2.1 [Signup](#signup)  
    2.2 [Login](#login)
 3. [Navigation](#navigation)  
