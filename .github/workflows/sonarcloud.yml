@@ -2,9 +2,9 @@ name: sonar-cloud-plananaz
 
 on:
   push:
-    branches: [ main, dev, dev-frontend ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, dev ]
+    branches: [ main ]
 
 jobs:
   sonarcloud:
