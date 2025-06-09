@@ -58,7 +58,7 @@ const FriendsPage = () => {
   };
 
   return (
-    <div>
+    <div style={{ height: "100vh", overflowY: "auto" }}>
       <List
         text="My Friends"
         items={friends}

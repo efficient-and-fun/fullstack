@@ -1,0 +1,62 @@
+name: sonar-cloud-plananaz
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  sonarcloud:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore dependencies
+        run: dotnet restore backend/WebApi/WebApi.csproj
+
+
+      - name: Set up Node.js with caching
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+
+      - name: Installiere dotnet-sonarscanner
+        run: |
+          dotnet tool install --global dotnet-sonarscanner --version 5.12.0
+          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+
+      - name: SonarCloud Begin Analyse (C# + TS)
+        working-directory: backend
+        run: |
+          dotnet sonarscanner begin \
+            /k:"efficient-and-fun_fullstack" \
+            /o:"efficient-and-fun" \
+            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.inclusions="../frontend/src/**/*.ts,../frontend/src/**/*.tsx" \
+            /d:sonar.exclusions="**/node_modules/**,WebApi/Properties/**,**/*.json" \
+            /d:sonar.sourceEncoding="UTF-8"
+      
+
+      - name: Build & Tests (Backend)
+        working-directory: backend
+        run: |
+          dotnet restore WebApi.sln
+          dotnet build WebApi.sln -c Release
+      
+      - name: SonarCloud End Analyse
+        working-directory: backend
+        run: |
+          dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
