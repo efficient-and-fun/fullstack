@@ -10,17 +10,19 @@
 
 ## 📑 Table of Contents
 
-1. [Introduction](#introduction)  
-2. [Signup Page](#signup-page)  
-3. [Login Page](#login-page)  
-4. [Event Overview Page](#event-overview-page)  
-5. [Create Event](#create-event)  
-6. [Edit Event](#edit-event)  
-7. [Friends Page](#friends-page)  
+1. [Introduction](#introduction)
+2. [Getting Started](#getting-started)
+   - [Signup](#signup)  
+   - [Login](#login)
+3. [Navigation](#navigation)  
+4. [Events](#event-overview-page)  
+   - [Create Event](#create-event)  
+   - [Edit Event](#edit-event)  
+5. [Friends Page](#friends-page)  
    - [Add Friend](#add-friend)  
    - [Remove Friend](#remove-friend)  
-8. [Settings Page](#settings-page)  
-9. [Logout](#logout)  
+6. [Settings Page](#settings-page)  
+   - [Logout](#logout)  
 
 ---
 ## Introduction
@@ -33,10 +35,10 @@ This documentation is intended for non-technical users who want to learn how to 
 - Creating and editing events  
 - Managing your friends list (adding and removing friends)  
 
-Each section contains clear instructions, screenshots or GIF's. Use the [⏫ Back to Top](#plananaz-user-manual) links to help you navigate effortlessly.
+Each section contains clear instructions, screenshots or GIFs. Use the [⏫ Back to Top](#plananaz-docs) links to help you navigate effortlessly.
 
 ### 🚀 Key Features
-> **Note:** This application is still under construction. More featrues will be added as they are published.
+> **Note:** This application is still under construction. More features will be added as they are published.
 
 - **User Registration**  
   Create a new Plananaz account with your email and a secure password.
@@ -50,21 +52,20 @@ Each section contains clear instructions, screenshots or GIF's. Use the [⏫ Bac
 
 - **Friend Management**  
   - **Add Friend**: Invite users by email or username.  
-  - **Remove Friend**: Remove contacts you no longer wish to keep.
-
-> **Note:** Insert a high-level GIF or screenshot of the dashboard  
-> `![Dashboard overview](TODO-path/dashboard.gif)`
-
-[⏫ Back to Top](#plananaz-user-manual)
+  - **Remove Friend**: Remove contacts you no longer wish to keep.  
 ---
 
-## Signup Page
+## Getting started
+In this section it is described how to create a user account and how to successfully log into Plananaz.
 
-### 🔍 Overview
+---
+### Sign up
+
+#### 🔍 Overview
 To get started visit: [plananaz](https://plananaz.pm4.init-lab.ch/)<br>
-Click on ``Sign up``<br>
+Click on `Sign up`<br>
 Enter the following information<br>
-Click on ``Sign up`` again
+Click on `Sign up` again
 
 | Field       | Description                  | Required |
 |-------------|------------------------------|:--------:|
@@ -73,73 +74,91 @@ Click on ``Sign up`` again
 | Password    | Minimum 8 characters <br> Minimum one uppercase letter <br> Minimum one number <br> Minimum one special character <br> (!@#$%^&*)         | ✔️       |
 
 
-### 🛠️ Step-by-Step
+#### 🛠️ Step-by-Step Guide
 
-![Registration proccess](../media/sign_up.gif)
+![Registration process](../media/sign_up.gif)
 
-[⏫ Back to Top](#plananaz-user-manual)
+[⏫ Back to Top](#plananaz-docs)
 ---
 
-## Login Page
+### Login
 
-### 🔍 Overview
+#### 🔍 Overview
 To get started visit: [plananaz](https://plananaz.pm4.init-lab.ch/)<br>
-Enter the following information
-Click on ``Sign in``
+Enter the following information<br>
+Click on `Sign in`
 
 | Field       | Description                  | Required |
 |-------------|------------------------------|:--------:|
 | Email       | User’s email address         | ✔️       |
 | Password    | Minimum 8 characters <br> Minimum one uppercase letter <br> Minimum one number <br> Minimum one special character <br> (!@#$%^&*)  | ✔️       |
 
-### 🛠️ Step-by-Step
+#### 🛠️ Step-by-Step Guide
 
-![Login proccess](../media/sign_in.gif)
+![Login process](../media/sign_in.gif)
 
-[⏫ Back to Top](#plananaz-user-manual)
+[⏫ Back to Top](#plananaz-docs)
 ---
+
+## Navigation
+
+This section describes the main navigation on the bottom of the screen.
+
+#### 🖼️ Layout
+
+The navigation bar is present on each page. It can be used to switch between different pages.
+<div><img src="../media/nav_bar.png" alt="Full Event Page" style="width:400px;"/></div>
+
+#### 🛠️ Step-by-Step Guide
+
+![Create event](../media/navigation.gif)
+
+[⏫ Back to Top](#plananaz-docs)
+---
+
 
 ## Event Overview Page
 
-### 🔎 Purpose
-Shows all upcoming and past events in one place.
-
-### 🖼️ Layout
-- **Calendar widget**  
-- **Event cards** with title, date, location  
-
-### ⚙️ Actions
-- View details (`View` button)  
-- Quick-edit (`✏️` icon)  
-- Delete (`🗑️` icon)  
-
-### 🛠️ Step-by-Step
-
-![Event page](../media/event_page.gif)
-
+This section describes the event overview page, which is the home view.
 
 ---
 
-## Create Event
+#### 🖼️ Layout
 
-### 🔍 Overview
-Guide to adding a new event.
+The event page has the following layout:
+<div><img src="../media/event_page_full.png" alt="Full Event Page" style="width:400px;"/></div>
 
-### 📝 Fields & Options
+On the top right side there is the Add Event button.
+<div><img src="../media/event_page_add_event.png" alt="Add Event button" style="width:400px;"/></div>
+
+Below there is the calendar. The current date is automatically selected. But with a simple click on any date it can be selected as well.
+<div><img src="../media/event_page_calendar.png" alt="Calendar widget" style="width:400px;"/></div>
+
+In the event section the selected date is shown again. Down below there is a list with all events that take place on this day. Those events can be opened by clicking on them.
+<div><img src="../media/event_page_event_section.png" alt="Event list section" style="width:400px;"/></div>
+
+If an event is clicked, the detail view opens. It contains all the information as well as an edit and close button.
+<div><img src="../media/event_page_detail_view.png" alt="Event detail view" style="width:400px;"/></div>
+
+[⏫ Back to Top](#plananaz-docs)
+---
+
+### Create Event
+
+#### 🔍 Overview
+Click on the `Create Event` button.<br>
+Fill in fields with information.<br>
+Click on the `Create` button.
+
+#### 📝 Fields & Options
 - **Title** (text)  
-- **Date & Time** (picker)  
-- **Location** (autocomplete)  
-- **Description** (rich text)  
-- **Invitees** (select friends)  
+- **Start and End Date/Time** (picker)  
+- **Location** (text)  
+- **Description** (long text)  
+- **Checklist** (text)  
+- **Number of participants** (number)  
 
-### 🛠️ Steps
-1. Click **Create Event**.  
-2. Fill in fields.  
-3. Invite friends.  
-4. Click **Save**.  
-5. TODO: Explain optional booking integrations.
-
-### 🛠️ Step-by-Step
+#### 🛠️ Step-by-Step Guide
 
 ![Create event](../media/create_event.gif)
 
@@ -147,27 +166,34 @@ Guide to adding a new event.
 
 ## Edit Event
 
-### 🔍 Overview
-Modify an existing event’s details.
+#### 🔍 Overview
+Click on the event.<br>
+Click on the `Edit Event` button.<br>
+Update fields as needed.<br>
+Click on the `Update` button.
 
-### 🛠️ Steps
-1. On Event Overview, click **✏️ Edit**.  
-2. Update fields as needed.  
-3. Click **Save Changes**.  
+#### 🛠️ Step-by-Step Guide
 
-### 🛠️ Step-by-Step
+![Edit event](../media/edit_event.gif)
 
-![Create event](../media/edit_event.gif)
-
-[⏫ Back to Top](#plananaz-user-manual)
+[⏫ Back to Top](#plananaz-docs)
 ---
 
 ## Friends Page
 
-### 🔎 Purpose
-Manage your social circle within Plananaz.
+#### 🖼️ Layout
 
-### 🛠️ Step-by-Step
+The Friends page has the following layout:
+
+<div><img src="../media/friends_page_full.png" alt="Friends page full layout" style="width:400px;"/></div>
+
+On the top there is the friends list.
+<div><img src="../media/friends_page_friends.png" alt="Friends list section" style="width:400px;"/></div>
+
+Below there is a list of all users.
+<div><img src="../media/friends_page_users.png" alt="All users section" style="width:400px;"/></div>
+
+#### 🛠️ Step-by-Step Guide
 
 ![Friends page](../media/friends_page.gif)
 
@@ -175,13 +201,10 @@ Manage your social circle within Plananaz.
 
 ### Add Friend
 
-#### 🛠️ Steps
-1. Go to **Friends**.  
-2. Click **Add Friend**.  
-3. Enter friend’s email or username.  
-4. Click **Send Request**.  
+#### 🔍 Overview
+Click on the green `+` button to add a user as a friend.
 
-### 🛠️ Step-by-Step
+#### 🛠️ Step-by-Step Guide
 
 ![Add friend](../media/add_friends.gif)
 
@@ -189,38 +212,31 @@ Manage your social circle within Plananaz.
 
 ### Remove Friend
 
-#### 🛠️ Steps
-1. On **Friends**, find the friend.  
-2. Click **Remove** (🗑️).  
-3. Confirm removal.  
+#### 🔍 Overview
+Click on the green `-` button to delete a friend from the friends list.
 
-### 🛠️ Step-by-Step
+#### 🛠️ Step-by-Step Guide
 
 ![Remove friends](../media/delete_friends.gif)
 
 ---
 
-## Settings Page
+#### 🖼️ Layout
 
-### 🔧 Options
-- **Profile**: name, avatar  
-- **Notifications**: email/push settings  
-- **Integrations**: calendar, booking APIs  
-- **Privacy**: data sharing preferences  
+The Settings page contains the `Log Out` button.
 
-> TODO: Insert screenshots of each settings tab.
+<div><img src="../media/settings_page.png" alt="Settings page layout" style="width:400px;"/></div>
 
 ---
 
-## Logout
+### Logout
 
-### 🛠️ Steps
-1. Click your **avatar** in top-right.  
-2. Select **Logout**.  
-3. You will be redirected to the **Login** page.
+#### 🔍 Overview
+Click on the green `Log Out` button to log out. You return to the login screen afterwards.
 
-### 🛠️ Step-by-Step
+#### 🛠️ Step-by-Step Guide
 
 ![Logout](../media/logout.gif)
 
+[⏫ Back to Top](#plananaz-docs)
 ---
