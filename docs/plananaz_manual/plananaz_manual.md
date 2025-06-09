@@ -12,20 +12,20 @@
 
 1. [Introduction](#introduction)
 2. [Getting Started](#getting-started)
-   - [Signup](#signup)  
-   - [Login](#login)
+   2.1 [Signup](#signup)  
+   2.2 [Login](#login)
 3. [Navigation](#navigation)  
 4. [Events](#event-overview-page)  
-   - [Create Event](#create-event)  
-   - [Edit Event](#edit-event)  
+   4.1 [Create Event](#create-event)  
+   4.2 [Edit Event](#edit-event)  
 5. [Friends Page](#friends-page)  
-   - [Add Friend](#add-friend)  
-   - [Remove Friend](#remove-friend)  
+   5.1 [Add Friend](#add-friend)  
+   5.2 [Remove Friend](#remove-friend)  
 6. [Settings Page](#settings-page)  
-   - [Logout](#logout)  
+   6.1 [Logout](#logout)  
 
 ---
-## Introduction
+## 1. Introduction
 
 ### 🎯 Purpose
 This documentation is intended for non-technical users who want to learn how to use the core features of Plananaz. Here you will find step-by-step guidance on:
@@ -55,52 +55,54 @@ Each section contains clear instructions, screenshots or GIFs. Use the [⏫ Back
   - **Remove Friend**: Remove contacts you no longer wish to keep.  
 ---
 
-## Getting started
+## 2. Getting started
 In this section it is described how to create a user account and how to successfully log into Plananaz.
 
 ---
-### Sign up
+### 2.1 Sign up
 
 #### 🔍 Overview
-To get started visit: [plananaz](https://plananaz.pm4.init-lab.ch/)<br>
-Click on `Sign up`<br>
-Enter the following information<br>
-Click on `Sign up` again
+- To get started visit: [plananaz](https://plananaz.pm4.init-lab.ch/)<br>
+- Click on `Sign up`<br>
+- Enter the following information<br>
+- Click on `Sign up` again
 
-| Field       | Description                  | Required |
-|-------------|------------------------------|:--------:|
-| Email       | User’s email address         | ✔️       |
-| Username    | Display name within Plananaz | ✔️       |
-| Password    | Minimum 8 characters <br> Minimum one uppercase letter <br> Minimum one number <br> Minimum one special character <br> (!@#$%^&*)         | ✔️       |
+| Field       | Description                  |
+|-------------|------------------------------|
+| Email       | User’s email address         |
+| Username    | Display name within Plananaz |
+| Password    | Minimum 8 characters <br> Minimum one uppercase letter <br> Minimum one number <br> Minimum one special character <br> (!@#$%^&*)         |
 
 
 #### 🛠️ Step-by-Step Guide
 
 ![Registration process](../media/sign_up.gif)
 
-[⏫ Back to Top](#plananaz-docs)
+<div style="text-align: right; margin-bottom: 1em;"><a href="#plananaz-docs">⏫ Back to Top</a></div>
+
 ---
 
-### Login
+### 2.2 Login
 
 #### 🔍 Overview
-To get started visit: [plananaz](https://plananaz.pm4.init-lab.ch/)<br>
-Enter the following information<br>
-Click on `Sign in`
+- To get started visit: [plananaz](https://plananaz.pm4.init-lab.ch/)<br>
+- Enter the following information<br>
+- Click on `Sign in`
 
-| Field       | Description                  | Required |
-|-------------|------------------------------|:--------:|
-| Email       | User’s email address         | ✔️       |
-| Password    | Minimum 8 characters <br> Minimum one uppercase letter <br> Minimum one number <br> Minimum one special character <br> (!@#$%^&*)  | ✔️       |
+| Field       | Description                  |
+|-------------|------------------------------|
+| Email       | User’s email address         |
+| Password    | Minimum 8 characters <br> Minimum one uppercase letter <br> Minimum one number <br> Minimum one special character <br> (!@#$%^&*)  |
 
 #### 🛠️ Step-by-Step Guide
 
 ![Login process](../media/sign_in.gif)
 
-[⏫ Back to Top](#plananaz-docs)
+<div style="text-align: right; margin-bottom: 1em;"><a href="#plananaz-docs">⏫ Back to Top</a></div>
+
 ---
 
-## Navigation
+## 3. Navigation
 
 This section describes the main navigation on the bottom of the screen.
 
@@ -113,11 +115,12 @@ The navigation bar is present on each page. It can be used to switch between dif
 
 ![Create event](../media/navigation.gif)
 
-[⏫ Back to Top](#plananaz-docs)
+<div style="text-align: right; margin-bottom: 1em;"><a href="#plananaz-docs">⏫ Back to Top</a></div>
+
 ---
 
 
-## Event Overview Page
+## 4. Event Overview Page
 
 This section describes the event overview page, which is the home view.
 
@@ -140,10 +143,11 @@ In the event section the selected date is shown again. Down below there is a lis
 If an event is clicked, the detail view opens. It contains all the information as well as an edit and close button.
 <div><img src="../media/event_page_detail_view.png" alt="Event detail view" style="width:400px;"/></div>
 
-[⏫ Back to Top](#plananaz-docs)
+<div style="text-align: right; margin-bottom: 1em;"><a href="#plananaz-docs">⏫ Back to Top</a></div>
+
 ---
 
-### Create Event
+### 4.1 Create Event
 
 #### 🔍 Overview
 Click on the `Create Event` button.<br>
@@ -162,24 +166,27 @@ Click on the `Create` button.
 
 ![Create event](../media/create_event.gif)
 
+<div style="text-align: right; margin-bottom: 1em;"><a href="#plananaz-docs">⏫ Back to Top</a></div>
+
 ---
 
-## Edit Event
+## 4.2 Edit Event
 
 #### 🔍 Overview
-Click on the event.<br>
-Click on the `Edit Event` button.<br>
-Update fields as needed.<br>
-Click on the `Update` button.
+- Click on the event.<br>
+- Click on the `Edit Event` button.<br>
+- Update fields as needed.<br>
+- Click on the `Update` button.
 
 #### 🛠️ Step-by-Step Guide
 
 ![Edit event](../media/edit_event.gif)
 
-[⏫ Back to Top](#plananaz-docs)
+<div style="text-align: right; margin-bottom: 1em;"><a href="#plananaz-docs">⏫ Back to Top</a></div>
+
 ---
 
-## Friends Page
+## 5. Friends Page
 
 #### 🖼️ Layout
 
@@ -188,7 +195,7 @@ The Friends page has the following layout:
 <div><img src="../media/friends_page_full.png" alt="Friends page full layout" style="width:400px;"/></div>
 
 On the top there is the friends list.
-<div><img src="../media/friends_page_friends.png" alt="Friends list section" style="width:400px;"/></div>
+<div><img src="../media/firends_page_friends.png" alt="Friends list section" style="width:400px;"/></div>
 
 Below there is a list of all users.
 <div><img src="../media/friends_page_users.png" alt="All users section" style="width:400px;"/></div>
@@ -199,27 +206,33 @@ Below there is a list of all users.
 
 ---
 
-### Add Friend
+### 5.1 Add Friend
 
 #### 🔍 Overview
-Click on the green `+` button to add a user as a friend.
+- Click on the green `+` button to add a user as a friend.
 
 #### 🛠️ Step-by-Step Guide
 
 ![Add friend](../media/add_friends.gif)
 
+<div style="text-align: right; margin-bottom: 1em;"><a href="#plananaz-docs">⏫ Back to Top</a></div>
+
 ---
 
-### Remove Friend
+### 5.2 Remove Friend
 
 #### 🔍 Overview
-Click on the green `-` button to delete a friend from the friends list.
+- Click on the green `-` button to delete a friend from the friends list.
 
 #### 🛠️ Step-by-Step Guide
 
 ![Remove friends](../media/delete_friends.gif)
 
+<div style="text-align: right; margin-bottom: 1em;"><a href="#plananaz-docs">⏫ Back to Top</a></div>
+
 ---
+
+## 6. Settings Page
 
 #### 🖼️ Layout
 
@@ -229,14 +242,15 @@ The Settings page contains the `Log Out` button.
 
 ---
 
-### Logout
+### 6.1 Logout
 
 #### 🔍 Overview
-Click on the green `Log Out` button to log out. You return to the login screen afterwards.
+- Click on the green `Log Out` button to log out. You return to the login screen afterwards.
 
 #### 🛠️ Step-by-Step Guide
 
 ![Logout](../media/logout.gif)
 
-[⏫ Back to Top](#plananaz-docs)
+<div style="text-align: right; margin-bottom: 1em;"><a href="#plananaz-docs">⏫ Back to Top</a></div>
+
 ---
