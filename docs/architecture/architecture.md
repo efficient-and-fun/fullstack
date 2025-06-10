@@ -217,7 +217,7 @@ How is the deployment process?
 [Frontend Test Results](https://github.com/efficient-and-fun/fullstack/actions/workflows/frontend-dev-pipeline.yaml)<br>
 [Backend Test Results](https://github.com/efficient-and-fun/fullstack/actions/workflows/backend-dev-pipeline.yml)
 
-- Sonarcloud is used to check the quality of the code:
+- Sonarcloud is used to check the quality of the code:<br>
 [![SonarCloud Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=efficient-and-fun_fullstack&metric=alert_status)](https://sonarcloud.io/dashboard?id=efficient-and-fun_fullstack)
 
 

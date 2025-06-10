@@ -50,11 +50,11 @@ jobs:
       - name: SonarCloud Analyse starten
         run: |
           dotnet sonarscanner begin \
-            /k:"DEIN_ORG_DEIN_PROJEKTKEY" \
-            /o:"DEIN_ORG" \
+            /k:"efficient-and-fun_fullstack" \
+            /o:"efficient-and-fun" \
             /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.sources="backend, frontend/src"    # <<< ANPASSEN: Ordner mit deinem Backend- und Frontend-Code >>> \
+            /d:sonar.sources="backend, frontend/src" \
             /d:sonar.exclusions="**/node_modules/**,**/bin/**,**/obj/**,**/*.json" \
             /d:sonar.test.inclusions="**/*.spec.ts,**/*.test.ts" \
             /d:sonar.sourceEncoding="UTF-8"
@@ -62,7 +62,7 @@ jobs:
       # 7) Backend bauen
       - name: Backend bauen & testen
         run: |
-          dotnet restore backend/WebApi.sln      # <<< ANPASSEN: Pfad zu deiner .sln im Backend >>>
+          dotnet restore backend/WebApi.sln
           dotnet build backend/WebApi.sln -c Release
 
       # 8) Frontend bauen
