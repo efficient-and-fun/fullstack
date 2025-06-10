@@ -2,6 +2,8 @@
 
 ## Project Documentation
 
+The manual of this project can be found here [link](docs/plananaz_manual/plananaz_manual.md)
+
 The project and its architecture is documented under this [link](docs/architecture/architecture.md)
 
 The code of conduct is [here](docs/CODE_OF_CONDUCT.md)
