@@ -54,12 +54,11 @@ jobs:
             /o:"efficient-and-fun" \
             /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            # lege hier fest, wo die Sources liegen:
             /d:sonar.sources="backend,frontend/src" \
-            # schließe Node-Modules, Bin/Obj, Configs, etc. aus
             /d:sonar.exclusions="**/node_modules/**,**/bin/**,**/obj/**,**/*.json" \
             /d:sonar.test.inclusions="**/*.spec.ts,**/*.test.ts" \
             /d:sonar.sourceEncoding="UTF-8"
+
 
       # 7) Build & Tests Backend
       - name: Backend bauen & testen

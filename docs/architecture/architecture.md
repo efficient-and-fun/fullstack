@@ -212,6 +212,16 @@ How is the deployment process?
 - Server-side validation of required fields: email, username, password, and AGB acceptance.
 - Clear error messages returned for duplicate emails or usernames.
 
+### Testing and Code Quality
+- Tests are run in the frontend and backend build pipeline the results can be found in the corresponding github actions. The results for the e2e test can be found in the frontend runs at the end:<br>
+[Frontend Test Results](https://github.com/efficient-and-fun/fullstack/actions/workflows/frontend-dev-pipeline.yaml)<br>
+[Backend Test Results](https://github.com/efficient-and-fun/fullstack/actions/workflows/backend-dev-pipeline.yml)
+
+- Sonarcloud is used to check the quality of the code:
+[![SonarCloud Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=efficient-and-fun_fullstack&metric=alert_status)](https://sonarcloud.io/dashboard?id=efficient-and-fun_fullstack)
+
+
+
 ## 9. Architecture Decisions
 
 ### Use of JWT for Authentication
