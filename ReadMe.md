@@ -1,6 +1,10 @@
 # Project ReadMe
 
+To get started click [here](https://plananaz.pm4.init-lab.ch/).
+
 ## Project Documentation
+
+The manual of this project can be found here [link](docs/plananaz_manual/plananaz_manual.md)
 
 The project and its architecture is documented under this [link](docs/architecture/architecture.md)
 
