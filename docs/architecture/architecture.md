@@ -173,7 +173,7 @@ Responsible for handling all meet up - related HTTP API endpoints, including:
 3. UserService adds the friend.
 ```
 ## 7. Deployment View
-As this is the scope of a school project we were limited to the available hardware environment our school provided. Therefore, we choose to use rancher paired with argoCD to host our environment. Our building pipeline uses GitHub Actions. In the following section a typical CI-CD pipeline run is described. It triggers when something is pushed into the dev branch on the fullstack repository.
+As this is the scope of a school project we were limited to the available hardware environment our school provided. Therefore, we choose to use rancher paired with [argoCD](https://argocd.pm4.init-lab.ch/) to host our environment. Our building pipeline uses GitHub Actions. In the following section a typical CI-CD pipeline run is described. It triggers when something is pushed into the dev branch on the fullstack repository.
 
 ![Arc42 deployment view.png](../media/Arc42%20deployment%20view.png)
 

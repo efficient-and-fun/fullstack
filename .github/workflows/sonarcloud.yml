@@ -2,7 +2,7 @@ name: SonarCloud Fullstack Analyse
 
 on:
   push:
-    branches: [ main, dev-frontend ]
+    branches: [ main ]
   pull_request:
     types: [ opened, synchronize, reopened ]
     branches: [ main ]
@@ -19,67 +19,59 @@ jobs:
         with:
           fetch-depth: 0
 
-      # 2) Java (für SonarScanner)
+      # 2) Java (für Scanner)
       - name: JDK 11 installieren
         uses: actions/setup-java@v3
         with:
           java-version: '11'
           distribution: 'adopt'
 
-      # 3) .NET (Backend)
+      # 3) .NET SDK (Backend-Build)
       - name: .NET SDK installieren
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      # 4) Node.js (Frontend)
-      - name: Node.js installieren und Cache einrichten
+      # 4) Node.js (Frontend-Build)
+      - name: Node.js installieren und Cache konfigurieren
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: frontend/package-lock.json  # <<< ANPASSEN: Pfad zu deinem Frontend lockfile >>>
 
-      # 5) SonarScanner for .NET installieren
+      # 5) SonarScanner installieren
       - name: dotnet-sonarscanner installieren
         run: |
           dotnet tool install --global dotnet-sonarscanner --version 5.12.0
           echo "${HOME}/.dotnet/tools" >> $GITHUB_PATH
 
-      # 6) SonarCloud Begin Analyse (im Root-Ordner)
-      - name: SonarCloud Begin
+      # 6) SonarCloud Begin
+      - name: SonarCloud Analyse starten
         run: |
           dotnet sonarscanner begin \
-            /k:"efficient-and-fun_fullstack" \
-            /o:"efficient-and-fun" \
+            /k:"DEIN_ORG_DEIN_PROJEKTKEY" \
+            /o:"DEIN_ORG" \
             /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.sources="backend,frontend/src" \
+            /d:sonar.sources="backend, frontend/src"    # <<< ANPASSEN: Ordner mit deinem Backend- und Frontend-Code >>> \
             /d:sonar.exclusions="**/node_modules/**,**/bin/**,**/obj/**,**/*.json" \
             /d:sonar.test.inclusions="**/*.spec.ts,**/*.test.ts" \
             /d:sonar.sourceEncoding="UTF-8"
 
-
-      # 7) Build & Tests Backend
+      # 7) Backend bauen
       - name: Backend bauen & testen
-        working-directory: backend
         run: |
-          dotnet restore WebApi.sln
-          dotnet build WebApi.sln -c Release
-          # optional: dotnet test WebApi.sln --logger trx
+          dotnet restore backend/WebApi.sln      # <<< ANPASSEN: Pfad zu deiner .sln im Backend >>>
+          dotnet build backend/WebApi.sln -c Release
 
-      # 8) Build & Tests Frontend
+      # 8) Frontend bauen
       - name: Frontend installieren & bauen
-        working-directory: frontend
         run: |
-          npm ci
-          npm run build
-          # optional: npm test
+          npm ci --prefix frontend
+          npm run build --prefix frontend
 
-      # 9) SonarCloud End Analyse
-      - name: SonarCloud End
+      # 9) SonarCloud End
+      - name: SonarCloud Analyse beenden
         run: |
           dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
-
-      # 10) Badge (in README) bleibt automatisch aktuell
-
