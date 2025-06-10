@@ -1,6 +1,6 @@
 # Project ReadMe
 
-To get started click [here](https://plananaz.pm4.init-lab.ch/)
+To get started click [here](https://plananaz.pm4.init-lab.ch/).
 
 ## Project Documentation
 

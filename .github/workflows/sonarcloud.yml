@@ -2,7 +2,7 @@ name: SonarCloud Fullstack Analyse
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dev-frontend ]
   pull_request:
     types: [ opened, synchronize, reopened ]
     branches: [ main ]
