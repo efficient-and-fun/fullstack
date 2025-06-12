@@ -10,19 +10,19 @@
 
 ## 📑 Table of Contents
 
-1. [Introduction](#introduction)
-2. [Getting Started](#getting-started)<br>
-   2.1 [Signup](#signup)  
-   2.2 [Login](#login)
-3. [Navigation](#navigation)  
-4. [Events](#event-overview-page)  
-   4.1 [Create Event](#create-event)  
-   4.2 [Edit Event](#edit-event)  
-5. [Friends Page](#friends-page)  
-   5.1 [Add Friend](#add-friend)  
-   5.2 [Remove Friend](#remove-friend)  
-6. [Settings Page](#settings-page)  
-   6.1 [Logout](#logout)  
+1. [Introduction](#1-introduction)
+2. [Getting Started](#2-getting-started)<br>
+   2.1 [Signup](#21-signup)  
+   2.2 [Login](#22-login)
+3. [Navigation](#3-navigation)  
+4. [Events](#4-event-overview-page)  
+   4.1 [Create Event](#41-create-event)  
+   4.2 [Edit Event](#42-edit-event)  
+5. [Friends Page](#5-friends-page)  
+   5.1 [Add Friend](#51-add-friend)  
+   5.2 [Remove Friend](#52-remove-friend)  
+6. [Settings Page](#6-settings-page)  
+   6.1 [Logout](#61-logout)  
 
 ---
 ## 1. Introduction
