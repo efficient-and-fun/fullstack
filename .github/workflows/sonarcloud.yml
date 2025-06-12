@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> dev
 name: SonarCloud Fullstack Analyse
 
 on:
@@ -5,7 +9,10 @@ on:
     branches: [ main, dev-frontend ]
   pull_request:
     types: [ opened, synchronize, reopened ]
+<<<<<<< HEAD
     branches: [ main ]
+=======
+>>>>>>> dev
 
 jobs:
   sonarcloud:
